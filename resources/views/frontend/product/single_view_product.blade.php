@@ -85,7 +85,8 @@
                                 <div class="row">
                                     <div class="product-images-container">
                                         {{-- Main Image Carousel --}}
-                                        <div class="owl-carousel owl-theme product-img-list owl-simple" data-toggle="owl" data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
+                                        <div class="owl-carousel owl-theme product-img-list owl-simple" data-toggle="owl"
+                                            data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
                                             @foreach ($response['images'] as $index => $media)
                                                 @php
                                                     $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
@@ -183,7 +184,7 @@
                                         <span class="new-price">
                                             ₹{{ number_format($price, 0, '.', ',') }}</span>
                                     @else --}}
-                                    @if ($price != 0)
+                                    @if ($price != 0 || $price)
                                         <span class="old-price 1"> ₹{{ $mrp }}</span>
                                     @endif
 
@@ -197,108 +198,156 @@
                                 </div><!-- End .product-price -->
                                 <span class="gst-n-text">(GST Included)</span>
 
+                                {{-- ────────────────────────────────────────────────
+     VARIATION ATTRIBUTES  (Color · Size · Weight/any)
+     ──────────────────────────────────────────────── --}}
                                 @if (!empty($response['variation_attributes']))
                                     @foreach ($response['variation_attributes'] as $attributeName => $attributeValues)
                                         @php
-                                            // Normalize attribute names
-                                            $sizeVariants = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Size'];
-                                            $isSize = in_array($attributeName, $sizeVariants);
-                                            $displayName = $isSize ? 'Size' : 'Color';
-                                            $attributeType = $isSize ? 'Size' : 'Color';
+                                            /* ── classify the attribute ── */
+                                            $sizeKeywords = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'Size', 'size'];
+                                            $colorKeywords = ['Color', 'color', 'Colour', 'colour'];
+
+                                            $isSize = in_array($attributeName, $sizeKeywords);
+                                            $isColor = in_array($attributeName, $colorKeywords);
+                                            $isWeight = !$isSize && !$isColor; // weight / volume / any custom
+
+                                            $attrType = $isSize ? 'Size' : ($isColor ? 'Color' : $attributeName);
+                                            $displayName = $attrType;
                                         @endphp
 
-                                        <div
-                                            class="d-flex align-items-center {{ $attributeType === 'Color' ? 'mb-20px color-options' : 'mb-35px size-options' }}">
-                                            <label
-                                                class="text-dark-gray alt-font me-15px fw-500">{{ $attributeType }}</label>
+                                        <div class="variation-group mb-3" data-attr-type="{{ $attrType }}">
+                                            <div class="variation-label-row">
+                                                <span class="variation-label">{{ $displayName }}</span>
+                                                @if ($isSize || $isWeight)
+                                                    <span class="variation-selected-val"
+                                                        id="selected-{{ Str::slug($attrType) }}"></span>
+                                                @endif
+                                            </div>
 
-                                            @if ($attributeType === 'Color')
-                                                {{-- Color Options --}}
-                                                <ul class="shop-color mb-0">
+                                            {{-- ── COLOR SWATCHES ── --}}
+                                            @if ($isColor)
+                                                <ul class="variation-swatch-list attribute-options">
                                                     @foreach ($attributeValues as $index => $attribute)
                                                         @php
-                                                            // Check if this color option has any stock
                                                             $hasStock = false;
-                                                            if (!empty($response['variations'])) {
-                                                                foreach ($response['variations'] as $variation) {
-                                                                    if ($variation['stock'] > 0) {
-                                                                        foreach ($variation['attributes'] as $attr) {
-                                                                            if (
-                                                                                $attr['name'] === 'Color' &&
-                                                                                strtolower($attr['value']) ===
-                                                                                    strtolower($attribute['value'])
-                                                                            ) {
-                                                                                $hasStock = true;
-                                                                                break 2;
-                                                                            }
+                                                            foreach ($response['variations'] ?? [] as $variation) {
+                                                                if ($variation['stock'] > 0) {
+                                                                    foreach ($variation['attributes'] as $attr) {
+                                                                        if (
+                                                                            $attr['name'] === 'Color' &&
+                                                                            strtolower($attr['value']) ===
+                                                                                strtolower($attribute['value'])
+                                                                        ) {
+                                                                            $hasStock = true;
+                                                                            break 2;
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                            $stockClass = $hasStock ? '' : 'out-of-stock-variation';
-                                                            $colorValue = strtolower(
+                                                            $colorHex = strtolower(
                                                                 str_replace(' ', '', $attribute['value']),
                                                             );
                                                             $uniqueId = 'color-' . ($index + 1);
                                                         @endphp
                                                         <li>
-                                                            <input class="d-none " type="radio" id="{{ $uniqueId }}"
-                                                                name="color" {{ $index === 0 ? 'checked' : '' }}>
-                                                            <label for="{{ $uniqueId }}">
-                                                                <span {{ !$hasStock ? 'title=Out-of-Stock' : '' }}
-                                                                    data-attr="{{ $attributeType }}"
-                                                                    data-value="{{ $colorValue }}"
-                                                                    data-id="{{ $attribute['id'] }}"
-                                                                    class="attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ $stockClass }}"
-                                                                    style="background-color: {{ $colorValue }};"></span>
-                                                            </label>
+                                                            <button type="button"
+                                                                class="swatch-color attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
+                                                                data-attr="{{ $attrType }}"
+                                                                data-value="{{ $colorHex }}"
+                                                                data-id="{{ $attribute['id'] }}"
+                                                                style="--swatch-color: {{ $colorHex }};"
+                                                                {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}
+                                                                aria-label="{{ $attribute['value'] }}{{ !$hasStock ? ' – Out of Stock' : '' }}">
+                                                                <span class="swatch-inner"></span>
+                                                                @if (!$hasStock)
+                                                                    <span class="oos-slash"></span>
+                                                                @endif
+                                                            </button>
                                                         </li>
                                                     @endforeach
                                                 </ul>
-                                            @else
-                                                {{-- Size Options --}}
-                                                <ul class="shop-size mb-0">
+
+                                                {{-- ── SIZE PILLS ── --}}
+                                            @elseif ($isSize)
+                                                <ul class="variation-pill-list attribute-options">
                                                     @foreach ($attributeValues as $index => $attribute)
                                                         @php
-                                                            // Check if this size option has any stock
                                                             $hasStock = false;
-                                                            if (!empty($response['variations'])) {
-                                                                foreach ($response['variations'] as $variation) {
-                                                                    if ($variation['stock'] > 0) {
-                                                                        foreach ($variation['attributes'] as $attr) {
-                                                                            if (
-                                                                                $attr['name'] === 'Size' &&
-                                                                                strtolower($attr['value']) ===
-                                                                                    strtolower($attribute['value'])
-                                                                            ) {
-                                                                                $hasStock = true;
-                                                                                break 2;
-                                                                            }
+                                                            foreach ($response['variations'] ?? [] as $variation) {
+                                                                if ($variation['stock'] > 0) {
+                                                                    foreach ($variation['attributes'] as $attr) {
+                                                                        if (
+                                                                            $attr['name'] === 'Size' &&
+                                                                            strtolower($attr['value']) ===
+                                                                                strtolower($attribute['value'])
+                                                                        ) {
+                                                                            $hasStock = true;
+                                                                            break 2;
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                            $stockClass = $hasStock ? '' : 'out-of-stock-variation';
-                                                            $sizeValue = strtolower(
+                                                            $sizeVal = strtolower(
                                                                 str_replace(' ', '', $attribute['value']),
                                                             );
                                                             $uniqueId = 'size-' . ($index + 1);
                                                         @endphp
                                                         <li>
-                                                            <input class="d-none " type="radio" id="{{ $uniqueId }}"
-                                                                name="size" {{ $index === 0 ? 'checked' : '' }}>
-                                                            <label for="{{ $uniqueId }}">
-                                                                <span {{ !$hasStock ? 'title=Out-of-Stock' : '' }}
-                                                                    data-attr="{{ $attributeType }}"
-                                                                    data-value="{{ $sizeValue }}"
-                                                                    data-id="{{ $attribute['id'] }}"
-                                                                    class=" attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ $stockClass }}">{{ strtoupper($attribute['value']) }}</span>
-                                                            </label>
+                                                            <button type="button"
+                                                                class="pill-btn attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
+                                                                data-attr="{{ $attrType }}"
+                                                                data-value="{{ $sizeVal }}"
+                                                                data-id="{{ $attribute['id'] }}"
+                                                                {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
+                                                                {{ strtoupper($attribute['value']) }}
+                                                            </button>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+
+                                                {{-- ── WEIGHT / CUSTOM PILLS ── --}}
+                                            @else
+                                                <ul class="variation-pill-list attribute-options">
+                                                    @foreach ($attributeValues as $index => $attribute)
+                                                        @php
+                                                            $hasStock = false;
+                                                            foreach ($response['variations'] ?? [] as $variation) {
+                                                                if ($variation['stock'] > 0) {
+                                                                    foreach ($variation['attributes'] as $attr) {
+                                                                        if (
+                                                                            strtolower($attr['name']) ===
+                                                                                strtolower($attributeName) &&
+                                                                            strtolower($attr['value']) ===
+                                                                                strtolower($attribute['value'])
+                                                                        ) {
+                                                                            $hasStock = true;
+                                                                            break 2;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            $attrVal = strtolower(
+                                                                str_replace(' ', '', $attribute['value']),
+                                                            );
+                                                        @endphp
+                                                        <li>
+                                                            <button type="button"
+                                                                class="pill-btn pill-btn--weight attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
+                                                                data-attr="{{ $attrType }}"
+                                                                data-value="{{ $attrVal }}"
+                                                                data-id="{{ $attribute['id'] }}"
+                                                                {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
+                                                                {{ $attribute['value'] }}
+                                                                @if (!$hasStock)
+                                                                    <span class="oos-tag">Out of stock</span>
+                                                                @endif
+                                                            </button>
                                                         </li>
                                                     @endforeach
                                                 </ul>
                                             @endif
-                                        </div>
+                                        </div>{{-- /.variation-group --}}
                                     @endforeach
                                 @endif
 
@@ -325,8 +374,8 @@
                                             class="{{ $isInWishlist ? 'remove-from-wishlist liked' : 'add-to-wishlist' }} wishlist  btn-product btn-wishlist"
                                             title="Wishlist">
                                             <svg class="wish-icon" title="Like Safebox SVG File" width="21"
-                                                height="21" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"
-                                                stroke-linejoin="round">
+                                                height="21" viewBox="0 0 24 24" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                                 <path
                                                     d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
                                                 </path>
@@ -496,7 +545,8 @@
                                                         </div>
                                                     </div>
                                                 @else
-                                                    <div class="cart-box-btn d-flex gap-10 align-items-center justify-content-center">
+                                                    <div
+                                                        class="cart-box-btn d-flex gap-10 align-items-center justify-content-center">
                                                         <a class="add-to-cart-home disabled">
                                                             <span>Out of Stock</span>
                                                         </a>
@@ -666,7 +716,8 @@
                 $('.attribute_seletion').removeClass('btn-outline-primary');
                 selectedAttributes['Size'] = {
                     id: firstSizeBtn.data('id'),
-                    value: firstSizeBtn.data('value').toLowerCase().replace(/\s+/g, '')
+                    value: firstSizeBtn.data('value')
+                    // .toLowerCase().replace(/\s+/g, '')
                 };
             }
 
@@ -703,21 +754,55 @@
             updateProductDetails();
 
             // Attribute Button Click
+            /*  $(document).on('click', '.attribute-btn', function() {
+                  var attrName = $(this).data('attr');
+                  var attrValue = $(this).data('value');
+                  var attrId = $(this).data('id');
+
+                  $(this).closest('.attribute-options').find('.attribute-btn')
+                      .removeClass('attribute_seletion btn-dark')
+                      .addClass('btn-outline-primary');
+                  $(this).addClass('attribute_seletion').removeClass('btn-outline-primary');
+
+                  selectedAttributes[attrName] = {
+                      id: attrId,
+                      value: attrValue.toLowerCase().replace(/\s+/g, '')
+                  };
+
+                  if (attrName === 'Size') {
+                      filterColorsBasedOnSize();
+                      autoSelectFirstVisibleColor();
+                  }
+
+                  updateProductDetails();
+                  checkSelection();
+              });
+
+              */
             $(document).on('click', '.attribute-btn', function() {
+                if ($(this).prop('disabled') || $(this).hasClass('oos')) return;
+
                 var attrName = $(this).data('attr');
                 var attrValue = $(this).data('value');
                 var attrId = $(this).data('id');
 
-                $(this).closest('.attribute-options').find('.attribute-btn')
-                    .removeClass('attribute_seletion btn-dark')
-                    .addClass('btn-outline-primary');
-                $(this).addClass('attribute_seletion').removeClass('btn-outline-primary');
+                // Deselect siblings in same group, select clicked
+                $(this).closest('.attribute-options')
+                    .find('.attribute-btn')
+                    .removeClass('selected attribute_seletion');
+                $(this).addClass('selected attribute_seletion');
 
+                // Store selection
                 selectedAttributes[attrName] = {
                     id: attrId,
-                    value: attrValue.toLowerCase().replace(/\s+/g, '')
+                    value: attrValue //.toLowerCase().replace(/\s+/g, '')
                 };
 
+                // Update the "selected value" label next to the variation heading
+                var $labelEl = $(this).closest('.variation-group').find('.variation-selected-val');
+                $labelEl.text($(this).data('value')); // show original readable value
+
+                // If size changed, re-filter colour options
                 if (attrName === 'Size') {
                     filterColorsBasedOnSize();
                     autoSelectFirstVisibleColor();
@@ -726,6 +811,7 @@
                 updateProductDetails();
                 checkSelection();
             });
+
 
             function filterColorsBasedOnSize() {
                 var size = selectedAttributes['Size']?.value;
@@ -780,11 +866,14 @@
             }
 
             function updateProductDetails() {
+
+                console.log("variations", variations)
                 var foundVariation = variations.find(function(variation) {
                     return variation.attributes.every(attr => {
                         var selectedAttr = selectedAttributes[attr.name];
+                        console.log("selectedAttributes", selectedAttributes,attr)
                         if (!selectedAttr) return false;
-                        return selectedAttr.value === attr.value.toLowerCase().replace(/\s+/g, '');
+                        return selectedAttr.value === parseInt(attr.value) //.toLowerCase().replace(/\s+/g, '');
                     });
                 });
                 console.log('foundVariation', variations, foundVariation)
@@ -842,6 +931,7 @@
                     console.log(".slider_images .swiper-slide-active img", imgSrc)
 
                 } else {
+                     console.log("Else foundVariation", foundVariation);
                     selectedVariationId = foundVariation.id;;
                     selectedPrice = foundVariation.price;
                     selectedMrp = foundVariation.mrp;
@@ -1314,9 +1404,15 @@
                 autoplayHoverPause: true,
                 navText: ['<i class="icon-angle-left"></i>', '<i class="icon-angle-right"></i>'],
                 responsive: {
-                    0: { items: 1 },
-                    600: { items: 1 },
-                    1000: { items: 1 }
+                    0: {
+                        items: 1
+                    },
+                    600: {
+                        items: 1
+                    },
+                    1000: {
+                        items: 1
+                    }
                 }
             });
 
@@ -1328,10 +1424,18 @@
                 dots: false,
                 items: 4,
                 responsive: {
-                    0: { items: 3 },
-                    600: { items: 3 },
-                    768: { items: 4 },
-                    1000: { items: 4 }
+                    0: {
+                        items: 3
+                    },
+                    600: {
+                        items: 3
+                    },
+                    768: {
+                        items: 4
+                    },
+                    1000: {
+                        items: 4
+                    }
                 }
             });
 

@@ -180,11 +180,11 @@
                             <span class="menu-text">{{ __('keywords.Admin Products') }}</span>
                         </a>
                     </div>
-                    {{-- <div class="menu-item {{ request()->is('attributes/*') ? 'active' : '' }}">
+                    <div class="menu-item {{ request()->is('attributes/*') ? 'active' : '' }}">
                         <a href="{{ route('attributes') }}" class="menu-link">
                             <span class="menu-text">{{ __('keywords.Attributes') }}</span>
                         </a>
-                    </div> --}}
+                    </div>
                     {{-- <div class="menu-item {{ request()->is('store_products/*') ? 'active' : '' }}">
                             <a href="{{ route('st_plist') }}" class="menu-link">
                                 <span

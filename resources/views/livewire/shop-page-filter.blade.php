@@ -5,7 +5,7 @@
                 position: sticky;
                 top: 80px;
                 height: calc(100vh - 80px);
-                background: #fff7ed;
+                background: #ffffff00;
             }
 
             .filter-scroll {
@@ -40,8 +40,8 @@
             .chevron {
                 width: 10px;
                 height: 10px;
-                border-right: 2px solid #4B3B2E;
-                border-bottom: 2px solid #4B3B2E;
+                border-right: 2px solid #ffffff;
+                border-bottom: 2px solid #ffffff;
                 transform: rotate(45deg);
                 transition: transform .3s ease;
             }
@@ -118,7 +118,7 @@
 
             /* Optional: slight emphasis */
             .filter-card.has-selection .filter-card-header {
-                background: #6b4f3b;
+                background: #000000;
                 color: #fff;
             }
 
@@ -131,7 +131,7 @@
             }
 
             .filter-card.has-selection {
-                border-color: #6b4f3b;
+                border-color: #ffffff;
             }
 
 
@@ -563,7 +563,7 @@
                                 card.classList.remove('has-selection');
                             }
                         });
-                       // scrollToProductContent();
+                        // scrollToProductContent();
                     });
 
                     // Scroll when product detail is shown

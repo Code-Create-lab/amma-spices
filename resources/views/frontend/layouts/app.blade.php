@@ -45,12 +45,35 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <style>
-        body {
+        /* body {
 
-            background: #000 url({{ asset('assets/images/homebg.jpg') }})no-repeat top center fixed;
+            background: #000 url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center fixed;
             background-size: cover;
-            /* padding: 180px 0px 50px 0px; */
+            padding: 180px 0px 50px 0px;
             min-height: 100vh;
+        } */
+        body {
+            font: normal 300 1.4rem/1.86 "Inter", sans-serif;
+            color: #ffffff;
+            /* background-color: transparent; */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            background: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),  url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
+                url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center;
+            background-size: cover;
+            background-attachment: fixed;
+            z-index: -1;
         }
     </style>
 </head>
@@ -270,6 +293,29 @@
             $(document).on('click', '.add-to-cart', function() {
                 const $container = $(this).closest('.d-flex');
                 const productId = $container.data('product-id');
+                const quantity = parseInt($container.find('.product_quantity').val()) || 1;
+
+                // Validate
+                if (quantity < 1 || quantity > 10) {
+                    alert('Quantity must be between 1 and 10');
+                    return;
+                }
+
+                console.log("Adding to cart:", {
+                    product_id: productId,
+                    quantity: quantity
+                });
+                // Pass as separate parameters (for Solution 2)
+                Livewire.dispatch('addToCart', {
+                    product_id: productId,
+                    quantity: quantity
+                });
+            });
+            /* From laravel product list component with updated code  */
+            
+            $(document).on('click', '.add-to-cart-component', function() {
+                const $container = $(this).closest('.product-card__footer');
+                const productId = $(this).data('product-id');
                 const quantity = parseInt($container.find('.product_quantity').val()) || 1;
 
                 // Validate

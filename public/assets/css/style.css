@@ -25,7 +25,7 @@ html {
 
 body {
   font: normal 300 1.4rem/1.86 "Inter", sans-serif;
-  color: #4B3B2E;;
+  color: #ffffff;;
   background-color: #FFF7ED;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -2197,7 +2197,7 @@ p {
   line-height: 1.6;
   font-weight: 400;
   font-family: "Inter", sans-serif;
-  color: #4B3B2E; }
+  color: #d5ca97c4; }
 
 @media screen and (max-width: 991px) {
   .header-middle .header-center {
@@ -2838,8 +2838,8 @@ a:focus {
   border-color: #c96; }
 
 .nav.nav-pills-mobile .nav-link.active, .nav.nav-pills-mobile .nav-link:hover, .nav.nav-pills-mobile .nav-link:focus {
-  color: #c96;
-  border-bottom-color: #c96; }
+    color: #e7c83b;
+    border-bottom-color: #4B3B2E; }
 
 .mobile-cats-menu li a:hover, .mobile-cats-menu li a:focus {
   color: #c96; }
@@ -4505,19 +4505,19 @@ a:focus {
     .breadcrumb-item i::before {
       margin: 0; }
   .breadcrumb-item a {
-    color: #4B3B2E; 
+    color: #fff; 
     font-weight:500;
   }
     .breadcrumb-item a:hover, .breadcrumb-item a:focus {
       color: #4B3B2E; }
   .breadcrumb-item.active {
-    color: #4B3B2E; 
+    color: #fff; 
   font-weight:500;
 }
   .breadcrumb-item + .breadcrumb-item {
     padding-left: 1rem; }
     .breadcrumb-item + .breadcrumb-item:before {
-      color: #4B3B2E;
+      color: #fff;
       content: '\f112';
       font-family: "molla";
       padding-right: .7rem;
@@ -5563,7 +5563,7 @@ a:focus {
     font-weight: 600;
     font-size: 23px;
     margin-bottom: 1.2rem;
-    color: #a06b3c;
+    color: #fff;
 }
 .product-title a {
   color: inherit; }
@@ -14806,7 +14806,7 @@ span.seprater-img img {
     color: #ffffff;;
     font-family: "Gideon Roman", serif;
 }
-.collection-list-slider {
+.collection-list-slider .row{
     padding-top: 40px;
 }
 .who-we-are {
@@ -14817,7 +14817,7 @@ span.seprater-img img {
     width: 100%;
     border: 13px solid transparent;
     position: relative;
-    border-image-source: url(../img/pro-bg.png);
+    /* border-image-source: url(../img/pro-bg.png); */
     border-image-slice: 25;
     border-image-repeat: round;
     object-fit: cover;
@@ -14825,7 +14825,7 @@ span.seprater-img img {
 
 .collection-list-slider .items-box h3 {
     font-size: 18px;
-    color: #4B3B2E;
+    color: #fff;
     font-weight: 400;
     text-transform: uppercase;
     margin-top: 10px;
@@ -14836,7 +14836,7 @@ span.seprater-img img {
 .collection-list-slider .container {
     background-image: url(../img/bg2.png);
     padding-top: 70px;
-    background-position: 50px bottom;
+    background-position: 0px bottom;
     background-size: cover;
     background-repeat: no-repeat;
     padding-bottom: 60px;
@@ -14848,8 +14848,8 @@ span.seprater-img img {
 }
 .owl-simple .owl-dots .owl-dot.active span {
     width: 18px;
-    border-color: #4B3B2E;
-    background: #4B3B2E;
+    border-color: #e7c840;
+    background: #e7c840;
 }
 .owl-simple .owl-dots {
     margin-top: 20px;
@@ -14895,7 +14895,7 @@ a.wishlist-link-product {
     margin-bottom: 20px;
 }
 .container-full-sf-in{
-  padding: 25px;
+  padding: 5px;
   padding-bottom: 0;
 }
 img.product-img {
@@ -14927,7 +14927,7 @@ span.gst-n-text {
 }
 img.bg-feture-sec {
     position: absolute;
-    left: 50px;
+    left: 0px;
     top: 0;
     width: 45%;
 }
@@ -14981,8 +14981,8 @@ img.bg-feture-sec {
 }
 img.bg-feture2-sec {
     position: absolute;
-    right: 25px;
-    bottom: 30px;
+    right: 0px;
+    bottom: -288px;
     width: 250px;
     z-index: -1;
 }
@@ -15018,8 +15018,8 @@ img.bg-feture2-sec {
 }
 img.bg-feture4-sec {
     position: absolute;
-    right: 53px;
-    bottom: -80px;
+    right: 0;
+    bottom: 0px;
     z-index: -1;
 }
 
@@ -15041,11 +15041,11 @@ img.bg-feture3-sec {
     margin-top: 50px;
 }
 a.social-icon i {
-    color: #ccb192;
-    background: #fff;
+    color: #e7c840;
+    background: #000000;
     border-radius: 50%;
-    width: 35px;
-    font-size: 16px;
+    width: 20px;
+    font-size: 20px;
     text-align: center;
     height: 35px;
     line-height: 35px;
@@ -15470,7 +15470,7 @@ footer.footer.footer-2 .container {
    font-size: 12px !important;
 }
 .old-price {
-    color: #4B3B2E80!important;
+    color: #ffffff80 !important;
     text-decoration: line-through;
 }
 section.a-section {
@@ -15478,7 +15478,7 @@ section.a-section {
 }
 .tab-content img.bg-feture-sec {
     position: absolute;
-    left: -30px;
+    left: -50px;
     top: -108px;
     width: 35%;
 }
@@ -15551,7 +15551,7 @@ a.know-more-btn {
     color: #fff !important;
 }
 span.header-title {
-    color: #4B3B2E;
+    color: #ffffff;
     font-weight: 500;
 }
 .filter-item .count {
@@ -15564,7 +15564,7 @@ span.header-title {
 }
 
 label {
-    color: #4B3B2E;
+    color: #fff;
 }
 .container.common-class-page .row {
     margin: 0;
@@ -16019,7 +16019,7 @@ a.social-icon i:before {
     align-items: center;
 }
 .filter-item .text {
-    color: #4B3B2E;
+    color: #fff;
     display: -webkit-box;
     max-width: 100%;
     -webkit-line-clamp: 1;
@@ -16404,5 +16404,214 @@ a.btnqun-btn {
 }
 
 .who-we-are-inner p{
-  color:white
+  color:#fff
+}
+
+.menu li:hover > a, .menu li.show > a, .menu li.active > a {
+    color: #ffffff !important;
+}
+
+.cart-dropdown .cart-count {
+    background-color: #ffffff !important;
+    color: black !important;
+}
+
+.wishlist-link .wishlist-count {
+    background-color: #ffffff !important;
+     color: black !important;
+}
+
+/* ═══════════════════════════════════════════════
+   VARIATION GROUPS — universal wrapper
+═══════════════════════════════════════════════ */
+.variation-group {
+    margin-bottom: 18px;
+}
+.variation-label-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.variation-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+.variation-selected-val {
+    font-size: 13px;
+    font-weight: 400;
+    color: #666;
+}
+.variation-selected-val::before {
+    content: ': ';
+}
+
+/* ═══════════════════════════════════════════════
+   PILL BUTTONS  (Size & Weight)
+═══════════════════════════════════════════════ */
+.variation-pill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pill-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border: 1.5px solid #d9d9d9;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s;
+    white-space: nowrap;
+    user-select: none;
+    line-height: 1;
+}
+
+.pill-btn:hover:not(:disabled):not(.oos) {
+    border-color: #333;
+    background: #f5f5f5;
+}
+
+/* Selected state */
+.pill-btn.selected,
+.pill-btn.attribute_seletion {
+    border-color: #222;
+    background: #222;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+/* Weight pills — slightly wider, show unit clearly */
+.pill-btn--weight {
+    padding: 8px 18px;
+    font-size: 13.5px;
+    border-radius: 8px;
+    letter-spacing: 0.01em;
+}
+.pill-btn--weight.selected,
+.pill-btn--weight.attribute_seletion {
+    border-color: #1a1a1a;
+    background: #1a1a1a;
+    color: #fff;
+}
+
+/* Out-of-stock pill */
+.pill-btn.oos,
+.pill-btn:disabled {
+    border-color: #e0e0e0;
+    background: #fafafa;
+    color: #bbb;
+    cursor: not-allowed;
+    pointer-events: none;       /* block hover */
+    position: relative;
+    overflow: hidden;
+}
+/* diagonal strike line for OOS pills */
+.pill-btn.oos::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 4px,
+        rgba(0,0,0,0.07) 4px,
+        rgba(0,0,0,0.07) 5px
+    );
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+/* tiny "Out of stock" label inside weight pills */
+.oos-tag {
+    font-size: 9px;
+    font-weight: 600;
+    color: #aaa;
+    background: #f0f0f0;
+    border-radius: 3px;
+    padding: 1px 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════
+   COLOR SWATCHES
+═══════════════════════════════════════════════ */
+.variation-swatch-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.swatch-color {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    padding: 2px;
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.18s, transform 0.15s;
+    outline: none;
+}
+.swatch-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--swatch-color, #ccc);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+}
+.swatch-color:hover:not(:disabled):not(.oos) {
+    transform: scale(1.12);
+    border-color: #aaa;
+}
+.swatch-color.selected,
+.swatch-color.attribute_seletion {
+    border-color: #222;
+}
+
+/* OOS swatch */
+.swatch-color.oos,
+.swatch-color:disabled {
+    cursor: not-allowed;
+    opacity: 0.42;
+    pointer-events: none;
+}
+.oos-slash {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    width: 80%;
+    height: 1.5px;
+    background: rgba(180, 0, 0, 0.55);
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+
+.container-full-sf:hover {
+    transform: translateY(-6px);
+    border-color: #e7c840;
+    box-shadow: 0 12px 40px rgba(231, 200, 64, 0.12);
 }

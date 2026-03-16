@@ -109,7 +109,7 @@
                                         </select> --}}
                                     </div>
                                 </div>
-                                <div class="col-md-4" style="display: none">
+                                <div class="col-md-4" style="display: ">
                                     <div class="form-group">
                                         <label class="bmd-label-floating">Product Type *</label>
                                         <select name="type" class="form-control" required>
