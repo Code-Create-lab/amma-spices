@@ -36,7 +36,7 @@ class BlogController extends Controller
     {
         $request->validate([
             'title'            => 'required|string|max:255',
-            'content'          => 'required|string',
+            'blog_content'          => 'required|string',
             'status'           => 'required|in:draft,published',
             'thumbnail'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'category'         => 'nullable|string|max:100',
@@ -58,7 +58,7 @@ class BlogController extends Controller
             'author'           => $request->author           ?: "Amma's Kitchen",
             'author_role'      => $request->author_role      ?: 'Traditional South Indian Recipes & Spice Expert',
             'excerpt'          => $request->excerpt          ?: null,
-            'content'          => $request->content,
+            'content'          => $request->blog_content,
             'read_time'        => $request->read_time        ?: null,
             'status'           => $request->status,
             'meta_title'       => $request->meta_title       ?: null,
@@ -112,7 +112,7 @@ class BlogController extends Controller
 
         $request->validate([
             'title'            => 'required|string|max:255',
-            'content'          => 'required|string',
+            'blog_content'          => 'required|string',
             'status'           => 'required|in:draft,published',
             'thumbnail'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'category'         => 'nullable|string|max:100',
@@ -133,7 +133,7 @@ class BlogController extends Controller
             'author'           => $request->author           ?: "Amma's Kitchen",
             'author_role'      => $request->author_role      ?: 'Traditional South Indian Recipes & Spice Expert',
             'excerpt'          => $request->excerpt          ?: null,
-            'content'          => $request->content,
+            'content'          => $request->blog_content,
             'read_time'        => $request->read_time        ?: null,
             'status'           => $request->status,
             'meta_title'       => $request->meta_title       ?: null,

@@ -627,7 +627,7 @@
                 .blog-card__title {
                     font-size: 15.5px;
                     font-weight: 700;
-                    color: #f0f0f0;
+                    color: #f0f0f0 !important;
                     line-height: 1.45;
                     margin: 0 0 10px;
                     font-family: 'Georgia', serif;

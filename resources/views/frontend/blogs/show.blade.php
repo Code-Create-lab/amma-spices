@@ -664,7 +664,7 @@
                 <div class="bsp-tags">
                     <span class="bsp-tags__lbl">Tags</span>
                     @foreach($blog->tags as $tag)
-                        <a href="{{ route('blog.index') }}?tag={{ urlencode($tag) }}" class="bsp-tag">
+                        <a href="{{ route('customer.blog.index') }}?tag={{ urlencode($tag) }}" class="bsp-tag">
                             {{ $tag }}
                         </a>
                     @endforeach
@@ -683,7 +683,7 @@
 
                 <div class="bsp-related__grid">
                     @foreach($related as $rel)
-                        <a href="{{ route('blog.show', $rel->slug) }}" class="bsp-rc">
+                        <a href="{{ route('customer.blog.show', $rel->slug) }}" class="bsp-rc">
                             <div class="bsp-rc__thumb">
                                 <img src="{{ $rel->thumbnail ? asset('storage/'.$rel->thumbnail) : 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=500&q=75' }}"
                                      alt="{{ $rel->title }}"
@@ -705,7 +705,7 @@
                 </div>
 
                 <div class="bsp-back-wrap">
-                    <a href="{{ route('blog.index') }}" class="bsp-back">
+                    <a href="{{ route('customer.blog.index') }}" class="bsp-back">
                         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path d="M19 12H5M12 19l-7-7 7-7"/>
                         </svg>

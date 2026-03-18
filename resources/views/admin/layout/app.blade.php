@@ -23,6 +23,7 @@
     <meta name="robots" content="noindex, nofollow">
     <link href="{{ asset('assets_old/theme_assets/css/app.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets_old/theme_assets/css/custom.css') }}" rel="stylesheet" />
+    <link href="{{ asset('admin/css/blog.css') }}" rel="stylesheet" />
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/material-icons.min.css"
         integrity="sha512-y9glprRcVESvYY3suAqBUYXx0ySbQNvbzzgvLy9F2o38Y7XCNeq/No2gnHjV3+Rjyq5ijoPZRMXotpdw6jcG4g=="
