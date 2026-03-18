@@ -13,6 +13,7 @@ use App\Models\Orders;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Blog;
 
 class IndexController extends Controller
 {
@@ -68,6 +69,17 @@ class IndexController extends Controller
         $videos = Video::get();
         $banners = Banner::get();
         $coupon = Coupon::where('show_on_web', 1)->first();
+
+
+        // ── ADD THIS LINE ──────────────────────────────────────
+        // Fetch latest 6 published blogs for the homepage carousel
+        // (Owl shows 3 at a time; 6 gives a good loop experience)
+        $blogs = Blog::published()
+            ->latestFirst()
+            ->take(6)
+            ->get();
+
+            // dd($blogs);
         return view('frontend.index.index', [
             'products' => $products,
             'categories' => $categories,
@@ -76,7 +88,8 @@ class IndexController extends Controller
             'videos' => $videos,
             'banners' => $banners,
             'coupon' => $coupon,
-            'sub_categories' => $sub_categories
+            'sub_categories' => $sub_categories,
+            'blogs' => $blogs,       // ← add this
         ]);
     }
 

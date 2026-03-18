@@ -133,6 +133,8 @@ use App\Http\Controllers\TestShippingController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\RatingReviewController;
 use App\Http\Controllers\ShiprocketWebhookController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 
 use App\Models\Orders;
 use App\Mail\ConfirmOrderWithShipment;
@@ -1215,6 +1217,15 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::get('admin/out_for_delivery_orders', [AdminorderController::class, 'admin_out_orders'])->name('admin_out_orders');
             Route::get('admin/payment_failed_orders', [AdminorderController::class, 'admin_failed_orders'])->name('admin_failed_orders');
 
+            // Blogs
+            // Route::get('admin/blogs', [BlogController::class, 'index'])->name('admin.blog');
+            Route::get('/blogs',               [AdminBlogController::class, 'index'])->name('admin.blog.index');
+            Route::get('/blogs/create',        [AdminBlogController::class, 'create'])->name('admin.blog.create');
+            Route::post('/blogs',              [AdminBlogController::class, 'store'])->name('admin.blog.store');
+            Route::get('/blogs/{id}/edit',     [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
+            Route::put('/blogs/{id}',          [AdminBlogController::class, 'update'])->name('admin.blog.update');
+            Route::get('/blogs/{id}/delete',   [AdminBlogController::class, 'destroy'])->name('admin.blog.destroy');
+
             // Route::get('id/list', [IdController::class, 'idlist'])->name('idlist');
             // Route::get('id', [IdController::class, 'idd'])->name('id');
             // Route::post('id/add', [IdController::class, 'idadd'])->name('idadd');
@@ -1523,6 +1534,11 @@ Route::post('/customer/register', [SignUpController::class, 'register'])->name('
 //Search Routes
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/search-results', [SearchController::class, 'searchResults'])->name('search.results');
+
+// Blogs
+Route::get('/blogs', [BlogController::class, 'index'])->name('customer.blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('customer.blog.show');
+
 
 //Shop Grid Routes
 Route::get('categories/{slug}', [ShopGridController::class, 'index'])->name('shop_grid');

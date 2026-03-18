@@ -118,7 +118,7 @@
 
             /* Optional: slight emphasis */
             .filter-card.has-selection .filter-card-header {
-                background: #000000;
+                background: #181818;
                 color: #fff;
             }
 
@@ -221,7 +221,7 @@
                         @endif
 
 
-                        <aside class="col-lg-3 order-lg-first">
+                        <aside class="col-lg-3 order-lg-first mt-5">
                             <div class="sidebar sidebar-shop">
                                 {{-- <div class="widget widget-clean">
                                     <label>Filter</label>

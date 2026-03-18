@@ -30,27 +30,26 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
-                        <img src="assets/img/Our-Belief.jpg" style="width: 100%;">
+                        <img src="assets/img/garam-masala.webp" style="width: 100%;">
                     </div>
                     <div class="col-md-6">
-                        <h2 class="section-title">About Amma's Spices Soap Co.</h2>
-                        <p class="intro-text">
-                            Amma's Spices Soap Co. is a celebration of nature, simplicity, and mindful living.
-                            Named after the sacred Fig tree under which Lord Buddha attained enlightenment.
-                            Amma's Spices is a creation that deviates from the artificial extravagance of most products in
-                            today’s world, instead placing all of its emphasis on the hidden beauty of organic-ness.
+                        <h2 class="section-title">Our Story</h2>
+                        <p class="intro-text">Our Story
+                            Growing up in South of India, we would always watch Amma lovingly blend her spices fresh before
+                            any meal preparation, thus filling our home with warmth and aroma.
                         </p>
                         <p class="intro-text">
-                            Devoted to rekindling a profound state of bliss and awakening that bathing was originally
-                            intended to bring us, Amma's Spices essentially serves as a message for us to reconnect with our
-                            roots and return to the sacred Panch Tatva that our body is made of.
-                            Treating our body as a sacred temple and offering it everything that Mother Earth has provided
-                            us with.
+                            Our Story
+                            Growing up in South of India, we would always watch Amma lovingly blend her spices fresh before
+                            any meal preparation, thus filling our home with warmth and aroma.
+
+                            Now, from our little home-run family kitchen, we bring you these authentic South Indian spice
+                            blends for you – crafted just like she made them, pure, traditional, and filled with motherly
+                            love. Every blend is crafted with love to bring you the nostalgic taste of home-cooked meals.
                         </p>
                         <p class="intro-text">
-                            Having been in close proximity with nature all my life, I envision a world in which we finally
-                            break free from this unhealthy mindset surrounding pretentiousness and superfluity and truly
-                            embrace nature once and for all.
+                            Our mission is to make your daily cooking nourishing, easy, and full of flavour – just like Amma
+                            intended.
                         </p>
                     </div>
                 </div>
@@ -61,46 +60,63 @@
         <section class="about-section Belief">
             <div class="container">
                 <!-- <div class="row">
-                                <div class="col-md-6">
-                                    <div  class="about-section-in">
-                                    <h2 class="section-title">Our Belief</h2>
-                                    <p>We believe the human body is sacred, formed from Panch Tatva — Earth, Water, Fire, Air, and Space. Everything we create is rooted in respect for these elements and for what Mother Earth provides naturally.</p>
-                                    <p>Amma's Spices stands for:</p>
-                                    <ul class="styled-list">
-                                        <li>Honest ingredients</li>
-                                        <li>Traditional craftsmanship</li>
-                                        <li>Skin health over artificial glamour</li>
-                                        <li>Sustainability over excess</li>
-                                        <li>Conscious choices over convenience</li>
-                                    </ul>
-                                </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <img src="assets/img/Our-Belief.jpg">
-                                </div>
-                            </div> -->
+                                        <div class="col-md-6">
+                                            <div  class="about-section-in">
+                                            <h2 class="section-title">Our Belief</h2>
+                                            <p>We believe the human body is sacred, formed from Panch Tatva — Earth, Water, Fire, Air, and Space. Everything we create is rooted in respect for these elements and for what Mother Earth provides naturally.</p>
+                                            <p>Amma's Spices stands for:</p>
+                                            <ul class="styled-list">
+                                                <li>Honest ingredients</li>
+                                                <li>Traditional craftsmanship</li>
+                                                <li>Skin health over artificial glamour</li>
+                                                <li>Sustainability over excess</li>
+                                                <li>Conscious choices over convenience</li>
+                                            </ul>
+                                        </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <img src="assets/img/Our-Belief.jpg">
+                                        </div>
+                                    </div> -->
                 <div class="row botton-sec">
 
                     <div class="col-md-6">
                         <div class="about-bo-in">
-                            <h2 class="section-title">What Makes Our Product Different</h2>
-                            <p>Our products are made with the ingredients that can easily be found in any kitchen, using:
-                                Fresh Fruits, Herbs, Vegetables, Fresh Milk, Natural Butters, Essential Oils, Cold Pressed
-                                Oils,
-                                Natural Colors, Natural Fragrances.</p>
-                            <p>All of these combined, will not only provide an expert organic fragrance, but they will also
-                                supply the skin with ample nutrition and moisture to give it a glowing radiance and maintain
-                                fairness, and ultimately result in clean, long-term youthful skin.</p>
-                            <p class="">From the tender skin of a child to the evolving skin of an adult, our skincare
-                                respects every
-                                stage of life and the nature that sustains it. Because when it comes to skin, mindfulness is
-                                not a choice. It is a responsibility.</p>
+                            <h2 class="section-title">Who we are</h2>
+
+                            <h5>Meet The Women Behind Amma’s Spices</h5>
+                            <p>Amma’s Spices is more than just a brand – it is a journey of love, tradition, and
+                                togetherness. It is the story of a <strong>mother-in-law and daughter-in-law duo</strong>
+                                who turned their shared passion for food into a purposeful business.</p>
+
+                            <h5>Our Master Crafter – The Mother-in-Law</h5>
+                            <p>At the heart of Amma’s Spices is our beloved mother-in-law, the master crafter behind each
+                                blend. With decades of wisdom, she knows exactly how to balance spices to create the rich,
+                                authentic flavours we all crave. Her recipes have been passed down through generations,
+                                perfected with love and patience.</p>
+
+                            <h5>The Brains Behind The Brand – The Daughter-in-law</h5>
+                            <p>Bringing Amma’s culinary magic to the world is her daughter-in-law, the entrepreneurial force
+                                who dreamt of making these traditional blends accessible to every home. From branding to
+                                packaging, she ensures that Amma’s legacy reaches your kitchen with care, purity, and
+                                purpose.</p>
+
+                            <p>Together, they are building Amma’s Spices as a <strong>family-run business rooted in
+                                    tradition and innovation</strong>. From <strong>start to packaging</strong>, every step
+                                is handled with honesty and dedication, ensuring that what reaches you is <strong>pure,
+                                    rich, and aromatic – just the way Amma makes it</strong>.</p>
+
+                            <p>Their simple mission is to make everyday cooking taste even better with blends that are
+                                fresh, authentic, and crafted with love.</p>
+
+                            <p><strong>“Because good food isn’t just about taste – it’s about creating memories at every
+                                    meal.”</strong></p>
 
                         </div>
 
                     </div>
                     <div class="col-md-6">
-                        <img src="assets/img/What-Makes-Our-Soaps-Different.jpg" style="width: 100%;">
+                        <img src="assets/img/aboutus.jpg" style="width: 100%;">
                     </div>
                 </div>
             </div>
@@ -111,18 +127,17 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-6">
-                        <img src="assets/img/The-Story-Behind-Bodhi-Bliss.jpg" style="width: 100%;">
+                        <img src="assets/img/aboutUsMasala.jpg" style="width: 100%;">
                     </div>
-                    <div class="col-md-6">
-                        <h2 class="section-title">A Conscious Choice for Skin & Planet</h2>
-                        <p class="">Amma's Spices Soap Co. products may not look fancy, but they work. With rising
-                            pollution and
-                            increasing skin sensitivities, we believe it is time to return to basics and care for our skin
-                            naturally. We do not claim miracles — only honesty.
-                            My family and I have used these home-made products for years and the difference is felt, not
-                            advertised.
-                        </p>
-                        <div class="bod-p-r-nm">
+                    <div class="col-md-6 about-txt">
+                        <h2 class="section-title">Why Choose Us Section</h2>
+                        <ul>
+                            <li>Pure, premium quality ingredients</li>
+                            <li>No artificial colours or preservatives</li>
+                            <li>Traditional recipes perfected over generations</li>
+                            <li>Freshly ground for maximum potency and taste</li>
+                        </ul>
+                        {{-- <div class="bod-p-r-nm">
                             <p class="bod-p-r-nm-te"> By choosing Amma's Spices, you are also choosing:</p>
                             <div class="styled-numbered">
 
@@ -131,9 +146,9 @@
                                     <p>Reduced chemical exposure</p>
                                 </div>
                                 <!-- <div class="ch-li">
-                                            <img src="assets/img/Less_water_and_waste.png">
-                                            <p>Less water and waste pollution</p>
-                                            </div> -->
+                                                    <img src="assets/img/Less_water_and_waste.png">
+                                                    <p>Less water and waste pollution</p>
+                                                    </div> -->
                                 <div class="ch-li">
                                     <img src="assets/img/lifestyle.png">
                                     <p>A more sustainable lifestyle</p>
@@ -143,14 +158,14 @@
                                     <p>Healthier skin means fewer salon and dermatology visits.</p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
 
 
 
-            <!-- Story & Brands Section -->
+            {{-- <!-- Story & Brands Section -->
             <section class="story-section Belief">
                 <div class="container">
                     <div class="row">
@@ -187,11 +202,11 @@
 
                         </div>
                         <!--   <div class="col-md-6">
-                                    <img src="assets/img/The-Story-Behind-Bodhi-Bliss.jpg" style="width: 100%;">
-                                </div> -->
+                                            <img src="assets/img/The-Story-Behind-Bodhi-Bliss.jpg" style="width: 100%;">
+                                        </div> -->
                     </div>
                 </div>
-            </section>
+            </section> --}}
     </main>
 @endsection
 

@@ -283,6 +283,31 @@
                     </div>
                 </div> --}}
 
+            <div class="menu-header">Blog </div>
+            <div
+                class="menu-item has-sub {{ request()->is('admin/blogs') ? 'active' : '' }}
+				{{ request()->is('orders/today/all') ? 'active' : '' }}">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">
+                        <i class="fa fa-calendar"></i>
+                    </span>
+                    <span class="menu-text">Blog Management</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item {{ request()->is('admin/blogs') ? 'active' : '' }}">
+                        <a href="{{ route('admin.blog.index') }}" class="menu-link">
+                            <span class="menu-text">Blog List</span>
+                        </a>
+                    </div>
+                    {{-- <div class="menu-item {{ request()->is('orders/today/all') ? 'active' : '' }}">
+                        <a href="{{ route('sales_today') }}" class="menu-link">
+                            <span class="menu-text">{{ __('keywords.Day Wise Orders') }}</span>
+                        </a>
+                    </div> --}}
+                </div>
+            </div>
+            
             <div class="menu-header">{{ __('keywords.Orders') }}</div>
             <div
                 class="menu-item has-sub {{ request()->is('admin/all_orders') ? 'active' : '' }}

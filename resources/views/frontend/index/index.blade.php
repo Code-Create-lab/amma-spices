@@ -69,8 +69,8 @@
             </div>
 
             <div class="featured-list-slider">
-                <img src="{{ asset('assets/img/top_down.png') }}" class="top_down-sec">
-                <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-sec">
+                <img src="{{ asset('assets/img/top_down.png') }}" class="top_down-sec" style="display: none">
+                <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-sec" style="display: none">
                 <div class="container">
                     <div class="row" style="display: block;">
                         <div class="heading">
@@ -79,10 +79,10 @@
                         </div>
                     </div>
                     <div class="row">
-                    <x-product-list :products="$products" />
+                        <x-product-list :products="$products" />
                     </div>
                 </div>
-                <img src="assets/img/bg-feature2.png" class="bg-feture2-sec">
+                <img src="assets/img/bg-feature2.png" class="bg-feture2-sec" style="display: none">
             </div>
 
             {{-- =============================================
@@ -137,7 +137,7 @@
      TESTIMONIALS SECTION - GOOGLE REVIEWS STYLE
      ============================================= --}}
             <div class="testimonials-section" style="position: relative">
-                <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-sec">
+                <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-sec" style="display: none">
                 <div class="container">
                     <div class="row" style="display: block;">
                         <div class="heading">
@@ -497,460 +497,408 @@
                 </div>
             </div>
 
-         {{-- =============================================
+            {{-- =============================================
      BLOG SECTION — Paste just before closing </div><!-- .page-content -->
      Theme: Dark background #0d0d0d | Gold accent #e7c840
      ============================================= --}}
- 
-<style>
-    /* ─────────────────────────────────────────────
-       BLOG SECTION WRAPPER
-    ───────────────────────────────────────────── */
-    .blog-section {
-        padding: 70px 0 80px;
-        /* background: #0d0d0d; */
-        position: relative;
-        overflow: hidden;
-    }
- 
-    /* Subtle texture overlay matching site's dark sections */
-    .blog-section::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image:
-            radial-gradient(ellipse 80% 50% at 50% 0%, rgba(227,199,64,0.06) 0%, transparent 70%);
-        pointer-events: none;
-        z-index: 0;
-    }
- 
-    /* ─────────────────────────────────────────────
-       BLOG CARD
-    ───────────────────────────────────────────── */
-    .blog-card {
-        background: #181818;
-        border: 1px solid #2a2a2a;
-        border-radius: 12px;
-        overflow: hidden;
-        display: flex !important;
-        flex-direction: column;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        text-decoration: none !important;
-        color: inherit !important;
-        margin: 6px 4px 16px;
-    }
- 
-    .blog-card:hover {
-        transform: translateY(-6px);
-        border-color: #e7c840;
-        box-shadow: 0 12px 40px rgba(231, 200, 64, 0.12);
-    }
- 
-    /* ── Thumbnail ── */
-    .blog-card__thumb {
-        position: relative;
-        height: 195px;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
- 
-    .blog-card__thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform 0.5s ease;
-        filter: brightness(0.88);
-    }
- 
-    .blog-card:hover .blog-card__thumb img {
-        transform: scale(1.06);
-        filter: brightness(1);
-    }
- 
-    /* Gold gradient overlay on image bottom */
-    .blog-card__thumb::after {
-        content: '';
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 60px;
-        background: linear-gradient(to top, #181818, transparent);
-        pointer-events: none;
-    }
- 
-    /* Category pill */
-    .blog-card__cat {
-        position: absolute;
-        top: 13px;
-        left: 13px;
-        background: #e7c840;
-        color: #0d0d0d;
-        font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 20px;
-        z-index: 2;
-        font-family: sans-serif;
-    }
- 
-    /* ── Card Body ── */
-    .blog-card__body {
-        padding: 18px 18px 14px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
- 
-    .blog-card__meta {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 11px;
-        color: #777;
-        margin-bottom: 10px;
-        font-family: sans-serif;
-        letter-spacing: 0.03em;
-    }
- 
-    .blog-card__meta .bdot {
-        width: 3px;
-        height: 3px;
-        background: #444;
-        border-radius: 50%;
-        display: inline-block;
-    }
- 
-    .blog-card__title {
-        font-size: 15.5px;
-        font-weight: 700;
-        color: #f0f0f0;
-        line-height: 1.45;
-        margin: 0 0 10px;
-        font-family: 'Georgia', serif;
-        transition: color 0.2s ease;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
- 
-    .blog-card:hover .blog-card__title {
-        color: #e7c840;
-    }
- 
-    .blog-card__excerpt {
-        font-size: 12.5px;
-        color: #888;
-        line-height: 1.68;
-        margin: 0 0 14px;
-        flex: 1;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        font-family: sans-serif;
-    }
- 
-    /* Read more link */
-    .blog-card__read-more {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 11px;
-        font-weight: 800;
-        color: #e7c840;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        margin-top: auto;
-        font-family: sans-serif;
-        transition: gap 0.2s;
-    }
- 
-    .blog-card__read-more svg {
-        transition: transform 0.22s ease;
-    }
- 
-    .blog-card:hover .blog-card__read-more svg {
-        transform: translateX(4px);
-    }
- 
-    /* ── Card Footer ── */
-    .blog-card__footer {
-        border-top: 1px solid #252525;
-        padding: 11px 18px 13px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-shrink: 0;
-    }
- 
-    .blog-card__author {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 11.5px;
-        color: #bbb;
-        font-weight: 500;
-        font-family: sans-serif;
-    }
- 
-    .blog-card__avatar {
-        width: 26px;
-        height: 26px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #e7c840, #c8922a);
-        color: #0d0d0d;
-        font-size: 11px;
-        font-weight: 900;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        font-family: sans-serif;
-    }
- 
-    .blog-card__tag {
-        font-size: 10px;
-        color: #555;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        font-family: sans-serif;
-    }
- 
-    /* ─────────────────────────────────────────────
-       OWL CAROUSEL DOTS — Gold theme
-    ───────────────────────────────────────────── */
-    .blog-carousel .owl-dots {
-        margin-top: 28px;
-        text-align: center;
-    }
- 
-    .blog-carousel .owl-dot span {
-        background: #333 !important;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        transition: background 0.25s ease, width 0.25s ease;
-        margin: 0 4px;
-    }
- 
-    .blog-carousel .owl-dot.active span {
-        background: #e7c840 !important;
-        width: 24px;
-        border-radius: 4px;
-    }
- 
-    /* ─────────────────────────────────────────────
-       VIEW ALL BUTTON
-    ───────────────────────────────────────────── */
-    .blog-view-all-wrap {
-        text-align: center;
-        margin-top: 40px;
-    }
- 
-    .blog-view-all-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 9px;
-        padding: 13px 36px;
-        border: 2px solid #e7c840;
-        color: #e7c840;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        border-radius: 40px;
-        text-decoration: none !important;
-        background: transparent;
-        font-family: sans-serif;
-        transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease,
-                    box-shadow 0.25s ease;
-    }
- 
-    .blog-view-all-btn:hover {
-        background: #e7c840;
-        color: #0d0d0d !important;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 28px rgba(231, 200, 64, 0.3);
-    }
- 
-    .blog-view-all-btn svg {
-        transition: transform 0.2s ease;
-    }
- 
-    .blog-view-all-btn:hover svg {
-        transform: translateX(4px);
-    }
-</style>
- 
-<div class="blog-section mt-2">
-    <div class="container" style="position:relative; z-index:1;">
- 
-        {{-- Section heading — reuses existing site's heading/separator pattern --}}
-        <div class="row" style="display:block;">
-            <div class="heading">
-                <h2 class="title text-center">From Our Kitchen &amp; Blog</h2>
-                <span class="seprater-img"><img src="assets/img/seprater.png" alt=""></span>
+
+            <style>
+                /* ─────────────────────────────────────────────
+               BLOG SECTION WRAPPER
+            ───────────────────────────────────────────── */
+                .blog-section {
+                    padding: 70px 0 80px;
+                    /* background: #0d0d0d; */
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                /* Subtle texture overlay matching site's dark sections */
+                .blog-section::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    background-image:
+                        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(227, 199, 64, 0.06) 0%, transparent 70%);
+                    pointer-events: none;
+                    z-index: 0;
+                }
+
+                /* ─────────────────────────────────────────────
+               BLOG CARD
+            ───────────────────────────────────────────── */
+                .blog-card {
+                    background: #181818;
+                    border: 1px solid #2a2a2a;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    display: flex !important;
+                    flex-direction: column;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+                    text-decoration: none !important;
+                    color: inherit !important;
+                    margin: 6px 4px 16px;
+                }
+
+                .blog-card:hover {
+                    transform: translateY(-6px);
+                    border-color: #e7c840;
+                    box-shadow: 0 12px 40px rgba(231, 200, 64, 0.12);
+                }
+
+                /* ── Thumbnail ── */
+                .blog-card__thumb {
+                    position: relative;
+                    height: 195px;
+                    overflow: hidden;
+                    flex-shrink: 0;
+                }
+
+                .blog-card__thumb img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    display: block;
+                    transition: transform 0.5s ease;
+                    filter: brightness(0.88);
+                }
+
+                .blog-card:hover .blog-card__thumb img {
+                    transform: scale(1.06);
+                    filter: brightness(1);
+                }
+
+                /* Gold gradient overlay on image bottom */
+                .blog-card__thumb::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 60px;
+                    background: linear-gradient(to top, #181818, transparent);
+                    pointer-events: none;
+                }
+
+                /* Category pill */
+                .blog-card__cat {
+                    position: absolute;
+                    top: 13px;
+                    left: 13px;
+                    background: #e7c840;
+                    color: #0d0d0d;
+                    font-size: 10px;
+                    font-weight: 800;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    z-index: 2;
+                    font-family: sans-serif;
+                }
+
+                /* ── Card Body ── */
+                .blog-card__body {
+                    padding: 18px 18px 14px;
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .blog-card__meta {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 11px;
+                    color: #777;
+                    margin-bottom: 10px;
+                    font-family: sans-serif;
+                    letter-spacing: 0.03em;
+                }
+
+                .blog-card__meta .bdot {
+                    width: 3px;
+                    height: 3px;
+                    background: #444;
+                    border-radius: 50%;
+                    display: inline-block;
+                }
+
+                .blog-card__title {
+                    font-size: 15.5px;
+                    font-weight: 700;
+                    color: #f0f0f0;
+                    line-height: 1.45;
+                    margin: 0 0 10px;
+                    font-family: 'Georgia', serif;
+                    transition: color 0.2s ease;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .blog-card:hover .blog-card__title {
+                    color: #e7c840;
+                }
+
+                .blog-card__excerpt {
+                    font-size: 12.5px;
+                    color: #888;
+                    line-height: 1.68;
+                    margin: 0 0 14px;
+                    flex: 1;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    font-family: sans-serif;
+                }
+
+                /* Read more link */
+                .blog-card__read-more {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-size: 11px;
+                    font-weight: 800;
+                    color: #e7c840;
+                    letter-spacing: 0.1em;
+                    text-transform: uppercase;
+                    margin-top: auto;
+                    font-family: sans-serif;
+                    transition: gap 0.2s;
+                }
+
+                .blog-card__read-more svg {
+                    transition: transform 0.22s ease;
+                }
+
+                .blog-card:hover .blog-card__read-more svg {
+                    transform: translateX(4px);
+                }
+
+                /* ── Card Footer ── */
+                .blog-card__footer {
+                    border-top: 1px solid #252525;
+                    padding: 11px 18px 13px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-shrink: 0;
+                }
+
+                .blog-card__author {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 11.5px;
+                    color: #bbb;
+                    font-weight: 500;
+                    font-family: sans-serif;
+                }
+
+                .blog-card__avatar {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #e7c840, #c8922a);
+                    color: #0d0d0d;
+                    font-size: 11px;
+                    font-weight: 900;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                    font-family: sans-serif;
+                }
+
+                .blog-card__tag {
+                    font-size: 10px;
+                    color: #555;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    font-family: sans-serif;
+                }
+
+                /* ─────────────────────────────────────────────
+               OWL CAROUSEL DOTS — Gold theme
+            ───────────────────────────────────────────── */
+                .blog-carousel .owl-dots {
+                    margin-top: 28px;
+                    text-align: center;
+                }
+
+                .blog-carousel .owl-dot span {
+                    background: #333 !important;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    transition: background 0.25s ease, width 0.25s ease;
+                    margin: 0 4px;
+                }
+
+                .blog-carousel .owl-dot.active span {
+                    background: #e7c840 !important;
+                    width: 24px;
+                    border-radius: 4px;
+                }
+
+                /* ─────────────────────────────────────────────
+               VIEW ALL BUTTON
+            ───────────────────────────────────────────── */
+                .blog-view-all-wrap {
+                    text-align: center;
+                    margin-top: 40px;
+                }
+
+                .blog-view-all-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 9px;
+                    padding: 13px 36px;
+                    border: 2px solid #e7c840;
+                    color: #e7c840;
+                    font-size: 12px;
+                    font-weight: 800;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    border-radius: 40px;
+                    text-decoration: none !important;
+                    background: transparent;
+                    font-family: sans-serif;
+                    transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease,
+                        box-shadow 0.25s ease;
+                }
+
+                .blog-view-all-btn:hover {
+                    background: #e7c840;
+                    color: #0d0d0d !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 28px rgba(231, 200, 64, 0.3);
+                }
+
+                .blog-view-all-btn svg {
+                    transition: transform 0.2s ease;
+                }
+
+                .blog-view-all-btn:hover svg {
+                    transform: translateX(4px);
+                }
+            </style>
+
+            {{-- =============================================
+     HOME PAGE — Blog Section (Dynamic)
+     Requires: $blogs passed from HomeController
+     ============================================= --}}
+
+            <div class="blog-section mt-2">
+                <div class="container" style="position:relative; z-index:1;">
+
+                    <div class="row" style="display:block;">
+                        <div class="heading">
+                            <h2 class="title text-center">From Our Kitchen &amp; Blog</h2>
+                            <span class="seprater-img"><img src="assets/img/seprater.png" alt=""></span>
+                        </div>
+                    </div>
+{{-- @dd($blogs) --}}
+                    @if (isset($blogs) && $blogs->count() > 0)
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="owl-carousel blog-carousel owl-simple" data-toggle="owl"
+                                    data-owl-options='{
+                            "nav": false,
+                            "loop": {{ $blogs->count() > 3 ? 'true' : 'false' }},
+                            "dots": true,
+                            "autoplay": true,
+                            "autoplayTimeout": 4000,
+                            "autoplayHoverPause": true,
+                            "margin": 22,
+                            "responsive": {
+                                "0":   { "items": 1 },
+                                "576": { "items": 2 },
+                                "992": { "items": 3 }
+                            }
+                        }'>
+                                    
+                                    @foreach ($blogs as $blog)
+                                        <a href="{{ route('customer.blog.show', $blog->slug) }}" class="blog-card">
+
+                                            {{-- Thumbnail --}}
+                                            <div class="blog-card__thumb">
+                                                @if ($blog->thumbnail)
+                                                    <img src="{{ asset('storage/' . $blog->thumbnail) }}"
+                                                        alt="{{ $blog->title }}" loading="lazy">
+                                                @else
+                                                    <img src="assets/img/blog-placeholder.jpg" alt="{{ $blog->title }}"
+                                                        loading="lazy">
+                                                @endif
+                                                @if ($blog->category)
+                                                    <span class="blog-card__cat">{{ $blog->category }}</span>
+                                                @endif
+                                            </div>
+
+                                            {{-- Body --}}
+                                            <div class="blog-card__body">
+                                                <div class="blog-card__meta">
+                                                    <span>
+                                                        {{ $blog->published_at ? $blog->published_at->format('d M Y') : $blog->created_at->format('d M Y') }}
+                                                    </span>
+                                                    <span class="bdot"></span>
+                                                    <span>{{ $blog->read_time }} min read</span>
+                                                </div>
+                                                <h3 class="blog-card__title">{{ $blog->title }}</h3>
+                                                <p class="blog-card__excerpt">{{ $blog->excerpt }}</p>
+                                                <span class="blog-card__read-more">
+                                                    Read Article
+                                                    <svg width="14" height="14" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                                    </svg>
+                                                </span>
+                                            </div>
+
+                                            {{-- Footer --}}
+                                            <div class="blog-card__footer">
+                                                <div class="blog-card__author">
+                                                    <div class="blog-card__avatar">
+                                                        {{ strtoupper(substr($blog->author ?? 'A', 0, 1)) }}
+                                                    </div>
+                                                    {{ $blog->author }}
+                                                </div>
+                                                @if ($blog->category)
+                                                    <span class="blog-card__tag">{{ $blog->category }}</span>
+                                                @endif
+                                            </div>
+
+                                        </a>
+                                    @endforeach
+
+                                </div>{{-- /.owl-carousel --}}
+                            </div>
+                        </div>
+
+                        {{-- View All CTA --}}
+                        <div class="blog-view-all-wrap">
+                            <a href="{{ route('customer.blog.index') }}" class="blog-view-all-btn">
+                                Explore All Articles
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    @else
+                        {{-- No blogs published yet — hidden section --}}
+                        <div
+                            style="text-align:center; padding: 40px 0; color:#555; font-family:sans-serif; font-size:13px;">
+                            Blog posts coming soon.
+                        </div>
+                    @endif
+
+                </div>
             </div>
-        </div>
- 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="owl-carousel blog-carousel owl-simple" data-toggle="owl"
-                    data-owl-options='{
-                        "nav": false,
-                        "loop": true,
-                        "dots": true,
-                        "autoplay": true,
-                        "autoplayTimeout": 4000,
-                        "autoplayHoverPause": true,
-                        "margin": 22,
-                        "responsive": {
-                            "0":   { "items": 1 },
-                            "576": { "items": 2 },
-                            "992": { "items": 3 }
-                        }
-                    }'>
- 
-                    {{-- ── Card 1 ── --}}
-                    <a href="#" class="blog-card">
-                        <div class="blog-card__thumb">
-                            <img src="https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&q=80" alt="Sambar Masala">
-                            <span class="blog-card__cat">Recipe</span>
-                        </div>
-                        <div class="blog-card__body">
-                            <div class="blog-card__meta">
-                                <span>12 Mar 2025</span>
-                                <span class="bdot"></span>
-                                <span>4 min read</span>
-                            </div>
-                            <h3 class="blog-card__title">How to Make the Perfect Sambar with Amma's Masala</h3>
-                            <p class="blog-card__excerpt">A steaming bowl of Sambar is the soul of South Indian cooking. Learn how our hand-ground masala blend brings authentic depth to every ladle — no shortcuts, just tradition.</p>
-                            <span class="blog-card__read-more">
-                                Read Article
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="blog-card__footer">
-                            <div class="blog-card__author">
-                                <div class="blog-card__avatar">A</div>
-                                Amma's Kitchen
-                            </div>
-                            <span class="blog-card__tag">Recipes</span>
-                        </div>
-                    </a>
- 
-                    {{-- ── Card 2 ── --}}
-                    <a href="#" class="blog-card">
-                        <div class="blog-card__thumb">
-                            <img src="https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600&q=80" alt="Spice Guide">
-                            <span class="blog-card__cat">Spice Guide</span>
-                        </div>
-                        <div class="blog-card__body">
-                            <div class="blog-card__meta">
-                                <span>05 Mar 2025</span>
-                                <span class="bdot"></span>
-                                <span>5 min read</span>
-                            </div>
-                            <h3 class="blog-card__title">5 South Indian Spices Every Kitchen Must Have in 2025</h3>
-                            <p class="blog-card__excerpt">From fragrant curry leaves to smoky coriander seeds, we break down the five essential spices that form the backbone of South Indian cuisine and why freshness matters.</p>
-                            <span class="blog-card__read-more">
-                                Read Article
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="blog-card__footer">
-                            <div class="blog-card__author">
-                                <div class="blog-card__avatar">N</div>
-                                Amma's Kitchen
-                            </div>
-                            <span class="blog-card__tag">Spice Guide</span>
-                        </div>
-                    </a>
- 
-                    {{-- ── Card 3 ── --}}
-                    <a href="#" class="blog-card">
-                        <div class="blog-card__thumb">
-                            <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=600&q=80" alt="Rasam">
-                            <span class="blog-card__cat">Recipe</span>
-                        </div>
-                        <div class="blog-card__body">
-                            <div class="blog-card__meta">
-                                <span>24 Feb 2025</span>
-                                <span class="bdot"></span>
-                                <span>3 min read</span>
-                            </div>
-                            <h3 class="blog-card__title">Amma's Rasam — A Remedy in Every Sip</h3>
-                            <p class="blog-card__excerpt">This thin, peppery tamarind broth has been a South Indian household remedy for centuries. We share the original family recipe and the secret spice ratio that makes it sing.</p>
-                            <span class="blog-card__read-more">
-                                Read Article
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="blog-card__footer">
-                            <div class="blog-card__author">
-                                <div class="blog-card__avatar">A</div>
-                                Amma's Kitchen
-                            </div>
-                            <span class="blog-card__tag">Recipes</span>
-                        </div>
-                    </a>
- 
-                    {{-- ── Card 4 ── --}}
-                    <a href="#" class="blog-card">
-                        <div class="blog-card__thumb">
-                            <img src="https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=600&q=80" alt="Storage Tips">
-                            <span class="blog-card__cat">Tips &amp; Tricks</span>
-                        </div>
-                        <div class="blog-card__body">
-                            <div class="blog-card__meta">
-                                <span>18 Feb 2025</span>
-                                <span class="bdot"></span>
-                                <span>4 min read</span>
-                            </div>
-                            <h3 class="blog-card__title">How to Store Your Spices to Keep Them Fresh Longer</h3>
-                            <p class="blog-card__excerpt">Light, heat, and moisture are your spices' worst enemies. Follow these simple storage tips to preserve the aroma and potency of your masalas for months.</p>
-                            <span class="blog-card__read-more">
-                                Read Article
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                            </span>
-                        </div>
-                        <div class="blog-card__footer">
-                            <div class="blog-card__author">
-                                <div class="blog-card__avatar">N</div>
-                                Amma's Kitchen
-                            </div>
-                            <span class="blog-card__tag">Tips &amp; Tricks</span>
-                        </div>
-                    </a>
- 
-                </div>{{-- /.owl-carousel --}}
-            </div>
-        </div>
- 
-        {{-- View All CTA --}}
-        <div class="blog-view-all-wrap">
-            <a href="" class="blog-view-all-btn">
-                Explore All Articles
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-            </a>
-        </div>
- 
-    </div>
-</div>
 
         </div>
     </main>

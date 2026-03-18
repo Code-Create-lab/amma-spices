@@ -16,19 +16,19 @@
                               alt=" Logo" width="50" height="25"></a>
                       <nav class="main-nav">
                           <ul class="menu sf-arrows">
-                              <li class="megamenu-container active megamenu-list">
-                                  <a href="{{ route('index') }}" class=" active">Home</a>
+                              <li class="megamenu-container {{ Route::currentRouteName() == 'index' ? 'active' :  ""}}  megamenu-list">
+                                  <a href="{{ route('index') }}" class="">Home</a>
 
                               </li>
-                              <li class="megamenu-list">
+                              <li class="megamenu-list {{ Route::currentRouteName() == 'shop.page.index' ? 'active' :  ""}}">
                                   <a href="{{route('shop.page.index')}}" class="">Shop</a>
 
                               </li>
-                              <li class="megamenu-list">
+                              <li class="megamenu-list {{ Route::currentRouteName() == 'frontend.about-us' ? 'active' :  '' }}">
                                   <a href="{{route('frontend.about-us')}}" class="">About</a>
 
                               </li>
-                              <li class="megamenu-list">
+                              <li class="megamenu-list {{ Route::currentRouteName() == 'contact-us.index' ? 'active' :  ""}}">
                                   <a href="{{route('contact-us.index')}}" class="">Contact Us</a>
 
                               </li>
