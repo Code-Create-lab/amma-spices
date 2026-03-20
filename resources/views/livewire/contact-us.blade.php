@@ -74,7 +74,7 @@
 
             <div class="col-md-6 text-center text-md-end sm-mt-25px">
                 <button
-                    class="btn btn-outline-primary-2"
+                    class="btn btn-outline-primary-2 "
                     type="submit">
                     Send message
                 </button>

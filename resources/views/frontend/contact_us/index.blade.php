@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' =>'' ])
+@extends('frontend.layouts.app', ['title' => ''])
 
 @section('content')
     <main class="main">
@@ -27,31 +27,35 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6">
-                       
+
                         <div class="row">
                             <div class="col-sm-7">
+                                <p>Amma’s Spices gets a lot of queries regarding our products.
+                                    We are sure you would like to know about these too! Simple.
+                                    Just connect with us</p>
                                 <div class="contact-info">
 
                                     <ul class="contact-list">
                                         <li>
                                             <i class="icon-map-marker"></i>
-                                           3121, Sobha Petunia, Virannapalaya, Nagwara 560045, Bangalore, Karnataka, India.
+                                            Shop No. UFF29 Signature Global, Sector 95A
+                                            Gurugram, Haryana 122505
                                         </li>
                                         <li>
                                             <i class="icon-phone"></i>
-                                            <a href="tel:9008741100">9008741100</a>
+                                            <a href="tel:8800952006">880 0952 006</a>
                                         </li>
                                         <li>
                                             <i class="icon-envelope"></i>
-                                            <a href="mailto:niharica@bodhiblisssoap.com">info@bodhiblisssoap.com</a>
+                                            <a href="mailto:info@ammasspices.com">info@ammasspices.com</a>
 
                                         </li>
-                                       
+
                                     </ul><!-- End .contact-list -->
                                 </div><!-- End .contact-info -->
                             </div><!-- End .col-sm-7 -->
 
-                            
+
                         </div><!-- End .row -->
                     </div><!-- End .col-lg-6 -->
                     <div class="col-lg-6">
@@ -59,7 +63,7 @@
                         <p class="mb-2">Use the form below to get in touch with the sales team</p>
 
                         @livewire('contact-us')
-                        
+
                     </div><!-- End .col-lg-6 -->
                 </div><!-- End .row -->
 

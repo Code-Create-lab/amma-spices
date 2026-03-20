@@ -50,15 +50,15 @@
                      <div class="widget">
                          <h4 class="widget-title text-white">Social Media</h4><!-- End .widget-title -->
                          <div class="social-icons social-icons-color">
-                             <a href="https://www.facebook.com/BodhiBlissSoapCompany/"
+                             <a href="https://www.facebook.com//"
                                  class="social-icon social-facebook" title="Facebook" target="_blank"><i
                                      class="icon-facebook-f"></i></a>
-                             <a href="https://x.com/bodhisoap?s=21" class="social-icon social-twitter" title="Twitter"
+                             <a href="https://x.com/" class="social-icon social-twitter" title="Twitter"
                                  target="_blank"><i class="icon-twitter"></i></a>
-                             <a href="https://www.instagram.com/bodhiblisssoap?igsh=cjdteDc3Zno1bXIy&utm_source=qr"
+                             <a href="https://www.instagram.com/"
                                  class="social-icon social-instagram" title="Instagram" target="_blank"><i
                                      class="icon-instagram"></i></a>
-                             <a href="https://youtube.com/@bodhiblisssoap?si=f1XG9jgXzIE2_VFX"
+                             <a href="https://youtube.com/"
                                  class="social-icon social-youtube" title="Youtube" target="_blank"><i
                                      class="icon-youtube"></i></a>
                          </div><!-- End .soial-icons -->
