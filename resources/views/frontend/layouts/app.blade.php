@@ -15,8 +15,8 @@
     <meta property="og:title" content="">
     <meta property="og:description"
         content="Shop handcrafted botanical soaps & organic body care at Amma's Spices. Natural, sustainable skincare products that nourish and rejuvenate. Buy now!">
-    <meta property="og:image" content="{{ asset('assets/images/bodhibliss-banner.jpg') }}">
-    <meta property="og:url" content="http://bodhiblissshop.com/">
+    <meta property="og:image" content="{{ asset('assets/images/homebg.jpg') }}">
+    <meta property="og:url" content="ammasspices.com">
     <meta property="og:type" content="website">
 
     <!-- Favicon -->

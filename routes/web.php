@@ -1630,10 +1630,10 @@ Route::post('/addToWishlist', [WishlistController::class, 'addToWishlist'])->nam
 Route::post('/removeFromWishlist', [WishlistController::class, 'removeFromWishlist'])->name('removeFromWishlist');
 
 
-// Livewire::setScriptRoute(function ($handle) {
-//     return Route::get('/' . env('FILAMENT_PATH') . '/livewire/livewire.js', $handle);
-// });
+Livewire::setScriptRoute(function ($handle) {
+    return Route::get('/' . env('FILAMENT_PATH') . '/livewire/livewire.js', $handle);
+});
 
-// Livewire::setUpdateRoute(function ($handle) {
-//     return Route::get('/' . env('FILAMENT_PATH') . '/livewire/update', $handle);
-// });
+Livewire::setUpdateRoute(function ($handle) {
+    return Route::get('/' . env('FILAMENT_PATH') . '/livewire/update', $handle);
+});
