@@ -9,12 +9,12 @@
 
 
     <meta name="keywords"
-        content="natural soap products, botanical soap collection, organic skincare essentials, handmade body care products, Amma's Spices soaps, chemical-free skincare, sustainable bath products, herbal body salves & oils, eco-friendly personal care, artisanal whipped soap">
+        content="Indian spices online, homemade masala Delhi NCR India, authentic Indian spices, buy spices online Delhi NCR, pure spices India, traditional masalas, Amma style cooking, homemade taste spices, fresh ground spices, Delhi NCR spices.">
     <meta name="description"
-        content="Shop handcrafted botanical soaps & organic body care at Amma's Spices. Natural, sustainable skincare products that nourish and rejuvenate. Buy now!">
+        content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
     <meta property="og:title" content="">
     <meta property="og:description"
-        content="Shop handcrafted botanical soaps & organic body care at Amma's Spices. Natural, sustainable skincare products that nourish and rejuvenate. Buy now!">
+        content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
     <meta property="og:image" content="{{ asset('assets/images/homebg.jpg') }}">
     <meta property="og:url" content="ammasspices.com">
     <meta property="og:type" content="website">
