@@ -55,13 +55,21 @@
         body {
             font: normal 300 1.4rem/1.86 "Inter", sans-serif;
             color: #ffffff;
-            /* background-color: transparent; */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
-            background: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)), url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center;
+            background: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
+                url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center;
             background-size: cover;
             background-attachment: fixed;
+            /* parallax effect on desktop */
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+                /* fixed is broken on mobile */
+            }
         }
 
         /* body::before {
@@ -437,134 +445,134 @@
     @stack('scripts')
     <script>
         document.addEventListener('livewire:init', () => {
-                    Livewire.on('toast', (event) => {
-                            console.log("type", event); // Just for testing
+            Livewire.on('toast', (event) => {
+                console.log("type", event); // Just for testing
 
-                            const {
-                                type,
-                                message
-                            } = event[0] ?? event;
-
-
-                            toastr.options = {
-                                closeButton: true,
-                                progressBar: true,
-                                positionClass: 'toast-top-right',
-
-                                timeOut: 800, // 👈 visible for 1.5 seconds
-                                extendedTimeOut: 500, // 👈 after hover
-                                showDuration: 200, // 👈 fade in speed
-                                hideDuration: 200, // 👈 fade out speed
-                            };
-
-                            toastr.options = {
-                                    "closeButton": true,
-                                     "progressBar": true,
-                                     "timeOut": 0,
-                                     "extendedTimeOut": 0
-                                 };
+                const {
+                    type,
+                    message
+                } = event[0] ?? event;
 
 
-                                toastr[type](message);
-                            });
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: 'toast-top-right',
 
-                        Livewire.on('init-product-carousel', () => {
-                            setTimeout(function() {
-                                var $mainCarousel = $('.product-img-list');
-                                var $thumbCarousel = $('.product-thumb-list');
+                    timeOut: 800, // 👈 visible for 1.5 seconds
+                    extendedTimeOut: 500, // 👈 after hover
+                    showDuration: 200, // 👈 fade in speed
+                    hideDuration: 200, // 👈 fade out speed
+                };
 
-                                // Destroy existing instances to avoid duplicates
-                                if ($mainCarousel.hasClass('owl-loaded')) {
-                                    $mainCarousel.trigger('destroy.owl.carousel');
-                                    $mainCarousel.html($mainCarousel.find('.owl-stage-outer').html())
-                                        .removeClass('owl-loaded');
-                                }
-                                if ($thumbCarousel.hasClass('owl-loaded')) {
-                                    $thumbCarousel.trigger('destroy.owl.carousel');
-                                    $thumbCarousel.html($thumbCarousel.find('.owl-stage-outer').html())
-                                        .removeClass('owl-loaded');
-                                }
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "timeOut": 0,
+                    "extendedTimeOut": 0
+                };
 
-                                // Initialize main carousel
-                                var $main = $mainCarousel.owlCarousel({
-                                    loop: true,
-                                    margin: 20,
-                                    nav: true,
-                                    items: 1,
-                                    dots: true,
-                                    autoplay: true,
-                                    autoplayTimeout: 3000,
-                                    autoplayHoverPause: true,
-                                    navText: ['<i class="icon-angle-left"></i>',
-                                        '<i class="icon-angle-right"></i>'
-                                    ],
-                                    responsive: {
-                                        0: {
-                                            items: 1
-                                        },
-                                        600: {
-                                            items: 1
-                                        },
-                                        1000: {
-                                            items: 1
-                                        }
-                                    }
-                                });
 
-                                // Initialize thumbnail carousel
-                                $thumbCarousel.owlCarousel({
-                                    loop: false,
-                                    margin: 10,
-                                    nav: false,
-                                    dots: false,
-                                    items: 4,
-                                    responsive: {
-                                        0: {
-                                            items: 3
-                                        },
-                                        600: {
-                                            items: 3
-                                        },
-                                        768: {
-                                            items: 4
-                                        },
-                                        1000: {
-                                            items: 4
-                                        }
-                                    }
-                                });
+                toastr[type](message);
+            });
 
-                                // Set first thumbnail as active
-                                $thumbCarousel.find('.item').first().addClass('active');
+            Livewire.on('init-product-carousel', () => {
+                setTimeout(function() {
+                    var $mainCarousel = $('.product-img-list');
+                    var $thumbCarousel = $('.product-thumb-list');
 
-                                // Click on thumbnail to change main image
-                                $thumbCarousel.find('.item').on('click', function() {
-                                    var index = $(this).data('index');
-                                    $thumbCarousel.find('.item').removeClass('active');
-                                    $(this).addClass('active');
-                                    $main.trigger('to.owl.carousel', [index, 300]);
-                                    $main.trigger('stop.owl.autoplay');
-                                    setTimeout(function() {
-                                        $main.trigger('play.owl.autoplay', [3000]);
-                                    }, 5000);
-                                });
+                    // Destroy existing instances to avoid duplicates
+                    if ($mainCarousel.hasClass('owl-loaded')) {
+                        $mainCarousel.trigger('destroy.owl.carousel');
+                        $mainCarousel.html($mainCarousel.find('.owl-stage-outer').html())
+                            .removeClass('owl-loaded');
+                    }
+                    if ($thumbCarousel.hasClass('owl-loaded')) {
+                        $thumbCarousel.trigger('destroy.owl.carousel');
+                        $thumbCarousel.html($thumbCarousel.find('.owl-stage-outer').html())
+                            .removeClass('owl-loaded');
+                    }
 
-                                // Sync thumbnails when main carousel changes
-                                $main.on('changed.owl.carousel', function(event) {
-                                    var currentIndex = event.item.index;
-                                    var itemCount = event.item.count;
-                                    var actualIndex = (currentIndex - event.relatedTarget._clones
-                                        .length / 2) % itemCount;
-                                    var normalizedIndex = actualIndex < 0 ? itemCount +
-                                        actualIndex :
-                                        actualIndex;
-                                    $thumbCarousel.find('.item').removeClass('active');
-                                    $thumbCarousel.find('.item').eq(normalizedIndex).addClass(
-                                        'active');
-                                });
-                            }, 150);
-                        });
+                    // Initialize main carousel
+                    var $main = $mainCarousel.owlCarousel({
+                        loop: true,
+                        margin: 20,
+                        nav: true,
+                        items: 1,
+                        dots: true,
+                        autoplay: true,
+                        autoplayTimeout: 3000,
+                        autoplayHoverPause: true,
+                        navText: ['<i class="icon-angle-left"></i>',
+                            '<i class="icon-angle-right"></i>'
+                        ],
+                        responsive: {
+                            0: {
+                                items: 1
+                            },
+                            600: {
+                                items: 1
+                            },
+                            1000: {
+                                items: 1
+                            }
+                        }
                     });
+
+                    // Initialize thumbnail carousel
+                    $thumbCarousel.owlCarousel({
+                        loop: false,
+                        margin: 10,
+                        nav: false,
+                        dots: false,
+                        items: 4,
+                        responsive: {
+                            0: {
+                                items: 3
+                            },
+                            600: {
+                                items: 3
+                            },
+                            768: {
+                                items: 4
+                            },
+                            1000: {
+                                items: 4
+                            }
+                        }
+                    });
+
+                    // Set first thumbnail as active
+                    $thumbCarousel.find('.item').first().addClass('active');
+
+                    // Click on thumbnail to change main image
+                    $thumbCarousel.find('.item').on('click', function() {
+                        var index = $(this).data('index');
+                        $thumbCarousel.find('.item').removeClass('active');
+                        $(this).addClass('active');
+                        $main.trigger('to.owl.carousel', [index, 300]);
+                        $main.trigger('stop.owl.autoplay');
+                        setTimeout(function() {
+                            $main.trigger('play.owl.autoplay', [3000]);
+                        }, 5000);
+                    });
+
+                    // Sync thumbnails when main carousel changes
+                    $main.on('changed.owl.carousel', function(event) {
+                        var currentIndex = event.item.index;
+                        var itemCount = event.item.count;
+                        var actualIndex = (currentIndex - event.relatedTarget._clones
+                            .length / 2) % itemCount;
+                        var normalizedIndex = actualIndex < 0 ? itemCount +
+                            actualIndex :
+                            actualIndex;
+                        $thumbCarousel.find('.item').removeClass('active');
+                        $thumbCarousel.find('.item').eq(normalizedIndex).addClass(
+                            'active');
+                    });
+                }, 150);
+            });
+        });
     </script>
 
 

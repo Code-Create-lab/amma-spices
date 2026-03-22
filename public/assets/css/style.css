@@ -15030,6 +15030,7 @@ img.bg-feture4-sec {
     right: 0;
     bottom: 0px;
     z-index: -1;
+    display: none;
 }
 
 img.bg-feture3-sec {
