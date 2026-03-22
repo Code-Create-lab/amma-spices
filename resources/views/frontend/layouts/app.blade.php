@@ -68,7 +68,12 @@
         @media (max-width: 768px) {
             body {
                 background-attachment: scroll;
+
                 /* fixed is broken on mobile */
+                background: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
+                    url({{ asset('assets/images/homebg-mobile.jpg') }}) no-repeat top center;
+                background-size: cover;
+                background-attachment: fixed;
             }
         }
 
