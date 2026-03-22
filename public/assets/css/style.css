@@ -1931,7 +1931,7 @@ blockquote {
   top: 0;
   bottom: 0;
   z-index: 1001;
-  background-color: #4B3B2E;
+  background-color: #000;
   width: 100%;
   max-width: 280px;
   overflow-y: scroll;
@@ -10925,7 +10925,7 @@ button:focus {
     max-width: 575px;
     margin-left: auto;
     margin-right: auto;
-    background-color: #FFF7ED;
+    background-color: #000;
     box-shadow: 0 3px 16px rgba(51, 51, 51, 0.1);
 }
 
@@ -14852,7 +14852,7 @@ span.seprater-img img {
     padding: 0 100px;
 }
 .owl-simple .owl-nav [class*='owl-'] {
-    color: #4B3B2E;
+    color: #e7c840;
     font-size: 30px;
 }
 .owl-simple .owl-dots .owl-dot.active span {
@@ -15090,7 +15090,7 @@ svg.wish-icon {
     cursor: pointer;
 }
 .close {
-  color: #4B3B2E;
+  color: #e7c840;
   font-size: 25px;
 }
 .liked  svg.wish-icon {
@@ -16770,4 +16770,8 @@ h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
     cursor: pointer;
     transition: background 0.22s, color 0.22s, transform 0.15s;
     text-decoration: none !important;
+}
+
+a#signin-tab-2 {
+    border-bottom-color: #e7c840;
 }

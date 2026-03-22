@@ -64,7 +64,7 @@
             background-attachment: fixed;
         }
 
-        body::before {
+        /* body::before {
             content: "";
             position: fixed;
             inset: 0;
@@ -74,7 +74,7 @@
             background-size: cover;
             background-attachment: fixed;
             z-index: -1;
-        }
+        } */
     </style>
 </head>
 

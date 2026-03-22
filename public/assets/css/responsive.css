@@ -17,7 +17,7 @@
 @media (max-width: 767px) {
 
     .header.header-28.sticky-header {
-    position: fixed;
+    /* position: fixed; */
     left: 0;
     right: 0;
     top: 0;
@@ -64,7 +64,7 @@ a.track-order-link {
     z-index: 1030;
     animation-name: fixedHeader;
     animation-duration: .4s;
-    background: #FFF7ED !important;
+    background: #000 !important;
     box-shadow: 0 3px 6px rgba(51, 51, 51, 0.05);
     height: 75px;
 }
@@ -210,7 +210,7 @@ form.form-search.show ul#suggestions {
 }
 button#mobile-bar {
     margin: 0;
-    color: #4B3B2E;
+    color: #e7c840;
     font-weight: bold;
     padding: 0;
     margin-left: -8px;
@@ -362,6 +362,7 @@ footer.footer.footer-2 .widget.mb-4 {
 }
 .collection-list-slider .container {
     padding: 0 70px;
+    padding-bottom: 60px !important;
 }
 .fot-col-div {
     padding: 0;
