@@ -73,7 +73,7 @@
             body {
                 background-image: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
                     url({{ asset('assets/images/homebg-mobile.jpg') }});
-                background-attachment: scroll;
+                background-attachment: scroll !important;
                 /* ✅ this must be LAST, nothing overrides it */
             }
         }
