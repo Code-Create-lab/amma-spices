@@ -52,6 +52,13 @@
             padding: 180px 0px 50px 0px;
             min-height: 100vh;
         } */
+
+        html,
+        body {
+            overflow-x: hidden;
+            /* moved to html+body to fix iOS scroll bug */
+        }
+
         body {
             font: normal 300 1.4rem/1.86 "Inter", sans-serif;
             color: #ffffff;
