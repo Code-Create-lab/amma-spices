@@ -30,7 +30,7 @@
 }
 
 .intro-section {
-    padding-top: 70px;
+    /* padding-top: 70px; */
 }
 .page-content {
     height: auto;
@@ -252,7 +252,7 @@ p.tag-line-text {
     font-size: 12px;
 }
 .header-28 {
-    margin-bottom: 35px;
+    /* margin-bottom: 35px; */
 }
 #toast-container>.toast-success {
     font-size: 12px;
