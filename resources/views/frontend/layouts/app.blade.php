@@ -56,7 +56,6 @@
         html,
         body {
             overflow-x: hidden;
-            /* moved to html+body to fix iOS scroll bug */
         }
 
         body {
@@ -64,23 +63,18 @@
             color: #ffffff;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden;
             background: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
                 url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center;
             background-size: cover;
             background-attachment: fixed;
-            /* parallax effect on desktop */
         }
 
         @media (max-width: 768px) {
             body {
+                background-image: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
+                    url({{ asset('assets/images/homebg-mobile.jpg') }});
                 background-attachment: scroll;
-
-                /* fixed is broken on mobile */
-                background: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
-                    url({{ asset('assets/images/homebg-mobile.jpg') }}) no-repeat top center;
-                background-size: cover;
-                background-attachment: fixed;
+                /* ✅ this must be LAST, nothing overrides it */
             }
         }
 
