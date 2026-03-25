@@ -17202,3 +17202,28 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   .icon-box { padding: 20px 14px !important; }
   .icon-title { font-size: 12px !important; }
 }
+
+
+a.btn.btn-outline-primary-2.btn-order.btn-block {
+
+      color: #fff;
+    background-color: #4B3B2E;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 0;
+    background: transparent;
+    border: 1.5px solid #e7c840;
+    border-radius: 8px;
+    color: #e7c840;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    cursor: pointer;
+    transition: background 0.22s, color 0.22s, transform 0.15s;
+    text-decoration: none !important;
+}
