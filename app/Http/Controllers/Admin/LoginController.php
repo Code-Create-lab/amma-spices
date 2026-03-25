@@ -75,7 +75,7 @@ class LoginController extends Controller
 
             return redirect()->route('adminHome');
         } else {
-            return redirect()->route('adminLogin')->withErrors(trans('keywords.Email/Password Wrong'));
+            return redirect()->route('login')->withErrors(trans('keywords.Email/Password Wrong'));
         }
     }
 
@@ -83,7 +83,7 @@ class LoginController extends Controller
     {
         Auth::guard('admin')->logout();
 
-        return redirect()->route('adminLogin')->withErrors(trans('keywords.logged out'));
+        return redirect()->route('login')->withErrors(trans('keywords.logged out'));
     }
 
     protected function guard()
