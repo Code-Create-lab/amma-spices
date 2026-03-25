@@ -45,13 +45,25 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <style>
-        /* body {
+        /* :root {
+            --gold: #e7c840;
+            --gold-light: #f5e070;
+            --gold-dim: rgba(231, 200, 64, 0.13);
+            --bg: #0c0c0c;
+            --bg2: #111111;
+            --bg3: #181818;
+            --card: #161616;
+            --border: rgba(255, 255, 255, 0.07);
+            --border2: rgba(255, 255, 255, 0.14);
+            --text: #f0ece4;
+            --text2: #a09888;
+            --text3: #5e564c;
+            --radius: 12px;
+            --radius-lg: 18px;
+        }
 
-            background: #000 url({{ asset('assets/images/homebg.jpg') }}) no-repeat top center fixed;
-            background-size: cover;
-            padding: 180px 0px 50px 0px;
-            min-height: 100vh;
-        } */
+
+        
 
         html,
         body {
@@ -74,11 +86,18 @@
                 background-image: linear-gradient(rgb(0 0 0 / 22%), rgb(20 19 19 / 47%)),
                     url({{ asset('assets/images/homebg-mobile.jpg') }});
                 background-attachment: scroll !important;
-                /* ✅ this must be LAST, nothing overrides it */
+               
             }
         }
 
-        /* body::before {
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+         body::before {
             content: "";
             position: fixed;
             inset: 0;
@@ -88,7 +107,7 @@
             background-size: cover;
             background-attachment: fixed;
             z-index: -1;
-        } */
+        }  */
     </style>
 </head>
 
