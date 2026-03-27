@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Frontend\ShopGrid;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Wishlist;
+use App\Traits\ImageStoragePicker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ShopGridController extends Controller
 {
+    use ImageStoragePicker;
+
     public function index($slug)
     {
 
@@ -76,6 +79,7 @@ class ShopGridController extends Controller
                 return view('frontend.category.index', [
                     'categories' => $categories,
                     'category' => $child_category,
+                    'url_aws' => $this->getImageStorage(),
                     'level' => 3
                 ]);
             }
@@ -87,6 +91,7 @@ class ShopGridController extends Controller
             return view('frontend.category.index', [
                 'categories' => $categories,
                 'category' => $sub_category,
+                'url_aws' => $this->getImageStorage(),
                 'level' => 2
             ]);
         }
@@ -110,6 +115,7 @@ class ShopGridController extends Controller
             'categories' => $categories,
             'category' => $category,
             'wishlist' => $wishlist,
+            'url_aws' => $this->getImageStorage(),
             'level' => 1
         ]);
     }

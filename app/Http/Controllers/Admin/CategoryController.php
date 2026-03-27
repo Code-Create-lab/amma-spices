@@ -12,6 +12,7 @@ use Session;
 use Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Setting;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -94,17 +95,12 @@ class CategoryController extends Controller
         $category_name = $request->cat_name;
         $status = 1;
         $slug = strtolower(str_replace(" ", '-', $category_name));
-        $date = date('d-m-Y');
-        $desc = $request->desc;
+        $desc = $request->filled('desc') ? $request->desc : null;
         $filePath = '';
-        if ($desc == null) {
-            $desc = $category_name;
-        }
+        $bannerFilePath = null;
         $category = DB::table('categories')
             ->where('cat_id', $parent_id)
             ->first();
-
-        $category_image_name = "";
 
         if ($status == "") {
             $status = 0;
@@ -126,7 +122,8 @@ class CategoryController extends Controller
             $request,
             [
                 'cat_name'   => 'required',
-                'cat_image'  => 'required|mimes:jpeg,png,jpg|max:1000',
+                'cat_image'  => 'required|file|mimes:jpeg,png,jpg,webp|max:2048',
+                'banner_image' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:4096',
                 'parent_id'  => 'sometimes|required',
             ],
             [
@@ -137,25 +134,13 @@ class CategoryController extends Controller
         );
 
         if ($request->hasFile('cat_image')) {
-            $category_image = $request->cat_image;
-            $fileName = $category_image->getClientOriginalName();
-            $fileName = str_replace(" ", "-", $fileName);
-
-            $this->getImageStorage();
-
-            if ($this->storage_space != "same_server") {
-                $category_image_name = $category_image->getClientOriginalName();
-                $category_image = $request->file('cat_image');
-                $filePath = '/category/' . $category_image_name;
-                Storage::disk($this->storage_space)->put($filePath, fopen($request->file('cat_image'), 'r+'), 'public');
-            } else {
-
-                $category_image->move('images/category/' . $date . '/', $fileName);
-                $filePath = '/images/category/' . $date . '/' . $fileName;
-            }
+            $filePath = $this->uploadCategoryFile($request->file('cat_image'), 'category');
         } else {
             $filePath = 'images/';
-            $category_image = 'N/A';
+        }
+
+        if ($request->hasFile('banner_image')) {
+            $bannerFilePath = $this->uploadCategoryFile($request->file('banner_image'), 'category-banner');
         }
 
         $insertCategory = DB::table('categories')
@@ -165,6 +150,7 @@ class CategoryController extends Controller
                 'slug' => $slug,
                 'level' => $level,
                 'image' => $filePath,
+                'banner_image' => $bannerFilePath,
                 'status' => $status,
                 'description' => $desc,
                 'tax_type' => $type,
@@ -235,14 +221,7 @@ class CategoryController extends Controller
         $category_name = $request->cat_name;
         $status = 1;
         $slug = strtolower(str_replace(" ", '-', $category_name));
-        $date = date('d-m-Y');
-        $desc = $request->desc;
-        if ($desc == null) {
-            $desc = $category_name;
-        }
-
-        $category_image_name = "";
-        $filePath = "";
+        $desc = $request->filled('desc') ? $request->desc : null;
 
         $category = DB::table('categories')
             ->where('cat_id', $parent_id)
@@ -281,42 +260,35 @@ class CategoryController extends Controller
             ->first();
 
         $image = $getCategory->image;
+        $bannerImage = $getCategory->banner_image;
+        $filePath = $image;
+        $bannerFilePath = $bannerImage;
 
         if ($request->hasFile('cat_image')) {
             $this->validate(
                 $request,
                 [
-                    'cat_image' => 'required|mimes:jpeg,png,jpg|max:1000',
+                    'cat_image' => 'required|file|mimes:jpeg,png,jpg,webp|max:2048',
                 ],
                 [
                     'cat_image.required' => 'Choose category image.',
                 ]
             );
 
-            $category_image = $request->cat_image;
-            $category_image_name = $category_image->getClientOriginalName();
-            $category_image = $request->file('cat_image');
+            $this->deleteCategoryFile($getCategory->image);
+            $filePath = $this->uploadCategoryFile($request->file('cat_image'), 'category');
+        }
 
-            $this->getImageStorage();
+        if ($request->hasFile('banner_image')) {
+            $this->validate(
+                $request,
+                [
+                    'banner_image' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:4096',
+                ]
+            );
 
-            if ($this->storage_space != "same_server") {
-                $url_aws = rtrim(Storage::disk($this->storage_space)->url('/'), "/");
-                $filePath = '/category/' . $category_image_name;
-                Storage::disk($this->storage_space)->delete($url_aws . $getCategory->image);
-                Storage::disk($this->storage_space)->put($filePath, fopen($request->file('cat_image'), 'r+'), 'public');
-            } else {
-                $oldImagePath = public_path($getCategory->image);
-                if (File::exists($oldImagePath)) {
-                    File::delete($oldImagePath);
-                }
-                $fileName = $category_image->getClientOriginalName();
-                $fileName = str_replace(" ", "-", $fileName);
-                $category_image->move('images/category/' . $date . '/', $fileName);
-                $category_image_name = $category_image->getClientOriginalName();
-                $filePath = '/images/category/' . $date . '/' . $fileName;
-            }
-        } else {
-            $filePath = $image;
+            $this->deleteCategoryFile($getCategory->banner_image);
+            $bannerFilePath = $this->uploadCategoryFile($request->file('banner_image'), 'category-banner');
         }
         $tx = DB::table('tax_types')
             ->where('tax_id', $tax)
@@ -328,6 +300,7 @@ class CategoryController extends Controller
                 'title' => $category_name,
                 'level' => $level,
                 'image' => $filePath,
+                'banner_image' => $bannerFilePath,
                 'status' => $status,
                 'description' => $desc,
                 'tax_type' => $type,
@@ -372,5 +345,47 @@ class CategoryController extends Controller
     {
         $subcategories = Category::where('parent', $categoryId)->get(['cat_id', 'title']);
         return response()->json($subcategories);
+    }
+
+    protected function uploadCategoryFile($image, string $folder): string
+    {
+        $this->getImageStorage();
+
+        $extension = strtolower($image->getClientOriginalExtension() ?: $image->extension() ?: 'jpg');
+        $fileName = Str::uuid()->toString() . '.' . $extension;
+
+        if ($this->storage_space != "same_server") {
+            $filePath = '/' . trim($folder, '/') . '/' . $fileName;
+            Storage::disk($this->storage_space)->put($filePath, fopen($image->getRealPath(), 'r'), 'public');
+
+            return $filePath;
+        }
+
+        $date = date('d-m-Y');
+        $relativeDirectory = 'images/' . trim($folder, '/') . '/' . $date . '/';
+        File::ensureDirectoryExists(public_path($relativeDirectory));
+        $image->move(public_path($relativeDirectory), $fileName);
+
+        return '/' . str_replace('\\', '/', $relativeDirectory . $fileName);
+    }
+
+    protected function deleteCategoryFile(?string $filePath): void
+    {
+        if (!$filePath) {
+            return;
+        }
+
+        $this->getImageStorage();
+
+        if ($this->storage_space != "same_server") {
+            Storage::disk($this->storage_space)->delete(ltrim($filePath, '/'));
+
+            return;
+        }
+
+        $oldImagePath = public_path(ltrim($filePath, '/'));
+        if (File::exists($oldImagePath)) {
+            File::delete($oldImagePath);
+        }
     }
 }

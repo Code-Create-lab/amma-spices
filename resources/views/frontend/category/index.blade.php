@@ -25,9 +25,10 @@
 </nav>
 
 {{-- FULL WIDTH BANNER --}}
+
 <div class="cp-banner">
     <img class="cp-banner-img"
-         src="{{ $category->banner_image ? asset('storage/' . $category->banner_image) : 'https://amma-spices.snehal.info/storage/banners/nhpsGQ7k5UQhJCMnw3Xre2qgMrEZ9P1gN50dXWBn.png' }}"
+         src="{{ $category->banner_image ? $url_aws . $category->banner_image : ($category->image ? $url_aws . $category->image : asset('assets/img/seprater.png')) }}"
          alt="{{ $category->title }}">
     <div class="cp-banner-gradient"></div>
     <div class="cp-banner-body">
@@ -36,7 +37,7 @@
         @if($category->description)
             <p class="cp-banner-sub">{{ $category->description }}</p>
         @else
-            <p class="cp-banner-sub">Authentic blends crafted from hand-picked spices. Every recipe tells a story of warmth &amp; tradition.</p>
+            <p class="cp-banner-sub">{{ $category->title }}</p>
         @endif
     </div>
     <div class="cp-banner-corner">Home Kitchen Crafted</div>
@@ -58,7 +59,7 @@
                     <div class="cp-subcat-card">
                         <a href="{{ route('getCatList', $cat->fullRouteParams()) }}">
                             <div class="cp-subcat-img-wrap">
-                                <img src="{{ asset($cat->image) }}" alt="{{ $cat->title }}">
+                                <img src="{{ $url_aws . $cat->image }}" alt="{{ $cat->title }}">
                             </div>
                             <h4>{{ $cat->title }}</h4>
                         </a>

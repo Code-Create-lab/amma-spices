@@ -16,6 +16,7 @@ class Category extends Model
         'title',
         'slug',
         'image',
+        'banner_image',
         'parent',
         'level',
         'description',

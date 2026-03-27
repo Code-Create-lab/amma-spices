@@ -490,12 +490,12 @@
                     hideDuration: 200, // 👈 fade out speed
                 };
 
-                toastr.options = {
-                    "closeButton": true,
-                    "progressBar": true,
-                    "timeOut": 0,
-                    "extendedTimeOut": 0
-                };
+                // toastr.options = {
+                //     "closeButton": true,
+                //     "progressBar": true,
+                //     "timeOut": 0,
+                //     "extendedTimeOut": 0
+                // };
 
 
                 toastr[type](message);

@@ -81,6 +81,14 @@
                                         for="customFile">{{ __('keywords.Choose_File') }}</label>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <label class="bmd-label-floating">Category Banner Image</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="bannerFile" name="banner_image"
+                                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                                    <label class="custom-file-label" for="bannerFile">{{ __('keywords.Choose_File') }}</label>
+                                </div>
+                            </div>
                             {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="bmd-label-floating">{{ __('keywords.Tax Name') }}</label>
@@ -95,12 +103,12 @@
                             </div> --}}
                         </div>
                         <div class="row">
-                            {{-- <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form">
                                     <label class="bmd-label-floating">{{ __('keywords.Description') }}</label>
                                     <textarea name="desc" class="form-control">{{ old('desc') }}</textarea>
                                 </div>
-                            </div> --}}
+                            </div>
                             {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="bmd-label-floating">{{ __('keywords.Tax Percentage') }}</label>
@@ -120,4 +128,15 @@
             </div>
         </div>
     </div>
+    @push('scripts')
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $(".custom-file-input").on("change", function() {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                });
+            });
+        </script>
+    @endpush
 @endsection
