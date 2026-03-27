@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Video;
 use App\Models\Wishlist;
 use App\Models\Coupon;
+use App\Models\GoogleReview;
 use App\Models\Orders;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -79,6 +80,17 @@ class IndexController extends Controller
             ->take(6)
             ->get();
 
+        $googleReviews = GoogleReview::where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->take(5)
+            ->get();
+
+        $googleReviewStats = [
+            'count' => GoogleReview::where('is_active', 1)->count(),
+            'average' => (float) GoogleReview::where('is_active', 1)->avg('rating'),
+        ];
+
             // dd($blogs);
         return view('frontend.index.index', [
             'products' => $products,
@@ -90,6 +102,8 @@ class IndexController extends Controller
             'coupon' => $coupon,
             'sub_categories' => $sub_categories,
             'blogs' => $blogs,       // ← add this
+            'googleReviews' => $googleReviews,
+            'googleReviewStats' => $googleReviewStats,
         ]);
     }
 

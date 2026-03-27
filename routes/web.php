@@ -1037,6 +1037,12 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::post('reviews/{id}/approve', [App\Http\Controllers\Admin\RatingReviewController::class, 'approve'])->name('reviews.approve');
             Route::post('reviews/{id}/reject', [App\Http\Controllers\Admin\RatingReviewController::class, 'reject'])->name('reviews.reject');
             Route::delete('reviews/{id}', [App\Http\Controllers\Admin\RatingReviewController::class, 'destroy'])->name('reviews.destroy');
+            Route::get('google-reviews', [App\Http\Controllers\Admin\GoogleReviewController::class, 'index'])->name('admin.google-reviews.index');
+            Route::get('google-reviews/create', [App\Http\Controllers\Admin\GoogleReviewController::class, 'create'])->name('admin.google-reviews.create');
+            Route::post('google-reviews', [App\Http\Controllers\Admin\GoogleReviewController::class, 'store'])->name('admin.google-reviews.store');
+            Route::get('google-reviews/{id}/edit', [App\Http\Controllers\Admin\GoogleReviewController::class, 'edit'])->name('admin.google-reviews.edit');
+            Route::put('google-reviews/{id}', [App\Http\Controllers\Admin\GoogleReviewController::class, 'update'])->name('admin.google-reviews.update');
+            Route::delete('google-reviews/{id}', [App\Http\Controllers\Admin\GoogleReviewController::class, 'destroy'])->name('admin.google-reviews.destroy');
 
             // for reedem
             Route::get('reedem', [ReedemController::class, 'reedem'])->name('reedem');
