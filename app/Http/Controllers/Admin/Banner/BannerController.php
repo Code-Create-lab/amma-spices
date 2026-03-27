@@ -7,11 +7,11 @@ use App\Http\Requests\Admin\Banner\BannerStoreRequest;
 use App\Http\Requests\Admin\Banner\BannerUpdateRequest;
 use App\Models\Banner;
 use App\Traits\ImageStoragePicker;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BannerController extends Controller
 {
@@ -56,24 +56,8 @@ class BannerController extends Controller
 
     public function store(BannerStoreRequest $request)
     {
-        $date = date('d-m-Y');
-        if ($request->hasFile('image')) {
-            $banner_image = $request->image;
-            $fileName = $banner_image->getClientOriginalName();
-            $fileName = str_replace(" ", "-", $fileName);
-            $this->getImageStorage();
-            if ($this->storage_space != "same_server") {
-                $banner_image_name = $banner_image->getClientOriginalName();
-                $banner_image = $request->file('image');
-                $filePath = '/banner/' . $banner_image_name;
-                Storage::disk($this->storage_space)->put($filePath, fopen($request->file('image'), 'r+'), 'public');
-            } else {
-                $filePath = Storage::disk('public')->put('banners', $request->file('image'));
-            }
-        }
-
         Banner::create([
-            'image' => $filePath
+            'image' => $this->uploadBannerImage($request->file('image')),
         ]);
 
         return redirect()->back()->with('success', 'Banner Added Successfully');
@@ -104,30 +88,13 @@ class BannerController extends Controller
     public function update(BannerUpdateRequest $request, $uuid)
     {
         $banner = Banner::where('uuid', $uuid)->firstOrFail();
-        $date = date('d-m-Y');
-        if ($banner) {
-            if ($request->hasFile('image')) {
-                $banner_image = $request->image;
-                $fileName = $banner_image->getClientOriginalName();
-                $fileName = str_replace(" ", "-", $fileName);
-                $this->getImageStorage();
-                if ($this->storage_space != "same_server") {
-                    $banner_image_name = $banner_image->getClientOriginalName();
-                    $banner_image = $request->file('image');
-                    $filePath = '/banner/' . $banner_image_name;
-                    Storage::disk($this->storage_space)->put($filePath, fopen($request->file('image'), 'r+'), 'public');
-                } else {
-                    $oldImagePath = public_path('storage/' . $banner->image);
-                    if (File::exists($oldImagePath)) {
-                        File::delete($oldImagePath);
-                    }
-                    $filePath = Storage::disk('public')->put('banners', $request->file('image'));
-                }
-            }
+        if ($request->hasFile('image')) {
+            $this->deleteBannerImage($banner->image);
             $banner->update([
-                'image' => $filePath
+                'image' => $this->uploadBannerImage($request->file('image')),
             ]);
         }
+
         return redirect()->route('banners')->with('success', 'Banner Updated Successfully');
     }
 
@@ -135,12 +102,46 @@ class BannerController extends Controller
     {
         $banner = Banner::where('uuid', $uuid)->firstOrFail();
         if ($banner) {
-            $oldImagePath = public_path('storage/' . $banner->image);
-            if (File::exists($oldImagePath)) {
-                File::delete($oldImagePath);
-            }
+            $this->deleteBannerImage($banner->image);
             $banner->delete();
             return redirect()->route('banners')->with('success', 'Banner Deleted Successfully');
+        }
+    }
+
+    protected function uploadBannerImage($image): string
+    {
+        $this->getImageStorage();
+
+        $extension = strtolower($image->getClientOriginalExtension() ?: $image->extension() ?: 'jpg');
+        $fileName = Str::uuid()->toString() . '.' . $extension;
+
+        if ($this->storage_space != "same_server") {
+            $filePath = '/banners/' . $fileName;
+            Storage::disk($this->storage_space)->put($filePath, fopen($image->getRealPath(), 'r'), 'public');
+
+            return $filePath;
+        }
+
+        return Storage::disk('public')->putFileAs('banners', $image, $fileName);
+    }
+
+    protected function deleteBannerImage(?string $imagePath): void
+    {
+        if (!$imagePath) {
+            return;
+        }
+
+        $this->getImageStorage();
+
+        if ($this->storage_space != "same_server") {
+            Storage::disk($this->storage_space)->delete(ltrim($imagePath, '/'));
+
+            return;
+        }
+
+        $localImagePath = public_path('storage/' . ltrim($imagePath, '/'));
+        if (File::exists($localImagePath)) {
+            File::delete($localImagePath);
         }
     }
 }
