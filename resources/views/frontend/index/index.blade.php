@@ -118,6 +118,81 @@
                 </div>
             </div>
 
+
+            {{-- ══════════════════════════════════════════
+             OUR STORY
+        ══════════════════════════════════════════ --}}
+            <div class="as-story">
+                <div class="container">
+                    <div class="as-story-grid">
+                        <div class="as-story-img">
+                            <img src="{{ asset('assets/img/who.jpg') }}" alt="Our Story">
+                        </div>
+                        <div>
+                            <div class="as-story-label">Our Story</div>
+                            <h2 class="as-story-title">A Kitchen Full of Warmth &amp; Aroma</h2>
+                            <p class="as-story-body">Growing up in South India, we would always watch Amma lovingly blend
+                                her spices fresh before any meal preparation — filling our home with warmth and aroma.</p>
+                            <p class="as-story-body">From our little home-run family kitchen, we bring you authentic South
+                                Indian spice blends, crafted just like she made them — pure, traditional, and filled with
+                                motherly love. Every blend is made to bring you the nostalgic taste of home-cooked meals.
+                                Our mission is to make your daily cooking nourishing, easy, and full of flavour — just like
+                                Amma intended.</p>
+                            <a href="{{ route('frontend.about-us') }}" class="know-more-btn">Know More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════════
+             WHY CHOOSE US
+             NOTE: Replace icon images with spice-relevant
+             icons (not the soap/skin-care ones currently used)
+        ══════════════════════════════════════════ --}}
+            <div class="as-why">
+                <div class="container">
+                    <div class="as-head">
+                        <h2>Why Choose Us</h2>
+                        <div class="as-divider"><span class="as-divider-dot"></span></div>
+                    </div>
+                    <div class="as-why-grid">
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">All products are lab-tested and certified</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">No preservatives or artificial additives</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Sustainable, home kitchen crafted</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Authentic South Indian recipes &amp; flavours</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             {{-- ══════════════════════════════════════════
              TESTIMONIALS
         ══════════════════════════════════════════ --}}
@@ -142,7 +217,8 @@
                                     class="gb">g</span><span class="gg">l</span><span class="gr">e</span>
                             </div>
                             <div class="as-google-stars">★★★★★</div>
-                            <div class="as-google-count">Based on {{ $reviewCount }} {{ \Illuminate\Support\Str::plural('review', $reviewCount) }}</div>
+                            <div class="as-google-count">Based on {{ $reviewCount }}
+                                {{ \Illuminate\Support\Str::plural('review', $reviewCount) }}</div>
                         </div>
                     </div>
                     <script>
@@ -158,7 +234,7 @@
                         });
                     </script>
 
-                <div class="owl-carousel testimonials-carousel owl-simple" data-toggle="owl"
+                    <div class="owl-carousel testimonials-carousel owl-simple" data-toggle="owl"
                         data-owl-options='{
                         "nav": false,
                         "loop": true,
@@ -197,7 +273,8 @@
                                     <div class="g-review-date">Customer Review</div>
                                     <p class="g-review-text">{{ $review->review_text }}</p>
                                     <div class="g-review-footer">
-                                        <svg class="g-google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="g-google-icon" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                                                 fill="#4285F4" />
@@ -222,7 +299,8 @@
                                     <div class="g-reviewer-info">
                                         <div class="g-reviewer-name">Priya Sharma</div>
                                         <div class="g-reviewer-meta">
-                                            <img src="https://www.google.com/favicon.ico" class="g-favicon" alt="Google">
+                                            <img src="https://www.google.com/favicon.ico" class="g-favicon"
+                                                alt="Google">
                                             <span>Google Review</span>
                                         </div>
                                     </div>
@@ -398,78 +476,6 @@
                 </div>
             </div>
 
-            {{-- ══════════════════════════════════════════
-             OUR STORY
-        ══════════════════════════════════════════ --}}
-            <div class="as-story">
-                <div class="container">
-                    <div class="as-story-grid">
-                        <div class="as-story-img">
-                            <img src="{{ asset('assets/img/who.jpg') }}" alt="Our Story">
-                        </div>
-                        <div>
-                            <div class="as-story-label">Our Story</div>
-                            <h2 class="as-story-title">A Kitchen Full of Warmth &amp; Aroma</h2>
-                            <p class="as-story-body">Growing up in South India, we would always watch Amma lovingly blend
-                                her spices fresh before any meal preparation — filling our home with warmth and aroma.</p>
-                            <p class="as-story-body">From our little home-run family kitchen, we bring you authentic South
-                                Indian spice blends, crafted just like she made them — pure, traditional, and filled with
-                                motherly love. Every blend is made to bring you the nostalgic taste of home-cooked meals.
-                                Our mission is to make your daily cooking nourishing, easy, and full of flavour — just like
-                                Amma intended.</p>
-                            <a href="{{ route('frontend.about-us') }}" class="know-more-btn">Know More</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- ══════════════════════════════════════════
-             WHY CHOOSE US
-             NOTE: Replace icon images with spice-relevant
-             icons (not the soap/skin-care ones currently used)
-        ══════════════════════════════════════════ --}}
-            <div class="as-why">
-                <div class="container">
-                    <div class="as-head">
-                        <h2>Why Choose Us</h2>
-                        <div class="as-divider"><span class="as-divider-dot"></span></div>
-                    </div>
-                    <div class="as-why-grid">
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
-                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">All products are lab-tested and certified</h3>
-                            </div>
-                        </div>
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
-                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">No preservatives or artificial additives</h3>
-                            </div>
-                        </div>
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
-                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">Sustainable, home kitchen crafted</h3>
-                            </div>
-                        </div>
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
-                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">Authentic South Indian recipes &amp; flavours</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {{-- ══════════════════════════════════════════
              BLOG SECTION
@@ -477,7 +483,7 @@
             <div class="blog-section">
                 <div class="container">
                     <div class="as-head">
-                        <h2>From Our Kitchen &amp; Blog</h2>
+                        <h2>Blogs & &amp; Articles</h2>
                         <div class="as-divider"><span class="as-divider-dot"></span></div>
                     </div>
 
