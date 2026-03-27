@@ -45,7 +45,7 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <label>Previous Image</label>
-                                    <img src="{{ asset('storage/'.$banner->image) }}"
+                                    <img src="{{ $url_aws . $banner->image }}"
                                         style="width:100px; height:100px; border-radius:50%;object-fit:cover;object-position:center;" />
                                 </div>
                                 <br>
@@ -54,7 +54,7 @@
                                         class="bmd-label-floating">{{ __('keywords.Image') }}<b>({{ __('keywords.banner image size') }} )</b></label>
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="customFile" name="image"
-                                            accept="image/*" required />
+                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
                                         <label class="custom-file-label"
                                             for="customFile">{{ __('keywords.Choose_File') }}</label>
                                     </div>
@@ -73,7 +73,6 @@
     </div>
     @push('scripts')
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js') }}"></script>
         <script>
             $(document).ready(function() {
                 $(".custom-file-input").on("change", function() {
@@ -82,6 +81,5 @@
                 });
             });
         </script>
-        {!! JsValidator::formRequest('App\Http\Requests\Admin\Banner\BannerUpdateRequest', '#banner-update-form') !!}
     @endpush
 @endsection
