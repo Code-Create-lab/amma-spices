@@ -17227,3 +17227,173 @@ a.btn.btn-outline-primary-2.btn-order.btn-block {
     transition: background 0.22s, color 0.22s, transform 0.15s;
     text-decoration: none !important;
 }
+
+  /* ── Category Page ─────────────────────────────── */
+.cp-breadcrumb {
+    background: #111;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 10px 0;
+}
+.cp-breadcrumb .breadcrumb {
+    background: transparent;
+    margin: 0; padding: 0;
+    font-size: 12px; color: #666;
+}
+.cp-breadcrumb .breadcrumb-item a { color: #e7c840; }
+.cp-breadcrumb .breadcrumb-item.active { color: #e7c840; }
+.cp-breadcrumb .breadcrumb-item + .breadcrumb-item::before { color: #444; }
+
+/* Banner */
+.cp-banner {
+    position: relative; width: 100%;
+    height: 320px; overflow: hidden; background: #1a0a00;
+}
+.cp-banner-img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover; opacity: 0.5;
+}
+.cp-banner-gradient {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.1) 100%);
+}
+.cp-banner-body {
+    position: relative; z-index: 2;
+    height: 100%; display: flex;
+    flex-direction: column; justify-content: center;
+    padding: 0 80px;
+}
+.cp-banner-super {
+    font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase; color: #e7c840;
+    margin-bottom: 10px; font-weight: 500;
+}
+.cp-banner-title {
+    font-family: Georgia, serif;
+    font-size: 44px; font-weight: 700;
+    color: #fff8ee; line-height: 1.15;
+    margin: 0 0 12px;
+}
+.cp-banner-sub {
+    font-size: 14px; color: rgba(232,224,208,0.65);
+    line-height: 1.7; max-width: 420px; margin: 0;
+}
+.cp-banner-corner {
+    position: absolute; top: 24px; right: 40px;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: rgb(255 255 255 / 53%);; text-transform: uppercase;
+}
+.cp-banner-line {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #e7c840 0%, #e8b97a 35%, transparent 70%);
+}
+
+/* Page body */
+.cp-page-wrap {
+    background: #0d0d0d;
+    /* padding: 48px 0 64px; */
+    min-height: 400px;
+}
+.cp-section-head {
+    text-align: center; margin-bottom: 32px;
+}
+.cp-section-head h3 {
+    font-family: Georgia, serif;
+    font-size: 22px; color: #f0e6d0; font-weight: 600;
+    margin-bottom: 8px;
+}
+.cp-section-sep {
+    display: flex; align-items: center;
+    justify-content: center; gap: 10px;
+}
+.cp-section-sep span {
+    display: block; height: 1px; width: 40px; background: #e7c840;
+}
+
+/* Subcategory grid */
+.cp-subcat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 8px;
+}
+.cp-subcat-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px; overflow: hidden;
+    text-align: center; transition: border-color .2s, transform .2s;
+}
+.cp-subcat-card:hover { border-color: #e7c840; transform: translateY(-2px); }
+.cp-subcat-card a { text-decoration: none; display: block; }
+.cp-subcat-img-wrap { height: 130px; overflow: hidden; background: #222; }
+.cp-subcat-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform .3s; }
+.cp-subcat-card:hover .cp-subcat-img-wrap img { transform: scale(1.05); }
+.cp-subcat-card h4 { padding: 12px 8px; font-size: 13px; color: #e8d8b8; font-weight: 500; }
+
+/* Product grid */
+.cp-prod-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.cp-prod-card {
+    background: #181818;
+    border: 1px solid #272727;
+    border-radius: 8px; overflow: hidden;
+    transition: border-color .2s, transform .2s;
+}
+.cp-prod-card:hover { border-color: #e7c840; transform: translateY(-3px); }
+.cp-prod-img-wrap { height: 190px; overflow: hidden; background: #222; position: relative; }
+.cp-prod-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+.cp-prod-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: #e7c840; color: #0d0d0d;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 2px; letter-spacing: 0.5px;
+}
+.cp-prod-wish {
+    position: absolute; top: 10px; right: 10px;
+    width: 30px; height: 30px;
+    background: rgba(0,0,0,0.55); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.cp-prod-wish svg { width: 14px; height: 14px; stroke: #e7c840; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cp-prod-wish.liked svg { fill: #e7c840; }
+.cp-prod-body { padding: 14px; }
+.cp-prod-name { font-size: 14px; font-weight: 500; color: #ede0c8; margin-bottom: 10px; line-height: 1.4; }
+.cp-prod-name:hover { color: #e7c840; }
+.cp-prod-price { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.cp-price-old { font-size: 12px; color: #555; text-decoration: line-through; }
+.cp-price-new { font-size: 16px; font-weight: 700; color: #e7c840; }
+.cp-price-off { font-size: 11px; color: #5a9e5a; font-weight: 500; }
+.cp-cart-row {
+    display: flex; align-items: center;
+    gap: 10px; justify-content: space-between;
+}
+.cp-add-btn {
+    flex: 1; padding: 9px 10px; text-align: center;
+    background: transparent; border: 1px solid #e7c840;
+    color: #e7c840; font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; cursor: pointer; border-radius: 3px;
+    transition: all .2s; display: block;
+}
+.cp-add-btn:hover { background: #e7c840; color: #0d0d0d; font-weight: 600; }
+.cp-out-of-stock { border-color: #444; color: #555; cursor: default; }
+.cp-out-of-stock:hover { background: transparent; color: #555; }
+.cp-qty-wrap input {
+    width: 52px; background: #222; border: 1px solid #333;
+    color: #e8d8b8; text-align: center; padding: 6px 4px;
+    border-radius: 3px; font-size: 13px;
+}
+.cp-empty { grid-column: 1/-1; text-align: center; padding: 40px; color: #666; }
+
+@media (max-width: 768px) {
+    .cp-banner { height: 220px; }
+    .cp-banner-body { padding: 0 24px; }
+    .cp-banner-title { font-size: 28px; }
+    .cp-subcat-grid { grid-template-columns: repeat(2, 1fr); }
+    .cp-prod-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .cp-prod-grid { grid-template-columns: 1fr; }
+}
