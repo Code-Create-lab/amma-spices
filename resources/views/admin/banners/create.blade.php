@@ -67,7 +67,6 @@
     </div>
     @push('scripts')
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js') }}"></script>
         <script>
             $(document).ready(function() {
                 $(".custom-file-input").on("change", function() {
@@ -76,6 +75,5 @@
                 });
             });
         </script>
-        {!! JsValidator::formRequest('App\Http\Requests\Admin\Banner\BannerStoreRequest', '#banner-store-form') !!}
     @endpush
 @endsection
