@@ -45,6 +45,32 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <style>
+        .toast-particle {
+            position: fixed;
+            /* fixed to viewport, not relative to any parent */
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 9999999;
+            /* above toastr's z-index */
+            animation: particleBurst 2.5s ease-out forwards;
+        }
+
+        @keyframes particleBurst {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            60% {
+                opacity: 0.85;
+            }
+
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(var(--rot));
+                opacity: 0;
+            }
+        }
+
         /* :root {
             --gold: #e7c840;
             --gold-light: #f5e070;
@@ -469,6 +495,74 @@
     </script>
     @stack('scripts')
     <script>
+        function addCelebrationEffect(toastEl) {
+            const particles = ['🎉', '✨', '🎊', '⭐', '🌟', '🎈'];
+            const count = 14;
+
+            const rect = toastEl.getBoundingClientRect();
+
+            // Guard: if toast has no size yet, skip
+            if (!rect.width && !rect.height) return;
+
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('span');
+                p.className = 'toast-particle';
+                p.textContent = particles[Math.floor(Math.random() * particles.length)];
+
+                const tx = (Math.random() - 0.5) * 260;
+                const ty = -(Math.random() * 120 + 30);
+                const rot = (Math.random() - 0.5) * 480;
+                const delay = Math.random() * 0.5;
+
+                const spawnX = rect.left + Math.random() * rect.width;
+                const spawnY = rect.top + rect.height / 2;
+
+                p.style.cssText = `
+            position: fixed;
+            z-index: 9999999;
+            pointer-events: none;
+            font-size: 16px;
+            left: ${spawnX}px;
+            top: ${spawnY}px;
+            --tx: ${tx}px;
+            --ty: ${ty}px;
+            --rot: ${rot}deg;
+            animation: particleBurst 2.5s ease-out forwards;
+            animation-delay: ${delay}s;
+            opacity: 0;
+        `;
+
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3000 + delay * 1000);
+            }
+        }
+
+        // Single observer on body — catches container+toast added together
+        const toastObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType !== 1) return;
+
+                    // Case 1: the added node IS a toast div
+                    if (node.classList.contains('toast')) {
+                        setTimeout(() => addCelebrationEffect(node), 50);
+                    }
+
+                    // Case 2: the added node CONTAINS toasts (e.g. container added with toast inside)
+                    node.querySelectorAll?.('.toast').forEach((t) => {
+                        setTimeout(() => addCelebrationEffect(t), 50);
+                    });
+                });
+            });
+        });
+
+        toastObserver.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+
+
         document.addEventListener('livewire:init', () => {
             Livewire.on('toast', (event) => {
                 console.log("type", event); // Just for testing
@@ -499,6 +593,15 @@
 
 
                 toastr[type](message);
+
+                // Grab the latest toast and fire the effect
+                // setTimeout(() => {
+                //     const latestToast = document.querySelector('#toast-container > div:last-child');
+                //     if (latestToast) addCelebrationEffect(latestToast);
+                // }, 10); // small delay so toastr finishes rendering
+
+
+                // addCelebrationEffect(latestToast)
             });
 
             Livewire.on('init-product-carousel', () => {
@@ -509,12 +612,14 @@
                     // Destroy existing instances to avoid duplicates
                     if ($mainCarousel.hasClass('owl-loaded')) {
                         $mainCarousel.trigger('destroy.owl.carousel');
-                        $mainCarousel.html($mainCarousel.find('.owl-stage-outer').html())
+                        $mainCarousel.html($mainCarousel.find('.owl-stage-outer')
+                                .html())
                             .removeClass('owl-loaded');
                     }
                     if ($thumbCarousel.hasClass('owl-loaded')) {
                         $thumbCarousel.trigger('destroy.owl.carousel');
-                        $thumbCarousel.html($thumbCarousel.find('.owl-stage-outer').html())
+                        $thumbCarousel.html($thumbCarousel.find('.owl-stage-outer')
+                                .html())
                             .removeClass('owl-loaded');
                     }
 
@@ -586,14 +691,16 @@
                     $main.on('changed.owl.carousel', function(event) {
                         var currentIndex = event.item.index;
                         var itemCount = event.item.count;
-                        var actualIndex = (currentIndex - event.relatedTarget._clones
+                        var actualIndex = (currentIndex - event.relatedTarget
+                            ._clones
                             .length / 2) % itemCount;
                         var normalizedIndex = actualIndex < 0 ? itemCount +
                             actualIndex :
                             actualIndex;
                         $thumbCarousel.find('.item').removeClass('active');
-                        $thumbCarousel.find('.item').eq(normalizedIndex).addClass(
-                            'active');
+                        $thumbCarousel.find('.item').eq(normalizedIndex)
+                            .addClass(
+                                'active');
                     });
                 }, 150);
             });

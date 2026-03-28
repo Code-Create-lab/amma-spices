@@ -15469,9 +15469,25 @@ footer.footer.footer-2 .container {
 }
 .toast-success {
    background-color: #e7c840 !important;
-   color: #ffff !important;
+   color: #000000 !important;
     font-size: 12px !important;
 
+}
+
+.toast-close-button {
+    position: relative;
+    right: -.3em;
+    top: -.3em;
+    float: right;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000 !important;
+    -webkit-text-shadow: 0 1px 0 #fff;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .8;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
+    filter: alpha(opacity=80);
+    line-height: 1;
 }
 
 .breadcrumb-nav {
