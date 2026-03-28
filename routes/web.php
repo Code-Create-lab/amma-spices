@@ -1520,6 +1520,7 @@ Route::group(['middleware' => ['verifylicense']], function () {
 
 //Frontend Routes
 Route::get('/', [IndexController::class, 'index'])->name('index');
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('frontend.gallery');
 Route::get('/generate-invoice/{orderId}', [IndexController::class, 'generate_invoice'])->name('user.generate_invoice');
 
 //Product Routes{

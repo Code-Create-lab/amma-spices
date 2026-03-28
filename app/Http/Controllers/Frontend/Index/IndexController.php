@@ -169,4 +169,13 @@ class IndexController extends Controller
 
         return $pdf->download(' ORD-' . now()->format('Y') . '-' . $order->cart_id . '.pdf');
     }
+
+
+    public function gallery()
+    {
+        // Fetch images for the gallery
+        // $images = GalleryImage::all();
+
+        return view('frontend.index.gallery');
+    }
 }

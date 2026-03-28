@@ -9,6 +9,78 @@
 ═══════════════════════════════════════════════════════════ --}}
 
     <style>
+        .as-hero-wrap {
+            position: relative;
+        }
+
+        .hero-overlay-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            width: 80%;
+            max-width: 800px;
+            pointer-events: none;
+            /* so owl carousel clicks still work */
+        }
+
+        .hero-overlay-content .hero-btn {
+            pointer-events: auto;
+            /* re-enable clicks on button only */
+        }
+
+        .hero-title {
+            font-size: 52px;
+            font-weight: 800;
+            /* color: #f5c518; */
+            /* golden yellow matching your screenshot */
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+
+
+            font-size: 60px;
+            margin: 0px;
+            color: #e7c840;
+            text-transform: uppercase;
+            text-shadow: 5px 5px #000;
+        }
+
+        .hero-subtitle {
+            font-size: 26px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 14px;
+            text-shadow: 2px 2px #000;
+        }
+
+        .hero-desc {
+            font-size: 15px;
+            color: #cccccc;
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            background-color: #e7c840;
+            color: #1a1a1a;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 36px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .hero-btn:hover {
+            background-color: #e7c840;
+            transform: translateY(-2px);
+            color: #1a1a1a;
+            text-decoration: none;
+        }
     </style>
 
     <main class="main">
@@ -17,7 +89,7 @@
             {{-- ══════════════════════════════════════════
              HERO BANNER
         ══════════════════════════════════════════ --}}
-            <div class="intro-section as-hero-wrap">
+            <div class="intro-section as-hero-wrap" style="position: relative;">
                 <div class="owl-carousel inner-carousel owl-simple rows cols-1" data-toggle="owl"
                     data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
                     @foreach ($banners as $banner)
@@ -25,6 +97,17 @@
                             <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r" alt="Amma's Spices">
                         </div>
                     @endforeach
+                </div>
+
+                {{-- Centered Overlay Text --}}
+                <div class="hero-overlay-content">
+                    <h1 class="hero-title">AMMA'S SPICES</h1>
+                    <h2 class="hero-subtitle">Authentic Home-made fresh Spice blend's</h2>
+                    <p class="hero-desc">
+                        Discover authentic, handcrafted south spice blends curated with love, tradition, and purity.<br>
+                        Every spoonful is a journey of flavours intended to give you the taste of south india.
+                    </p>
+                    <a href="{{ route('shop.page.index') }}" class="hero-btn">Explore Our Products</a>
                 </div>
             </div>
 
@@ -126,7 +209,7 @@
                 <div class="container">
                     <div class="as-story-grid">
                         <div class="as-story-img">
-                            <img src="{{ asset('assets/img/who.jpg') }}" alt="Our Story">
+                            <img src="{{ asset('assets/img/aboutus.jpg') }}" alt="Our Story">
                         </div>
                         <div>
                             <div class="as-story-label">Our Story</div>
@@ -213,8 +296,9 @@
                         <div class="as-google-score">{{ $reviewAverageFormatted }}</div>
                         <div class="as-google-meta">
                             <div class="as-google-logo">
-                                <span class="gb">G</span><span class="gr">o</span><span class="gy">o</span><span
-                                    class="gb">g</span><span class="gg">l</span><span class="gr">e</span>
+                                <span class="gb">G</span><span class="gr">o</span><span
+                                    class="gy">o</span><span class="gb">g</span><span
+                                    class="gg">l</span><span class="gr">e</span>
                             </div>
                             <div class="as-google-stars">★★★★★</div>
                             <div class="as-google-count">Based on {{ $reviewCount }}
