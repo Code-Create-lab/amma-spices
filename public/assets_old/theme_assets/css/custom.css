@@ -9,7 +9,46 @@
 body {
     background-color: #FFF7ED;
 } */
+ 
 
+.app-header {
+    border: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 0;
+    z-index: 1030;
+    height: 60px;
+    background: #000000;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: space-between;
+    -ms-flex-pack: space-between;
+    justify-content: space-between;
+    -webkit-transition: box-shadow .2s linear;
+    -moz-transition: box-shadow .2s linear;
+    -ms-transition: box-shadow .2s linear;
+    -o-transition: box-shadow .2s linear;
+    transition: box-shadow .2s linear;
+    -webkit-box-shadow: 0 6px 6px rgba(31,107,255,.1);
+    box-shadow: 0 6px 6px rgba(31,107,255,.1);
+}
+
+.app-sidebar .menu .menu-item .menu-icon {
+
+    color: #ffffff;
+
+}
+
+.app-sidebar {
+    background: #000000;
+}
 .dashboard_card .card {
     height: 140px;
 }
@@ -17,7 +56,7 @@ body {
     padding: 6px 10px;
     line-height: 30px;
     text-decoration: none;
-    color: #4B3B2E;
+    color: #ffffff;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -44,13 +83,23 @@ body {
     border: none;
 }
 .app-sidebar .menu .menu-item .menu-link:hover {
-    background: #DBC9B1;
+    background: #0e0e0e;
 }
 body {
-    background-color: #DBC9B1;
+    background-color: #0e0e0e !important;
 }
 .app-footer {
-    background: #DBC9B1;
+    background: #0e0e0e;
+        color: white;
+}
+
+.app-header .menu .menu-item .menu-link {
+
+    color: #ffffff;
+
+}
+.app-header .menu-toggler .bar {
+    background: #ffffff;
 }
 .alert-danger {
     background: #4B3B2E;

@@ -612,7 +612,7 @@
 
             <div class="menu-header">{{ __('keywords.Page management') }}</div>
             <div
-                class="menu-item has-sub {{ request()->is('about_us') ? 'active' : '' }} {{ request()->is('terms') ? 'active' : '' }}">
+                class="menu-item has-sub {{ request()->is('about_us') ? 'active' : '' }} {{ request()->is('terms') ? 'active' : '' }} {{ request()->is('admin/gallery-images*') || request()->is('gallery-images*') ? 'active' : '' }}">
                 <a href="#" class="menu-link">
                     <span class="menu-icon">
                         <i class="fa fa-bookmark"></i>
@@ -649,6 +649,11 @@
                     <div class="menu-item {{ request()->is('shipping-and-delivery-policy') ? 'active' : '' }}">
                         <a href="{{ route('shippinganddeliverypolicy') }}" class="menu-link">
                             <span class="menu-text">{{ __('keywords.Shipping & Delivery') }}</span>
+                        </a>
+                    </div>
+                    <div class="menu-item {{ request()->is('admin/gallery-images*') || request()->is('gallery-images*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.gallery-images.index') }}" class="menu-link">
+                            <span class="menu-text">Gallery</span>
                         </a>
                     </div>
                 </div>

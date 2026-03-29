@@ -78,6 +78,7 @@ use App\Http\Controllers\Admin\SubadController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\TaxreportController;
 use App\Http\Controllers\Admin\CityAdminController;
+use App\Http\Controllers\Admin\GalleryImageController;
 
 //Store Controllers
 use App\Http\Controllers\Store\AssignHomecateController;
@@ -1043,6 +1044,12 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::get('google-reviews/{id}/edit', [App\Http\Controllers\Admin\GoogleReviewController::class, 'edit'])->name('admin.google-reviews.edit');
             Route::put('google-reviews/{id}', [App\Http\Controllers\Admin\GoogleReviewController::class, 'update'])->name('admin.google-reviews.update');
             Route::delete('google-reviews/{id}', [App\Http\Controllers\Admin\GoogleReviewController::class, 'destroy'])->name('admin.google-reviews.destroy');
+            Route::get('gallery-images', [GalleryImageController::class, 'index'])->name('admin.gallery-images.index');
+            Route::get('gallery-images/create', [GalleryImageController::class, 'create'])->name('admin.gallery-images.create');
+            Route::post('gallery-images', [GalleryImageController::class, 'store'])->name('admin.gallery-images.store');
+            Route::get('gallery-images/{id}/edit', [GalleryImageController::class, 'edit'])->name('admin.gallery-images.edit');
+            Route::put('gallery-images/{id}', [GalleryImageController::class, 'update'])->name('admin.gallery-images.update');
+            Route::delete('gallery-images/{id}', [GalleryImageController::class, 'destroy'])->name('admin.gallery-images.destroy');
 
             // for reedem
             Route::get('reedem', [ReedemController::class, 'reedem'])->name('reedem');

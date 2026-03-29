@@ -10,6 +10,7 @@ use App\Models\Video;
 use App\Models\Wishlist;
 use App\Models\Coupon;
 use App\Models\GoogleReview;
+use App\Models\GalleryImage;
 use App\Models\Orders;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -173,9 +174,15 @@ class IndexController extends Controller
 
     public function gallery()
     {
-        // Fetch images for the gallery
-        // $images = GalleryImage::all();
+        $galleryImages = GalleryImage::active()->ordered()->get();
+        $galleryCategories = $galleryImages
+            ->map(fn (GalleryImage $galleryImage) => [
+                'slug' => $galleryImage->category_slug,
+                'name' => $galleryImage->category_name,
+            ])
+            ->unique('slug')
+            ->values();
 
-        return view('frontend.index.gallery');
+        return view('frontend.index.gallery', compact('galleryImages', 'galleryCategories'));
     }
 }

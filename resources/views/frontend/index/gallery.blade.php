@@ -1,20 +1,17 @@
 @extends('frontend.layouts.app')
 
 @section('content')
-    {{-- @push('styles') --}}
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap"
         rel="stylesheet">
+
     <style>
         :root {
             --gold: #e7c840;
-            --gold-dim: #c9a f20;
             --black: #000000;
             --off-black: #0e0e0e;
-            --dark: #141414;
             --white: #ffffff;
             --grey: #888888;
-            --light-grey: #1e1e1e;
         }
 
         * {
@@ -31,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* ── HERO ── */
         .gallery-hero {
             position: relative;
             padding: 100px 40px 60px;
@@ -85,7 +81,6 @@
             animation: fadeUp 0.7s 0.2s ease both;
         }
 
-        /* ── FILTER TABS ── */
         .gallery-filters {
             display: flex;
             justify-content: center;
@@ -121,7 +116,6 @@
             color: var(--black);
         }
 
-        /* ── DIVIDER ── */
         .gallery-divider {
             display: flex;
             align-items: center;
@@ -147,7 +141,6 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        /* ── MASONRY GRID ── */
         .gallery-grid {
             columns: 4 280px;
             column-gap: 14px;
@@ -221,7 +214,6 @@
             transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        /* Gold border on hover */
         .gallery-item::before {
             content: '';
             position: absolute;
@@ -233,7 +225,6 @@
             pointer-events: none;
         }
 
-        /* Dark overlay */
         .gallery-item-overlay {
             position: absolute;
             inset: 0;
@@ -280,7 +271,6 @@
             line-height: 1.3;
         }
 
-        /* Expand icon */
         .overlay-icon {
             position: absolute;
             top: 14px;
@@ -313,7 +303,6 @@
             transform: scale(1);
         }
 
-        /* ── FEATURED STRIP ── */
         .featured-strip {
             background: var(--gold);
             padding: 22px 40px;
@@ -340,7 +329,6 @@
             flex-shrink: 0;
         }
 
-        /* ── LIGHTBOX ── */
         .lightbox {
             position: fixed;
             inset: 0;
@@ -457,7 +445,6 @@
             right: -60px;
         }
 
-        /* ── CTA SECTION ── */
         .gallery-cta {
             text-align: center;
             padding: 60px 40px 100px;
@@ -502,7 +489,33 @@
             color: var(--black);
         }
 
-        /* ── ANIMATIONS ── */
+        .gallery-empty-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 40px 80px;
+        }
+
+        .gallery-empty {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .gallery-empty h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .gallery-empty p {
+            color: var(--grey);
+            max-width: 540px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
         @keyframes fadeUp {
             from {
                 opacity: 0;
@@ -527,7 +540,6 @@
             }
         }
 
-        /* ── RESPONSIVE ── */
         @media (max-width: 768px) {
             .gallery-hero {
                 padding: 60px 20px 40px;
@@ -545,6 +557,10 @@
 
             .gallery-grid .gallery-item {
                 margin-bottom: 10px;
+            }
+
+            .gallery-empty-wrap {
+                padding: 24px 16px 60px;
             }
 
             .lightbox-nav.prev {
@@ -565,221 +581,59 @@
             }
         }
     </style>
-    {{-- @endpush --}}
-
 
     <div class="gallery-page">
-
-        {{-- ── HERO ── --}}
         <section class="gallery-hero">
             <div class="gallery-hero-tag">Our Gallery</div>
             <h1>Moments &amp; <span>Flavours</span></h1>
-            <p>A glimpse into our world — from vibrant spice events and product showcases to the heart of every blend we
-                craft.</p>
+            <p>A glimpse into our world - from vibrant spice events and product showcases to the heart of every blend we craft.</p>
         </section>
 
-        {{-- ── FILTER TABS ── --}}
         <div class="gallery-filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="events">Events</button>
-            <button class="filter-btn" data-filter="products">Products</button>
-            <button class="filter-btn" data-filter="behind-scenes">Behind the Scenes</button>
-            <button class="filter-btn" data-filter="packaging">Packaging</button>
+            <button class="filter-btn active" data-filter="all" type="button">All</button>
+            @foreach ($galleryCategories as $galleryCategory)
+                <button class="filter-btn" data-filter="{{ $galleryCategory['slug'] }}" type="button">
+                    {{ $galleryCategory['name'] }}
+                </button>
+            @endforeach
         </div>
 
-        {{-- ── SECTION LABEL ── --}}
         <div class="gallery-divider">
             <span>Explore</span>
         </div>
 
-        {{-- ── MASONRY GALLERY ── --}}
-        <div class="gallery-grid" id="galleryGrid">
-
-            <div class="gallery-item" data-category="products" data-title="Signature Spice Blends" data-tag="Products"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80" alt="Spice Blends"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Products</div>
-                    <div class="overlay-title">Signature Spice Blends</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
+        @if ($galleryImages->isNotEmpty())
+            <div class="gallery-grid" id="galleryGrid">
+                @foreach ($galleryImages as $galleryImage)
+                    <div
+                        class="gallery-item"
+                        data-category="{{ $galleryImage->category_slug }}"
+                        data-title="{{ $galleryImage->title }}"
+                        data-tag="{{ $galleryImage->category_name }}">
+                        <img src="{{ $galleryImage->image_url }}" alt="{{ $galleryImage->title }}" loading="lazy">
+                        <div class="gallery-item-overlay">
+                            <div class="overlay-tag">{{ $galleryImage->category_name }}</div>
+                            <div class="overlay-title">{{ $galleryImage->title }}</div>
+                        </div>
+                        <div class="overlay-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="gallery-empty-wrap">
+                <div class="gallery-empty">
+                    <h3>Gallery updates are coming soon.</h3>
+                    <p>Please check back again for new moments from our kitchen, products, and events.</p>
                 </div>
             </div>
+        @endif
 
-            <div class="gallery-item" data-category="events" data-title="Spice Festival 2024" data-tag="Events"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=600&q=80" alt="Spice Festival"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Events</div>
-                    <div class="overlay-title">Spice Festival 2024</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="behind-scenes" data-title="Handcrafting Each Blend"
-                data-tag="Behind the Scenes" onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600&q=80" alt="Handcrafting"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Behind the Scenes</div>
-                    <div class="overlay-title">Handcrafting Each Blend</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="packaging" data-title="Premium Jar Collection" data-tag="Packaging"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80" alt="Packaging"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Packaging</div>
-                    <div class="overlay-title">Premium Jar Collection</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="events" data-title="Market Day Showcase" data-tag="Events"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1470119693884-47d3a1d1f180?w=600&q=80" alt="Market Day"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Events</div>
-                    <div class="overlay-title">Market Day Showcase</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="products" data-title="Rasam & Sambar Powders" data-tag="Products"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=600&q=80" alt="Rasam Powder"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Products</div>
-                    <div class="overlay-title">Rasam &amp; Sambar Powders</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="behind-scenes" data-title="Sun-Drying Spices"
-                data-tag="Behind the Scenes" onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80" alt="Sun drying"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Behind the Scenes</div>
-                    <div class="overlay-title">Sun-Drying Spices</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="events" data-title="Cooking Demo — Chennai" data-tag="Events"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80" alt="Cooking Demo"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Events</div>
-                    <div class="overlay-title">Cooking Demo — Chennai</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="packaging" data-title="Gift Box Sets" data-tag="Packaging"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&q=80" alt="Gift Boxes"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Packaging</div>
-                    <div class="overlay-title">Gift Box Sets</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="products" data-title="Chettinad Masala" data-tag="Products"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=80" alt="Chettinad Masala"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Products</div>
-                    <div class="overlay-title">Chettinad Masala</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="behind-scenes" data-title="Stone Grinding Process"
-                data-tag="Behind the Scenes" onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&q=80" alt="Stone Grinding"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Behind the Scenes</div>
-                    <div class="overlay-title">Stone Grinding Process</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-category="events" data-title="Food Expo Stall 2023" data-tag="Events"
-                onclick="openLightbox(this)">
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80" alt="Food Expo"
-                    loading="lazy">
-                <div class="gallery-item-overlay">
-                    <div class="overlay-tag">Events</div>
-                    <div class="overlay-title">Food Expo Stall 2023</div>
-                </div>
-                <div class="overlay-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                    </svg>
-                </div>
-            </div>
-
-        </div>
-
-        {{-- ── FEATURED STRIP ── --}}
         <div class="featured-strip">
-            <p>Authentic • Homemade • Fresh</p>
+            <p>Authentic &bull; Homemade &bull; Fresh</p>
             <div class="featured-strip-dot"></div>
             <p>South Indian Tradition</p>
             <div class="featured-strip-dot"></div>
@@ -790,30 +644,27 @@
             <p>Amma's Spices</p>
         </div>
 
-        {{-- ── CTA ── --}}
         <section class="gallery-cta">
             <p>Taste the Tradition</p>
             <h2>Ready to Explore Our Spices?</h2>
             <a href="{{ route('shop.page.index') }}" class="cta-btn">Shop All Products</a>
         </section>
-
     </div>
 
-    {{-- ── LIGHTBOX ── --}}
-    <div class="lightbox" id="lightbox" onclick="closeLightboxOnBackdrop(event)">
+    <div class="lightbox" id="lightbox">
         <div class="lightbox-inner">
-            <button class="lightbox-close" onclick="closeLightbox()">
+            <button class="lightbox-close" id="lightboxClose" type="button">
                 <svg viewBox="0 0 24 24">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
             </button>
-            <button class="lightbox-nav prev" onclick="navigateLightbox(-1)">
+            <button class="lightbox-nav prev" id="lightboxPrev" type="button">
                 <svg viewBox="0 0 24 24">
                     <polyline points="15 18 9 12 15 6" />
                 </svg>
             </button>
-            <button class="lightbox-nav next" onclick="navigateLightbox(1)">
+            <button class="lightbox-nav next" id="lightboxNext" type="button">
                 <svg viewBox="0 0 24 24">
                     <polyline points="9 18 15 12 9 6" />
                 </svg>
@@ -826,32 +677,83 @@
         </div>
     </div>
 
-
     <script>
-        // ── FILTER ──
-        const allItems = document.querySelectorAll('.gallery-item');
+        const allItems = Array.from(document.querySelectorAll('.gallery-item'));
+        const filterButtons = Array.from(document.querySelectorAll('.filter-btn'));
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxTag = document.getElementById('lightboxTag');
+        const lightboxTitle = document.getElementById('lightboxTitle');
+        const lightboxClose = document.getElementById('lightboxClose');
+        const lightboxPrev = document.getElementById('lightboxPrev');
+        const lightboxNext = document.getElementById('lightboxNext');
 
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+        let currentIndex = 0;
 
-                const filter = btn.dataset.filter;
+        function loadLightbox(item) {
+            const itemImage = item.querySelector('img');
 
-                allItems.forEach(item => {
-                    const match = filter === 'all' || item.dataset.category === filter;
+            lightboxImg.src = itemImage.src;
+            lightboxImg.alt = item.dataset.title || '';
+            lightboxTag.textContent = item.dataset.tag || '';
+            lightboxTitle.textContent = item.dataset.title || '';
+        }
 
-                    if (match) {
-                        // Step 1: make it exist in layout (but still invisible)
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function openLightbox(item) {
+            loadLightbox(item);
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function getVisibleItems() {
+            return allItems.filter((item) => item.style.display !== 'none');
+        }
+
+        function navigateLightbox(direction) {
+            const visibleItems = getVisibleItems();
+
+            if (!visibleItems.length) {
+                return;
+            }
+
+            const currentItem = allItems[currentIndex] || visibleItems[0];
+            const currentVisibleIndex = visibleItems.indexOf(currentItem);
+            const startIndex = currentVisibleIndex === -1 ? 0 : currentVisibleIndex;
+            const nextVisibleIndex = (startIndex + direction + visibleItems.length) % visibleItems.length;
+            const nextItem = visibleItems[nextVisibleIndex];
+
+            currentIndex = allItems.indexOf(nextItem);
+            loadLightbox(nextItem);
+        }
+
+        allItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentIndex = index;
+                openLightbox(item);
+            });
+        });
+
+        filterButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach((item) => item.classList.remove('active'));
+                button.classList.add('active');
+
+                const filter = button.dataset.filter;
+
+                allItems.forEach((item) => {
+                    const matches = filter === 'all' || item.dataset.category === filter;
+
+                    if (matches) {
                         item.style.display = 'block';
                         item.style.opacity = '0';
                         item.style.transform = 'scale(0.95)';
-                        item.style.transition = 'none'; // no transition yet
-
-                        // Step 2: force browser to paint the display:block state
-                        item.offsetHeight; // <-- triggers reflow
-
-                        // Step 3: NOW apply transition + animate in
+                        item.style.transition = 'none';
+                        item.offsetHeight;
                         item.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
                         item.style.opacity = '1';
                         item.style.transform = 'scale(1)';
@@ -864,7 +766,6 @@
                         item.style.pointerEvents = 'none';
                         item.dataset.visible = 'false';
 
-                        // Hide from layout AFTER fade-out finishes
                         setTimeout(() => {
                             if (item.dataset.visible === 'false') {
                                 item.style.display = 'none';
@@ -875,58 +776,32 @@
             });
         });
 
-        // ── LIGHTBOX ──
-        let currentIndex = 0;
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightboxPrev.addEventListener('click', () => navigateLightbox(-1));
+        lightboxNext.addEventListener('click', () => navigateLightbox(1));
 
-        // Attach click listeners properly via JS (not inline onclick)
-        allItems.forEach((item, index) => {
-            item.style.cursor = 'pointer';
-            item.addEventListener('click', () => {
-                currentIndex = index;
-                loadLightbox(item);
-                document.getElementById('lightbox').classList.add('open');
-                document.body.style.overflow = 'hidden';
-            });
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) {
+                closeLightbox();
+            }
         });
 
-        function loadLightbox(item) {
-            document.getElementById('lightboxImg').src = item.querySelector('img').src;
-            document.getElementById('lightboxImg').alt = item.dataset.title || '';
-            document.getElementById('lightboxTag').textContent = item.dataset.tag || '';
-            document.getElementById('lightboxTitle').textContent = item.dataset.title || '';
-        }
+        document.addEventListener('keydown', (event) => {
+            if (!lightbox.classList.contains('open')) {
+                return;
+            }
 
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('open');
-            document.body.style.overflow = '';
-        }
+            if (event.key === 'Escape') {
+                closeLightbox();
+            }
 
-        // Close on backdrop click
-        document.getElementById('lightbox').addEventListener('click', function(e) {
-            if (e.target === this) closeLightbox();
-        });
+            if (event.key === 'ArrowRight') {
+                navigateLightbox(1);
+            }
 
-        // Prev / Next  — only cycle through VISIBLE items
-        function navigateLightbox(dir) {
-            const visible = [...allItems].filter(i => i.style.pointerEvents !== 'none');
-            const pool = visible.length ? visible : [...allItems];
-            const curPos = pool.findIndex(i => i === allItems[currentIndex]);
-            const nextPos = (curPos + dir + pool.length) % pool.length;
-            currentIndex = [...allItems].indexOf(pool[nextPos]);
-            loadLightbox(pool[nextPos]);
-        }
-
-        // Hook nav buttons
-        document.querySelector('.lightbox-nav.prev').addEventListener('click', () => navigateLightbox(-1));
-        document.querySelector('.lightbox-nav.next').addEventListener('click', () => navigateLightbox(1));
-        document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
-
-        // Keyboard
-        document.addEventListener('keydown', e => {
-            if (!document.getElementById('lightbox').classList.contains('open')) return;
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowRight') navigateLightbox(1);
-            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (event.key === 'ArrowLeft') {
+                navigateLightbox(-1);
+            }
         });
     </script>
 @endsection

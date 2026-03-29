@@ -209,7 +209,7 @@
                 <div class="container">
                     <div class="as-story-grid">
                         <div class="as-story-img">
-                            <img src="{{ asset('assets/img/aboutus.jpg') }}" alt="Our Story">
+                            <img src="{{ asset('assets/img/aboutus_home.jpg') }}" alt="Our Story">
                         </div>
                         <div>
                             <div class="as-story-label">Our Story</div>
