@@ -5,7 +5,9 @@
              <div class="row">
                  <div class="fot-col-div">
                      <div class="widget widget-about">
-                         <img src="{{ asset('assets/img/logo-bodhi.png') }}" alt=" Logo" class="fot-logo">
+                         <a href="{{ route('index') }}">
+                             <img src="{{ asset('assets/img/logo-bodhi.png') }}" alt=" Logo" class="fot-logo">
+                         </a>
                      </div><!-- End .widget about-widget -->
                  </div><!-- End .col-sm-12 col-lg-3 -->
 
@@ -50,17 +52,14 @@
                      <div class="widget">
                          <h4 class="widget-title text-white">Social Media</h4><!-- End .widget-title -->
                          <div class="social-icons social-icons-color">
-                             <a href="https://www.facebook.com//"
-                                 class="social-icon social-facebook" title="Facebook" target="_blank"><i
-                                     class="icon-facebook-f"></i></a>
+                             <a href="https://www.facebook.com//" class="social-icon social-facebook" title="Facebook"
+                                 target="_blank"><i class="icon-facebook-f"></i></a>
                              <a href="https://x.com/" class="social-icon social-twitter" title="Twitter"
                                  target="_blank"><i class="icon-twitter"></i></a>
-                             <a href="https://www.instagram.com/"
-                                 class="social-icon social-instagram" title="Instagram" target="_blank"><i
-                                     class="icon-instagram"></i></a>
-                             <a href="https://youtube.com/"
-                                 class="social-icon social-youtube" title="Youtube" target="_blank"><i
-                                     class="icon-youtube"></i></a>
+                             <a href="https://www.instagram.com/" class="social-icon social-instagram" title="Instagram"
+                                 target="_blank"><i class="icon-instagram"></i></a>
+                             <a href="https://youtube.com/" class="social-icon social-youtube" title="Youtube"
+                                 target="_blank"><i class="icon-youtube"></i></a>
                          </div><!-- End .soial-icons -->
 
                      </div><!-- End .widget -->
@@ -73,6 +72,4 @@
 
 
  </footer><!-- End .footer -->
- <script>
-    
- </script>
+ <script></script>

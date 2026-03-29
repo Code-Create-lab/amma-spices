@@ -49,6 +49,10 @@ body {
     max-width: 100%;
 }
 
+.app-header .menu .menu-item .menu-link:focus, .app-header .menu .menu-item .menu-link:hover {
+    color: #e7c840;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #e7c840;
@@ -92,7 +96,11 @@ body {
     border: none;
 }
 .app-sidebar .menu .menu-item .menu-link:hover {
-    background: #0e0e0e;
+    background: #e7c840;
+}
+
+.app-sidebar .menu .menu-header {
+    color: #e7c840;
 }
 body {
     /* background-color: #0e0e0e !important; */

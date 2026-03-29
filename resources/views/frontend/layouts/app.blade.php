@@ -273,7 +273,9 @@
 
 
 
-
+    <div class="whatsapp-container"><a href="https://api.whatsapp.com/send?phone=918800952006&amp;text=Hi+there!"
+            target="_blank"><img src="{{ asset('assets/images/whatsapp-n-img.png') }}" alt="Whatsapp Chat"
+                title="Chat with us in Whatsapp" data-no-retina=""></a></div>
     <!-- start sticky elements -->
 
 

@@ -17044,6 +17044,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   border-color: var(--gold); color: var(--gold); background: var(--gold-dim);
 }
 
+.whatsapp-container {
+    position: fixed;
+    z-index: 99;
+    right: 15px;
+    bottom: 15px;
+}
+
+.contact-list a:hover, .contact-list a:focus {
+    color: #e7c840 !important;
+}
+
+
+.footer a:hover, .footer a:focus {
+    color:  #e7c840 !important;
+}
 /* ══════════════════════════════════════════
    WHY CHOOSE US
 ══════════════════════════════════════════ */
