@@ -218,7 +218,7 @@
             </div>
             <div class="menu-item  {{ request()->is('google-reviews*') ? 'active' : '' }}">
                 <a href="{{ route('admin.google-reviews.index') }}" class="menu-link">
-                    <span class="menu-icon"><i class="fa fa-google"></i></span>
+                    <span class="menu-icon"><i class="fa fa-star"></i></span>
                     <span class="menu-text">Homepage Reviews</span>
                 </a>
             </div>

@@ -41,9 +41,18 @@ body {
 }
 
 .app-sidebar .menu .menu-item .menu-icon {
-
     color: #ffffff;
+}
 
+.app-header .brand img {
+    max-height: 55px;
+    max-width: 100%;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #e7c840;
+    border-color: #e7c840;
 }
 
 .app-sidebar {
@@ -86,7 +95,8 @@ body {
     background: #0e0e0e;
 }
 body {
-    background-color: #0e0e0e !important;
+    /* background-color: #0e0e0e !important; */
+    background-color: #e7c840 !important;
 }
 .app-footer {
     background: #0e0e0e;
