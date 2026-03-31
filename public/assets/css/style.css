@@ -17235,7 +17235,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   .as-trust-inner { gap: 18px; }
   .as-trust-item { font-size: 11px; }
   .as-google-pill { padding: 14px 20px; }
-  .baneer-img-r { height: min(52vh, 400px); }
+  .baneer-img-r { height: min(30vh, 400px); }
 }
 @media (max-width: 480px) {
   .as-section, .as-story, .as-why, .as-testimonials, .blog-section, .featured-list-slider { padding: 40px 0; }
