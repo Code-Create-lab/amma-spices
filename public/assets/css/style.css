@@ -16849,7 +16849,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .baneer-img-r {
   width: 100%; height: min(74vh, 640px);
   object-fit: cover; object-position: center;
-  filter: brightness(0.58);
+  /* filter: brightness(0.58); */
   display: block;
 }
 /* Vignette overlay */

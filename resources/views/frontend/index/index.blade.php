@@ -100,7 +100,7 @@
                 </div>
 
                 {{-- Centered Overlay Text --}}
-                <div class="hero-overlay-content">
+                {{-- <div class="hero-overlay-content">
                     <h1 class="hero-title">AMMA'S SPICES</h1>
                     <h2 class="hero-subtitle">Authentic Home-made fresh Spice blend's</h2>
                     <p class="hero-desc">
@@ -108,7 +108,7 @@
                         Every spoonful is a journey of flavours intended to give you the taste of south india.
                     </p>
                     <a href="{{ route('shop.page.index') }}" class="hero-btn">Explore Our Products</a>
-                </div>
+                </div> --}}
             </div>
 
             {{-- ══════════════════════════════════════════
