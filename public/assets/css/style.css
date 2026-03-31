@@ -16847,7 +16847,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .as-hero-wrap .owl-carousel { line-height: 0; }
 .intro-slide { position: relative; }
 .baneer-img-r {
-  width: 100%; height: min(74vh, 690px);
+  width: 100%; height: min(74vh, 713px);
   object-fit: cover; object-position: center;
   filter: brightness(1.1);
   display: block;
@@ -16860,6 +16860,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
     linear-gradient(to right, rgba(12,12,12,0.55) 0%, transparent 55%),
     linear-gradient(to top,   rgba(12,12,12,0.65) 0%, transparent 45%); */
   pointer-events: none;
+  background: linear-gradient(to bottom, rgba(12, 12, 12, 0.60) 0%, transparent 40%);
+
 }
 
 /* ══════════════════════════════════════════
