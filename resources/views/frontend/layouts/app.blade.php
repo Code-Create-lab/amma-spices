@@ -291,7 +291,7 @@
     <script>
         window.addEventListener('scroll', function() {
             const header = document.querySelector('.header.header-28.sticky-header');
-            if (window.scrollY <= 10) {
+            if (window.scrollY <= 200) {
                 header.classList.add('header-transparent');
             } else {
                 header.classList.remove('header-transparent');

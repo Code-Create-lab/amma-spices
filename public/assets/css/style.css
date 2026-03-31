@@ -3121,6 +3121,14 @@ a:focus {
   border-color: #c96;
   background: #c96; }
 
+  .owl-simple .owl-nav .owl-prev {
+    left: -20px;
+}
+
+.owl-simple .owl-nav .owl-next {
+    right: -20px;
+}
+
 .quickView-content .owl-theme.owl-light .owl-nav [class*='owl-'] {
   border: none;
   font-size: 3rem;
@@ -14853,8 +14861,8 @@ span.seprater-img img {
     padding: 0 100px;
 }
 .owl-simple .owl-nav [class*='owl-'] {
-    color: #e7c840;
-    font-size: 30px;
+    color: #e7c840 !important;
+    font-size: 20px !important;
 }
 .owl-simple .owl-dots .owl-dot.active span {
     width: 18px;
