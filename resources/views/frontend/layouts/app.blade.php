@@ -71,6 +71,11 @@
             }
         }
 
+        .header.header-28.sticky-header.header-transparent {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
         /* :root {
             --gold: #e7c840;
             --gold-light: #f5e070;
@@ -282,7 +287,26 @@
     <!-- javascript libraries -->
 
     @livewireScripts
+
     <script>
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header.header-28.sticky-header');
+            if (window.scrollY <= 10) {
+                header.classList.add('header-transparent');
+            } else {
+                header.classList.remove('header-transparent');
+            }
+        }, {
+            passive: true
+        });
+
+        // Run on page load too (in case page loads already scrolled to top)
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.header.header-28.sticky-header');
+            if (window.scrollY <= 10) {
+                header.classList.add('header-transparent');
+            }
+        });
         // document.addEventListener('livewire:init', () => {
         //     // Handle various Livewire request states
         //     Livewire.hook('request', ({
