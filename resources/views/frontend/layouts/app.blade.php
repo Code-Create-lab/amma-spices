@@ -44,6 +44,15 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    @if (Route::currentRouteName() !== 'index')
+        <style>
+            main {
+                margin-top: 12rem;
+            }
+        </style>
+    @endif
+
     <style>
         .toast-particle {
             position: fixed;
