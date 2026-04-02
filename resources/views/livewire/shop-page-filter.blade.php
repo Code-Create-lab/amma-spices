@@ -141,6 +141,61 @@
                 font-weight: 600;
             }
         </style>
+        <style>
+            .filter-card {
+                background: #ffffff;
+                border-color: rgba(75, 59, 46, 0.12);
+                box-shadow: 0 12px 28px rgba(75, 59, 46, 0.05);
+            }
+
+            .filter-card-header,
+            .header-title,
+            .sub-title,
+            .standalone-title,
+            .filter-item .text {
+                color: #433327;
+            }
+
+            .filter-item .count {
+                color: #9b8f82;
+                font-weight: 600;
+            }
+
+            .filter-card-header:hover {
+                background: #fffaf2;
+            }
+
+            .chevron {
+                border-right-color: #a58c70;
+                border-bottom-color: #a58c70;
+            }
+
+            .selected-badge {
+                background: linear-gradient(135deg, #f6e28e 0%, #e7c840 100%);
+                color: #433327;
+            }
+
+            .filter-card.has-selection {
+                border-color: rgba(231, 200, 64, 0.45);
+            }
+
+            .filter-card.has-selection .filter-card-header {
+                background: #fff7df;
+                color: #433327;
+            }
+
+            .filter-card.has-selection .filter-card-header .header-title {
+                color: #433327;
+            }
+
+            .filter-card.has-selection .filter-card-header .chevron {
+                border-color: #b9910d;
+            }
+
+            .filter-item.is-selected {
+                background-color: #fff6e7;
+            }
+        </style>
 
         <main class="main">
             <div class="page-header">
