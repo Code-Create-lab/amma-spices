@@ -2934,7 +2934,7 @@ a:focus {
   color: #c96; }
 
 .table .total-col {
-  color: #fff !important; }
+  color: #000 !important; }
 
 .btn.btn-spinner:hover, .btn.btn-spinner:focus {
   color: #c96; }
@@ -2957,7 +2957,7 @@ a:focus {
 .table.table-summary a:hover, .table.table-summary a:focus {
   color: #c96; }
 .table.table-summary .summary-total td {
-  color: #c96; }
+  color: rgb(0, 0, 0); }
 
 .accordion-summary .card-title a:before {
   border-color: #c96; }
@@ -11255,7 +11255,7 @@ button:focus {
       color: #c96; }
   .table.table-summary thead th,
   .table.table-summary .summary-subtotal td {
-    color: #fff;
+    color: #000;
     font-weight: 400;
     font-size: 1.6rem; }
   .table.table-summary thead th {
@@ -11276,7 +11276,7 @@ button:focus {
   .table.table-summary .summary-total td {
     font-weight: 400;
     font-size: 1.6rem;
-    color: #fff !important;
+    color: #000 !important;
     border-bottom: none; }
 
 .accordion-summary {
@@ -11351,7 +11351,7 @@ button:focus {
   padding-bottom: 3rem; }
 .table .price-col {
   width: 180px;
-  color: #fff;
+  color: #000000;
   font-weight: 400;
   font-size: 1.6rem; }
 .table .stock-col {
@@ -11644,7 +11644,7 @@ button:focus {
     margin-bottom: 0; }
 
 .table.table-summary .summary-shipping {
-  color: #fff;
+  color: #000;
   font-weight: 400;
   font-size: 1.6rem; }
   .table.table-summary .summary-shipping td {
@@ -14883,7 +14883,7 @@ svg.wish-icon {
     height: 20px;
 }
 .quantity button {
-    color: #fff !important;
+    color: #000 !important;
 }
 .mmenu-btn:hover, .mmenu-btn:focus {
     color: #fff !important;
