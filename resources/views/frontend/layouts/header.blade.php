@@ -71,8 +71,8 @@
 <style>
     .header-28 {
         background: rgba(255, 255, 255, 0.94) !important;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
         box-shadow: 0 14px 34px rgba(75, 59, 46, 0.08) !important;
         border-bottom: 1px solid rgba(75, 59, 46, 0.08) !important;
     }

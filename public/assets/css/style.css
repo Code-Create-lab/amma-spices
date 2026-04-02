@@ -10935,7 +10935,9 @@ button:focus {
     max-width: 575px;
     margin-left: auto;
     margin-right: auto;
-    background-color: #000;
+    background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
+    border: 1px solid rgba(75, 59, 46, 0.12);
+    border-radius: 12px;
     box-shadow: 0 3px 16px rgba(51, 51, 51, 0.1);
 }
 
@@ -16186,8 +16188,24 @@ a.social-icon i:before {
 .modal-backdrop {
   display: none !important;
 }
+
+.modal.fade.show {
+  background: linear-gradient(180deg, rgba(255, 249, 241, 0.94) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
+}
+
+.modal.fade.show .modal-dialog {
+  margin: 2rem auto;
+}
+
+@media screen and (max-width: 767px) {
+  .modal.fade.show .modal-dialog {
+    width: calc(100% - 1.6rem);
+    margin: 1.2rem auto;
+  }
+}
+
 #loginModal {
-  background: rgba(0,0,0,0.8);
+  background: linear-gradient(180deg, rgba(255, 249, 241, 0.94) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
 }
 .alertbox-lo{
   background-color: #FFF7ED;
@@ -16199,7 +16217,7 @@ a.social-icon i:before {
     width: 75%;
 }
 div#exampleModal {
-    background: rgba(0,0,0,0.6);
+    background: linear-gradient(180deg, rgba(255, 249, 241, 0.94) 0%, rgba(255, 255, 255, 0.9) 100%) !important;
 }
 div#exampleModal .modal-dialog {
         max-width: 420px;
@@ -17574,7 +17592,7 @@ form.form-search.show ul#suggestions,
 .modal-content,
 #exampleModal .modal-body,
 .product-details-tab .tab-content {
-    background: #ffffff !important;
+    background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
     border: 1px solid var(--border) !important;
     box-shadow: var(--shadow-card);
 }

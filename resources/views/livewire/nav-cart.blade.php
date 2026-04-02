@@ -158,19 +158,6 @@
         </div><!-- End .cart-dropdown -->
     </div>
 
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
-            <div class="modal-content p-0 border-0 bg-transparent">
-                @livewire('auth-page')
-            </div>
-        </div>
-    </div>
-    <script>
-        document.addEventListener('livewire:initialized', () => {
-            Livewire.on('show-login-modal', () => {
-                $('#loginModal').modal('show');
-            });
-        });
-    </script>
+   
 
 </div>

@@ -6,7 +6,7 @@
             <div class="form-group">
                 <label for="singin-email-2">Mobile or Email address *</label>
                 <input type="text" wire:model.live.debounce.300ms="username" class="form-control" id="singin-email-2"
-                    name="singin-email" placeholder="Enter your email or mobile no" required>
+                    name="singin-email" placeholder="Enter your email" required>
                 @error('username')
                     <span class="text-danger small d-block mt-1">{{ $message }}</span>
                 @enderror

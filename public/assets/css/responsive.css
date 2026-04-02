@@ -24,7 +24,7 @@
     z-index: 1030;
     animation-name: fixedHeader;
     animation-duration: .4s;
-    background: #000000 !important;
+   background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
     box-shadow: 0 3px 6px rgba(51, 51, 51, 0.05);
     height: 75px;
 }
@@ -64,7 +64,7 @@ a.track-order-link {
     z-index: 1030;
     animation-name: fixedHeader;
     animation-duration: .4s;
-    background: #000 !important;
+    background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
     box-shadow: 0 3px 6px rgba(51, 51, 51, 0.05);
     height: 75px;
 }
@@ -84,7 +84,7 @@ a.track-order-link {
   width: auto !important;
 }
 .sticky-wrapper {
-    padding-top: 5px;
+    /* padding-top: 5px; */
 }
 .collection-list-slider  .col-md-12 {
     padding: 0;
@@ -175,7 +175,8 @@ span.cart-txt {
     display: none;
 }
 .logo img {
-    width: 70px;
+    width: 50px;
+    margin-left: 10px;
 }
 .logo {
     position: relative;

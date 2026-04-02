@@ -28,7 +28,7 @@ class Login extends Component
     public $isMobileLogin = false;
 
     /**
-     * Detect if username is email or mobile
+     * Detect if username is email
      */
     public function updatedUsername($value)
     {
@@ -38,13 +38,7 @@ class Login extends Component
             return;
         }
 
-        // Check if it's a mobile number (10 digits)
-        if (preg_match('/^[0-9]{10}$/', $value)) {
-            $this->isMobileLogin = true;
-            $this->isEmailLogin = false;
-        }
-        // Check if it's an email
-        elseif (filter_var($value, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
             $this->isEmailLogin = true;
             $this->isMobileLogin = false;
         } else {
@@ -104,7 +98,7 @@ class Login extends Component
                 //     'username.email' => 'Please enter a valid email address.',
                 // ]);
             } else {
-                session()->flash('error', 'Please enter a valid email or 10-digit mobile number.');
+                session()->flash('error', 'Please enter a valid email address.');
                 $this->isLoading = false;
                 return;
             }
