@@ -252,7 +252,7 @@
                 </ul>
 
                 <div class="tab-content">
-                    <img src="https://bodhi-bliss.yugasa.org/assets/img/bg-feture.png" class="bg-feture-sec">
+                    {{-- <img src="https://bodhi-bliss.yugasa.org/assets/img/bg-feture.png" class="bg-feture-sec"> --}}
 
                     <div class="tab-pane fade show active" id="product-info-tab" role="tabpanel"
                         aria-labelledby="product-info-link">

@@ -118,7 +118,8 @@
 
             /* Optional: slight emphasis */
             .filter-card.has-selection .filter-card-header {
-                background: #181818;
+                background: #181818
+                ;
                 color: #fff;
             }
 

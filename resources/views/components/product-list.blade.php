@@ -490,6 +490,22 @@
         border-color: rgba(231, 200, 64, 0.8) !important;
         box-shadow: 0 0 0 0.2rem rgba(231, 200, 64, 0.14) !important;
     }
+
+    @media (max-width: 767.98px) {
+        .product-card__thumb {
+            height: auto;
+            aspect-ratio: 5 / 4;
+        }
+
+        .product-card__slide img {
+            object-position: center;
+        }
+
+        .product-card:hover .product-card__slide img {
+            transform: none;
+            filter: brightness(0.97);
+        }
+    }
 </style>
 
 @foreach ($products as $product)

@@ -21,7 +21,7 @@
         }
 
         .gallery-page {
-            background: var(--off-black);
+            background: var(--white);
             min-height: 100vh;
             font-family: 'DM Sans', sans-serif;
             color: var(--white);

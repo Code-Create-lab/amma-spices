@@ -1910,7 +1910,8 @@ blockquote {
     z-index: 1040;
     animation-name: fixedHeader;
     animation-duration: .4s;
-    background-color: #000000 !important;
+    background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
+    background-color: #ffffff !important;
     box-shadow: 0 3px 6px rgba(51, 51, 51, 0.05) !important; }
         /*.sticky-header.fixed .logo {
         margin-top: 0;
@@ -2661,7 +2662,7 @@ a:focus {
   color: #c96; }
 .nav.nav-pills .nav-item.show .nav-link,
 .nav.nav-pills .nav-item .nav-link.active {
-  color: rgb(255, 255, 255) !important;
+  color: rgb(0, 0, 0) !important;
   border-bottom-color: #c96; }
 
 .nav.nav-border-anim .nav-link:before {
@@ -2727,7 +2728,7 @@ a:focus {
     border-bottom-color: #c96; }
 
 .product.product-8 .new-price {
-  color: rgb(255, 255, 255); }
+  color: rgb(0, 0, 0); }
 .product.product-8 .btn-product:before {
   color: #c96; }
 .product.product-8 .btn-product:hover, .product.product-8 .btn-product:focus {
@@ -9233,7 +9234,7 @@ button:focus {
     border-radius: .3rem; }
     .product-details-tab .tab-content .tab-pane {
       padding: 1.5rem 1.5rem; 
-      background-color: #181818a1;
+      background-color: #1818180d;
     }
 
 .product-desc-content h2 {
@@ -14776,7 +14777,7 @@ button:focus {
     display: block;
     max-width: 100%;
     height: auto;
-    width: 100px;
+    width: 50px;
 }
  .logo{
     position: relative;
@@ -17524,7 +17525,7 @@ a:focus {
 .header-middle.sticky-header.fixed .header-st-bar,
 .header-middle.sticky-header.fixed .he-right,
 .header-middle.sticky-header.fixed .header-left {
-    background: #ffffff !important;
+    background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
 }
 
 .header-28,

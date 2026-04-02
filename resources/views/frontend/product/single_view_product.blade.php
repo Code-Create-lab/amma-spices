@@ -418,8 +418,8 @@
                                 ({{ $total_reviews }})</a>
                         </li>
                     </ul>
-                    <div class="tab-content">
-                        <img src="https://bodhi-bliss.yugasa.org/assets/img/bg-feture.png" class="bg-feture-sec">
+                    <div class="tab-content mb-5">
+                        {{-- <img src="https://bodhi-bliss.yugasa.org/assets/img/bg-feture.png" class="bg-feture-sec"> --}}
                         {{-- <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel"
                             aria-labelledby="product-desc-link">
                             <div class="product-desc-content">

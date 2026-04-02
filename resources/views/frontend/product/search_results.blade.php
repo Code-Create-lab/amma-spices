@@ -15,7 +15,7 @@
     @if ($products->isNotEmpty())
         <!-- start section -->
         <div class="featured-list-slider">
-            <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-sec">
+            {{-- <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-sec"> --}}
             <div class="container">
                 <div class="row" style="display: block;">
                     <div class="heading">
