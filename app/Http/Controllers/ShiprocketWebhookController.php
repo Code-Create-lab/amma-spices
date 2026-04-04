@@ -441,7 +441,7 @@ class ShiprocketWebhookController extends Controller
 
             $shipment->save();
 
-            $recipient = $shipment->order->address->receiver_email ?? 'info@bodhiblisssoap.com';
+            $recipient = $shipment->order->address->receiver_email ?? 'info@ammasspices.com ';
             $phone = $shipment->order->address->receiver_phone ?? $shipment->order->user->user_phone;
             $orderId = $shipment->order->cart_id;
             $user_name = $shipment->order->address->receiver_name ?? $shipment->order->user->name;
@@ -620,7 +620,7 @@ class ShiprocketWebhookController extends Controller
     {
         // $order->payment_status = 'success';
         $order->order_status = 'Completed';
-         $order->is_view = 1;
+        $order->is_view = 1;
 
         $order->delivery_date = Carbon::now();
         $order->save();
@@ -728,7 +728,7 @@ class ShiprocketWebhookController extends Controller
             'items'
         ]);
 
-        $recipient = $order->user->email ?? 'info@bodhiblisssoap.com';
+        $recipient = $order->user->email ?? 'info@ammasspices.com ';
         $phone = $order->address->receiver_phone ?? $order->user->user_phone;
         $orderId = $order->order_number;
         $user_name = $order->user->first_name ?? $order->user->display_name;

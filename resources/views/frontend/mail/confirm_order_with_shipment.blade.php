@@ -75,7 +75,7 @@
                             style="padding:25px; border-top:1px solid #e5e7eb; font-size:12px; color:#6b7280;">
                             <p style="margin:0;">
                                 Need help? Contact us at
-                                <strong>info@bodhiblisssoap.com</strong> or <strong>+91 900 8741 100</strong>
+                                <strong>info@ammasspices.com </strong> or <strong>+91 880 0952 006</strong>
                             </p>
                             <p style="margin:10px 0 0;">
                                 © {{ date('Y') }} Amma's Spices. All rights reserved.

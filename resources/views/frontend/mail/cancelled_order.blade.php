@@ -127,7 +127,7 @@
                     <tr>
                         <td style="padding-top:30px; font-size:13px; line-height:20px; border-top:1px solid #dddddd;">
                             If you have any questions, contact us at
-                            <strong>info@bodhiblisssoap.com</strong> or <strong>+91 900 8741 100</strong>.
+                            <strong>info@ammasspices.com </strong> or <strong>+91 880 0952 006</strong>.
                             <br><br>
                             © {{ date('Y') }} Amma's Spices All rights reserved.
                         </td>

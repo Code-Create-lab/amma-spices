@@ -20,7 +20,8 @@
                     <!-- Logo -->
                     <tr>
                         <td align="center" style="padding-bottom:25px;">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="Amma's Spices" style="max-width:140px;">
+                            <img src="{{ asset('assets/images/logo.png') }}" alt="Amma's Spices"
+                                style="max-width:140px;">
                         </td>
                     </tr>
 
@@ -115,7 +116,7 @@
                     <tr>
                         <td align="center"
                             style="padding-top:30px; font-size:13px; line-height:20px; border-top:1px solid #dddddd;">
-                            <strong>info@bodhiblisssoap.com</strong> or <strong>+91 900 8741 100</strong>.
+                            <strong>info@ammasspices.com </strong> or <strong>+91 880 0952 006</strong>.
                             <br><br>
                             © {{ date('Y') }} Amma's Spices. All rights reserved.
                         </td>

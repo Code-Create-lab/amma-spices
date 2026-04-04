@@ -32,8 +32,9 @@ class ContactUs extends Component
         ModelsContactUs::create($validated);
 
         // Send email
-        Mail::to('snehal.yugasa@gmail.com')
-            ->bcc('snehal.yugasa@gmail.com')
+        // ammasspices1@gmail.com
+        Mail::to('sr.snehal369@gmail.com')
+            ->bcc('shreyadiwivedi@gmail.com')
             ->send(new MailContactUs($validated));
 
         // Reset form fields
