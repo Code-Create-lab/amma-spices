@@ -178,7 +178,7 @@
                                     @endif
                                 </div><!-- End .rating-container -->
 
-                                <div class="product-price">
+                                <div class="product-price" id="product-price">
                                     {{-- @dd($response['variations'][0]['price'] ?? $response['base_price'] ) --}}
                                     {{-- @if ($response['variations'][0]['price'] ?? $response['base_price'] == 0)
                                         <span class="new-price">
@@ -188,10 +188,13 @@
                                         <span class="old-price 1"> ₹{{ $mrp }}</span>
                                     @endif
 
-                                    <span class="new-price">
+                                    <span class="new-price" id="product-price-current">
                                         ₹{{ number_format($price == 0 ? $mrp : $price, 0, '.', ',') }}</span>
                                     @if ($price != 0)
+                                        <span id="product-price-discount"
+                                            @if ($price == 0 || $mrp == $price) style="display: none;" @endif>
                                         <span class="discount">{{ (int) $percentOff }}%off</span>
+                                        </span>
                                     @endif
                                     {{-- @endif --}}
 
@@ -255,6 +258,7 @@
                                                                 class="swatch-color attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
                                                                 data-attr="{{ $attrType }}"
                                                                 data-value="{{ $colorHex }}"
+                                                                data-label="{{ $attribute['value'] }}"
                                                                 data-id="{{ $attribute['id'] }}"
                                                                 style="--swatch-color: {{ $colorHex }};"
                                                                 {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}
@@ -298,6 +302,7 @@
                                                                 class="pill-btn attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
                                                                 data-attr="{{ $attrType }}"
                                                                 data-value="{{ $sizeVal }}"
+                                                                data-label="{{ $attribute['value'] }}"
                                                                 data-id="{{ $attribute['id'] }}"
                                                                 {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
                                                                 {{ strtoupper($attribute['value']) }}
@@ -336,6 +341,7 @@
                                                                 class="pill-btn pill-btn--weight attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
                                                                 data-attr="{{ $attrType }}"
                                                                 data-value="{{ $attrVal }}"
+                                                                data-label="{{ $attribute['value'] }}"
                                                                 data-id="{{ $attribute['id'] }}"
                                                                 {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
                                                                 {{ $attribute['value'] }}
@@ -652,6 +658,9 @@
                     }
                 }
             });
+
+            // Variant handling is reinitialized in the dedicated script below.
+            return;
             var variations = window.variationsData;
             if (!variations) {
                 console.error('Variations not found!');
@@ -1052,6 +1061,409 @@
 
         $("button.size-btn-attribute").css({
             "border": "0.1rem solid rgb(243 240 240)"
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            var variations = Array.isArray(window.variationsData) ? window.variationsData : [];
+            var $variantGroups = $('.variation-group');
+            var attributeGroupCount = $variantGroups.length;
+            var selectedAttributes = {};
+            var selectedVariationId = null;
+            var $addToCartButton = $('.product-details-action .add-to-cartJS').first();
+            var $priceContainer = $('#product-price');
+            var $priceCurrent = $('#product-price-current');
+            var $priceMrp = $priceContainer.find('.old-price').first();
+            var $priceDiscountWrap = $('#product-price-discount');
+            var $priceDiscountText = $priceDiscountWrap.find('.discount').first();
+            var $mainGallery = $('.product-img-list');
+            var $thumbGallery = $('.product-thumb-list');
+            var storageBaseUrl = @json(asset('storage'));
+            var basePrice = Number(@json((float) ($response['base_price'] ?? 0)));
+            var baseMrp = Number(@json((float) ($response['base_mrp'] ?? 0)));
+            var fallbackImage = @json(!empty($response['image']) ? asset('storage/' . $response['image']) : '');
+            var defaultGalleryImage = $mainGallery.find('.items-list img').first().attr('src') || fallbackImage;
+            var gallerySyncTimer = null;
+
+            if (!$priceContainer.length || !$addToCartButton.length) {
+                return;
+            }
+
+            if (!$priceCurrent.length) {
+                $priceCurrent = $('<span class="new-price" id="product-price-current"></span>');
+                $priceContainer.append($priceCurrent);
+            }
+
+            if (!$priceMrp.length) {
+                $priceMrp = $('<span class="old-price 1" style="display: none;"></span>');
+                $priceContainer.prepend($priceMrp);
+            }
+
+            if (!$priceDiscountWrap.length) {
+                $priceDiscountWrap = $('<span id="product-price-discount" style="display: none;"><span class="discount"></span></span>');
+                $priceContainer.append($priceDiscountWrap);
+            }
+
+            if (!$priceDiscountText.length) {
+                $priceDiscountText = $priceDiscountWrap.find('.discount').first();
+                if (!$priceDiscountText.length) {
+                    $priceDiscountText = $('<span class="discount"></span>');
+                    $priceDiscountWrap.append($priceDiscountText);
+                }
+            }
+
+            function normalizeValue(value) {
+                return String(value === undefined || value === null ? '' : value)
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\s+/g, '');
+            }
+
+            function normalizeAttributeName(name) {
+                var normalizedName = String(name === undefined || name === null ? '' : name).trim();
+                var lowerName = normalizedName.toLowerCase();
+
+                if (lowerName === 'color' || lowerName === 'colour') {
+                    return 'Color';
+                }
+
+                if (lowerName === 'size') {
+                    return 'Size';
+                }
+
+                return normalizedName;
+            }
+
+            variations = variations.map(function(variation) {
+                variation._normalizedAttributes = {};
+
+                (variation.attributes || []).forEach(function(attr) {
+                    variation._normalizedAttributes[normalizeAttributeName(attr.name)] = normalizeValue(attr.value);
+                });
+
+                return variation;
+            });
+
+            function formatPrice(value) {
+                return '\u20B9' + Number(value || 0).toLocaleString('en-IN');
+            }
+
+            function isSelectable($button) {
+                return !$button.prop('disabled') && !$button.hasClass('oos');
+            }
+
+            function getButtonLabel($button) {
+                return String($button.data('label') || $.trim($button.text()) || $button.data('value') || '').trim();
+            }
+
+            function cloneSelection(source) {
+                var copy = {};
+
+                Object.keys(source).forEach(function(key) {
+                    copy[key] = {
+                        id: source[key].id,
+                        value: source[key].value
+                    };
+                });
+
+                return copy;
+            }
+
+            function setSelectedButton($button) {
+                var attrName = normalizeAttributeName($button.data('attr'));
+                var $group = $button.closest('.variation-group');
+
+                $group.find('.attribute-btn').removeClass('selected attribute_seletion');
+                $button.addClass('selected attribute_seletion');
+
+                selectedAttributes[attrName] = {
+                    id: $button.data('id'),
+                    value: normalizeValue($button.data('value'))
+                };
+
+                $group.find('.variation-selected-val').text(getButtonLabel($button));
+            }
+
+            function hasMatchingVariation(selection, requireInStock) {
+                return variations.some(function(variation) {
+                    if (requireInStock && Number(variation.stock || 0) <= 0) {
+                        return false;
+                    }
+
+                    return Object.keys(selection).every(function(attrName) {
+                        return variation._normalizedAttributes[attrName] === selection[attrName].value;
+                    });
+                });
+            }
+
+            function refreshOptionStates() {
+                var selectionChanged = false;
+
+                $variantGroups.each(function() {
+                    var $group = $(this);
+                    var attrName = normalizeAttributeName($group.data('attr-type'));
+
+                    $group.find('.attribute-btn').each(function() {
+                        var $button = $(this);
+                        var candidateSelection = cloneSelection(selectedAttributes);
+
+                        candidateSelection[attrName] = {
+                            id: $button.data('id'),
+                            value: normalizeValue($button.data('value'))
+                        };
+
+                        var isAvailable = hasMatchingVariation(candidateSelection, true);
+
+                        $button.toggleClass('oos', !isAvailable);
+                        $button.prop('disabled', !isAvailable);
+
+                        if (!isAvailable) {
+                            $button.attr('title', 'Out of Stock');
+                        } else if ($button.attr('title') === 'Out of Stock') {
+                            $button.removeAttr('title');
+                        }
+                    });
+
+                    var $selected = $group.find('.attribute-btn.selected').first();
+                    if (!$selected.length || !isSelectable($selected)) {
+                        var $fallback = $group.find('.attribute-btn').filter(function() {
+                            return isSelectable($(this));
+                        }).first();
+
+                        $group.find('.attribute-btn').removeClass('selected attribute_seletion');
+                        delete selectedAttributes[attrName];
+                        $group.find('.variation-selected-val').text('');
+
+                        if ($fallback.length) {
+                            setSelectedButton($fallback);
+                            selectionChanged = true;
+                        }
+                    }
+                });
+
+                return selectionChanged;
+            }
+
+            function getExactVariation() {
+                if (!variations.length) {
+                    return null;
+                }
+
+                if (!attributeGroupCount) {
+                    return variations[0];
+                }
+
+                return variations.find(function(variation) {
+                    var variationAttributeCount = Array.isArray(variation.attributes) ? variation.attributes.length : 0;
+
+                    if (Object.keys(selectedAttributes).length !== variationAttributeCount) {
+                        return false;
+                    }
+
+                    return Object.keys(selectedAttributes).every(function(attrName) {
+                        return variation._normalizedAttributes[attrName] === selectedAttributes[attrName].value;
+                    });
+                }) || null;
+            }
+
+            function renderPrice(price, mrp) {
+                var numericPrice = Number(price || 0);
+                var numericMrp = Number(mrp || 0);
+                var effectivePrice = numericPrice === 0 ? numericMrp : numericPrice;
+                var hasDiscount = numericPrice > 0 && numericMrp > numericPrice;
+
+                $priceCurrent.text(formatPrice(effectivePrice));
+
+                if (hasDiscount) {
+                    var percentOff = Math.round(((numericMrp - numericPrice) / numericMrp) * 100);
+                    $priceMrp.text(formatPrice(numericMrp)).show();
+                    $priceDiscountText.text(percentOff + '%off');
+                    $priceDiscountWrap.show();
+                } else {
+                    $priceMrp.hide();
+                    $priceDiscountWrap.hide();
+                }
+            }
+
+            function renderGalleryImage(imageUrl) {
+                var resolvedImage = imageUrl || defaultGalleryImage;
+                if (!resolvedImage) {
+                    return;
+                }
+
+                var $firstMainImage = $mainGallery.find('.items-list img').first();
+                var $firstThumbImage = $thumbGallery.find('.thumb-item img').first();
+
+                if ($firstMainImage.length) {
+                    $firstMainImage.attr('src', resolvedImage);
+                }
+
+                if ($firstThumbImage.length) {
+                    $firstThumbImage.attr('src', resolvedImage);
+                }
+
+                if ($mainGallery.hasClass('owl-loaded')) {
+                    $mainGallery.trigger('to.owl.carousel', [0, 300]);
+
+                    clearTimeout(gallerySyncTimer);
+                    gallerySyncTimer = setTimeout(function() {
+                        var $activeMainImage = $mainGallery.find('.owl-item.active img').first();
+                        var $activeThumbImage = $thumbGallery.find('.owl-item.active img').first();
+
+                        if ($activeMainImage.length) {
+                            $activeMainImage.attr('src', resolvedImage);
+                        }
+
+                        if ($activeThumbImage.length) {
+                            $activeThumbImage.attr('src', resolvedImage);
+                        }
+
+                        $thumbGallery.find('.thumb-item').removeClass('active').first().addClass('active');
+                    }, 325);
+                }
+            }
+
+            function renderCartState(variation) {
+                if (!attributeGroupCount && !variation) {
+                    $addToCartButton.prop('disabled', false).removeClass('disabled').html('<span>add to cart</span>');
+                    return;
+                }
+
+                if (!variation) {
+                    $addToCartButton.prop('disabled', true).addClass('disabled').html('<span>Select options</span>');
+                    return;
+                }
+
+                if (Number(variation.stock || 0) <= 0) {
+                    $addToCartButton.prop('disabled', true).addClass('disabled').html('<span>Out of stock</span>');
+                    return;
+                }
+
+                $addToCartButton.prop('disabled', false).removeClass('disabled').html('<span>add to cart</span>');
+            }
+
+            function syncVariantState() {
+                var attempts = 0;
+
+                while (refreshOptionStates() && attempts < 5) {
+                    attempts += 1;
+                }
+
+                var matchedVariation = getExactVariation();
+                selectedVariationId = matchedVariation ? matchedVariation.id : null;
+
+                if (matchedVariation) {
+                    renderPrice(matchedVariation.price, matchedVariation.mrp);
+                    renderGalleryImage(matchedVariation.image ? (storageBaseUrl + '/' + matchedVariation.image) : defaultGalleryImage);
+                } else {
+                    renderPrice(basePrice, baseMrp);
+                    renderGalleryImage(defaultGalleryImage);
+                }
+
+                renderCartState(matchedVariation);
+            }
+
+            function initializeSelections() {
+                $variantGroups.each(function() {
+                    var $group = $(this);
+                    var $preferred = $group.find('.attribute-btn.selected').filter(function() {
+                        return isSelectable($(this));
+                    }).first();
+
+                    if (!$preferred.length) {
+                        $preferred = $group.find('.attribute-btn').filter(function() {
+                            return isSelectable($(this));
+                        }).first();
+                    }
+
+                    $group.find('.attribute-btn').removeClass('selected attribute_seletion');
+                    $group.find('.variation-selected-val').text('');
+
+                    if ($preferred.length) {
+                        setSelectedButton($preferred);
+                    }
+                });
+
+                syncVariantState();
+            }
+
+            $(document).on('click', '.variation-group .attribute-btn', function() {
+                var $button = $(this);
+
+                if (!isSelectable($button)) {
+                    return;
+                }
+
+                setSelectedButton($button);
+                syncVariantState();
+            });
+
+            initializeSelections();
+
+            $addToCartButton.on('click', function(e) {
+                if ($(this).prop('disabled') || $(this).hasClass('disabled')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (attributeGroupCount && !selectedVariationId) {
+                    e.preventDefault();
+                    toastr.error('Please select an available variant.');
+                    return;
+                }
+
+                var cartData = {
+                    product_id: '{{ $response['id'] }}',
+                    variation_id: selectedVariationId || '',
+                    attributes: Object.values(selectedAttributes),
+                    quantity: $('#qty').val() || 1
+                };
+
+                $.ajax({
+                    url: '{{ route('addToCart') }}',
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: cartData,
+                    success: function(response) {
+                        if (response.success) {
+                            $('#cart-count-span').html('(' + response.cart_count + ' Items)');
+                            $('.cart-total-span').html(response.cart_total);
+
+                            if (response.cart_count > 0) {
+                                if ($('#cart_count_header').length > 0) {
+                                    $('#cart_count_header').html(response.cart_count).show();
+                                } else {
+                                    $('a.cart__btn').append('<ins id="cart_count_header"></ins>');
+                                    $('#cart_count_header').html(response.cart_count).show();
+                                }
+                            } else {
+                                $('#cart_count_header').hide();
+                            }
+
+                            toastr.options = {
+                                closeButton: true,
+                                progressBar: true,
+                                positionClass: 'toast-top-right',
+                                timeOut: 800,
+                                extendedTimeOut: 500,
+                                showDuration: 200,
+                                hideDuration: 200,
+                            };
+                            toastr.success(response.message);
+
+                            window.dispatchEvent(new CustomEvent('cart-updated'));
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function(error) {
+                        toastr.error(error.responseJSON?.message || 'Something went wrong.');
+                    }
+                });
+            });
         });
     </script>
 
