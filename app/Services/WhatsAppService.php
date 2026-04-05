@@ -40,8 +40,8 @@ class WhatsAppService
 
             $response = Http::timeout(30)
                 ->retry(2, 100)
-                ->withToken(config('services.whatsapp.api_token'))
-                ->post('https://api.helloyubo.com/v3/whatsapp/notification', $payload);
+                ->withToken(config('services.whatsapp.api_token'));
+                // ->post('https://api.helloyubo.com/v3/whatsapp/notification', $payload);
 
             Log::info('WhatsApp message sent successfully', [
                 'number' => $payload['send_to'],

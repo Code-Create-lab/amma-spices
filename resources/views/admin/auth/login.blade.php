@@ -20,7 +20,7 @@
     <meta property="og:description"
         content="ZAKH offers stylish women’s and men’s clothing, trendy outfits, chic fashion accessories, and modern apparel designed for a contemporary lifestyle.">
     <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
-    <meta property="og:url" content="https://bodhi-bliss.yugasa.org/admin">
+    <meta property="og:url" content="{{ url('/admin/login') }}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="ZAKH – Modern Clothing & Accessories for Women and Men">

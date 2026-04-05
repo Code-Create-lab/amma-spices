@@ -26,8 +26,8 @@
         <!-- end section -->
         <!-- start section -->
         <section class="checkout-page">
-            <img src="https://bodhi-bliss.yugasa.org/assets/img/checkout-top-img.png" class="bg-feture-check-top">
-            <img src="https://bodhi-bliss.yugasa.org/assets/img/bg-feture.png" class="bg-feture-check">
+            <img src="{{asset('assets/img/checkout-top-img.png')}}" class="bg-feture-check-top">
+            <img src="{{asset('assets/img/bg-feture.png')}}" class="bg-feture-check">
             <div class="container">
                 <form wire:submit="storeOrder">
                     <div class="row justify-content-center coupon-box-in">
@@ -742,7 +742,7 @@
                     </div>
                 </form>
             </div>
-            <img src="https://bodhi-bliss.yugasa.org/assets/img/checkout-bottom-img.png" class="bg-feture-check-bot">
+            <img src="{{asset('assets/img/checkout-bottom-img.png')}}" class="bg-feture-check-bot">
         </section>
 
 

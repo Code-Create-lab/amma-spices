@@ -170,10 +170,10 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12">
-                            <h2 class="section-title">The Birth Of Amma's Spices Soap Co.</h2>
+                            <h2 class="section-title">The Birth Of Amma's Spices.</h2>
 
                             <p> I have frequently been asked by many of my clients, what exactly it was that prompted me to
-                                create Amma's Spices Soap Co. Truth be told, it was not just one thing, but a culmination of
+                                create Amma's Spices. Truth be told, it was not just one thing, but a culmination of
                                 various
                                 experiences that led to this moment.</p>
                             <p>From childhood hikes with my father to tending a kitchen garden in rural northern India, from
@@ -198,7 +198,7 @@
                                 used to create genuine, pure, soap out of various herbs, local flowers, oils, etc.
                                 It was at that very moment that I fell in love with this concept. The world of natural soaps
                                 as a
-                                whole inspired me to start this company, Amma's Spices Soap Co.</p>
+                                whole inspired me to start this company, Amma's Spices.</p>
 
                         </div>
                         <!--   <div class="col-md-6">

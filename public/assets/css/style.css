@@ -5611,7 +5611,7 @@ a:focus {
   margin-bottom: 1.3rem; }
 
 .new-price {
-    color: #fff;
+    color: #000000;
     margin-left: 5px;
 }
 
@@ -15589,7 +15589,7 @@ a.know-more-btn {
     color: #fff !important;
 }
 span.header-title {
-    color: #ffffff;
+    color: #000000;
     font-weight: 500;
 }
 .filter-item .count {

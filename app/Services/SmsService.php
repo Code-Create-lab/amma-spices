@@ -33,8 +33,8 @@ class SmsService
             ];
 
             $response = Http::timeout(30)
-                ->retry(2, 100)
-                ->get('http://www.admagister.net/api/mt/SendSMS', $params);
+                ->retry(2, 100);
+                // ->get('http://www.admagister.net/api/mt/SendSMS', $params);
 
             Log::info('SMS sent successfully', [
                 'number' => $params['number'],

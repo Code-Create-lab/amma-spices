@@ -144,7 +144,7 @@
         </style>
         <style>
             .filter-card {
-                background: #ffffff;
+                background: #fffaf3;
                 border-color: rgba(75, 59, 46, 0.12);
                 box-shadow: 0 12px 28px rgba(75, 59, 46, 0.05);
             }

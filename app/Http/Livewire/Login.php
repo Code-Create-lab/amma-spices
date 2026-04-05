@@ -174,13 +174,13 @@ class Login extends Component
             // Send OTP
             if ($this->isMobileLogin) {
                 // $this->sendOTPSMS($user->user_phone, $otp);
-                SendOtpJob::dispatch($user_data);
+                // SendOtpJob::dispatch($user_data);
                 session()->flash('success', 'OTP sent successfully to your mobile number.');
             } else {
 
 
                 $user_data['is_email'] = true;
-                SendOtpJob::dispatch($user_data);
+                // SendOtpJob::dispatch($user_data);
                 // $this->sendOtpEmail($user->email, $user->name, $otp);
                 session()->flash('success', 'OTP sent successfully to your email.');
             }
@@ -382,7 +382,7 @@ class Login extends Component
             ];
             // dd($user_data);
             // Dispatch job
-            SendOtpJob::dispatch($user_data);
+            // SendOtpJob::dispatch($user_data);
 
             // Success message
             if ($this->isMobileLogin) {

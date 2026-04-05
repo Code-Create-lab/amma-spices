@@ -54,10 +54,10 @@
                                     <td width="48%" valign="top" align="right">
                                         <strong>Company Information:</strong><br />
                                         Amma's Spices<br />
-                                        3121, Sobha Petunia, Virannapalaya, Nagwara,<br />
-                                        560045, Bangalore, Karnataka, India.<br />
-                                        <strong>GSTIN:</strong> 123457890<br />
-                                        <strong>Email:</strong> niharica@bodhiblisssoap.com
+                                        Shop No. UFF29 Signature Global, <br />
+                                        Sector 95A Gurugram, Haryana 122505<br />
+                                        {{-- <strong>GSTIN:</strong> 29GJIPP3529L1ZG<br /> --}}
+                                        <strong>Email:</strong> info@ammasspices.com
                                     </td>
                                 </tr>
                             </table>
@@ -89,9 +89,9 @@
                                         {{ $order->address->pincode ?? '' }}<br /><br />
                                         <strong>Sold by:</strong><br />
                                         Amma's Spices<br />
-                                        3121, Sobha Petunia, Virannapalaya, Nagwara,<br />
-                                        560045, Bangalore, Karnataka, India.<br />
-                                        <strong>GSTIN:</strong> 123457890
+                                         Shop No. UFF29 Signature Global, <br />
+                                        Sector 95A Gurugram, Haryana 122505<br />
+                                        <strong>GSTIN:</strong> 29GJIPP3529L1ZG
                                     </td>
                                     <td width="30%" style="text-align: right;" valign="top">
                                         <strong>Order No.</strong><br />
@@ -102,10 +102,10 @@
                                         {{ $order->order_date ?? now()->format('d M, D Y') }}<br /><br />
                                         <strong>Invoice Date</strong><br />
                                         {{ now()->format('d M, D Y') }}<br /><br />
-                                        <strong>Shipped By</strong><br />
+                                        {{-- <strong>Shipped By</strong><br />
                                         {{ $order->shipment->logistic_name ?? 'DELHIVERY' }}<br /><br />
                                         <strong>AWB No.</strong><br />
-                                        {{ $order->shipment->waybill ?? '' }}<br /><br />
+                                        {{ $order->shipment->waybill ?? '' }}<br /><br /> --}}
                                         <strong>Payment Method</strong><br />
                                         {{ strtoupper($order->payment_method ?? 'PREPAID') }}
                                     </td>
@@ -160,10 +160,7 @@
                                         @foreach ($order->orderItems as $item)
                                             @php
                                                 $mrp = $item->variation->mrp ?? 0;
-                                                $price =
-                                                    ($item->variation->price == 0
-                                                        ? $item->variation->mrp
-                                                        : $item->variation->price) ?? 0;
+                                                $price = ($item->variation->price == 0 ? $item->variation->mrp  : $item->variation->price ) ?? 0;
                                                 $qty = $item->quantity ?? 1;
                                                 $unitDiscount = max(0, $mrp - $price);
                                                 $taxRate = $item->variation->product->tax->value ?? 0;
@@ -204,11 +201,9 @@
 
                                                 {{-- IGST --}}
                                                 <td style="text-align: right;">
-                                                    {{ $igstAmount > 0 ? number_format($igstRate, 2) . '%' : '—' }}
-                                                </td>
+                                                    {{ $igstAmount > 0 ? number_format($igstRate, 2) . '%' : '—' }}</td>
                                                 <td style="text-align: right;">
-                                                    {{ $igstAmount > 0 ? '' . number_format($igstAmount, 2) : '—' }}
-                                                </td>
+                                                    {{ $igstAmount > 0 ? '' . number_format($igstAmount, 2) : '—' }}</td>
 
                                                 {{-- Net Amount --}}
                                                 <td style="text-align: right;">{{ number_format($lineTotal, 2) }}</td>
@@ -239,7 +234,7 @@
                                         <td colspan="10" style="text-align: right; font-weight: bold; padding: 8px;">
                                             Shipping</td>
                                         <td style="font-weight: bold; text-align: right; padding: 8px;">Rs
-                                            {{ number_format($order->shipping_cost ?? 0, 2) }}</td>
+                                            {{ number_format($order->delivery_charge ?? 0, 2) }}</td>
                                     </tr>
                                     @if (isset($order->coupon_discount) && $order->coupon_discount > 0)
                                         <tr>
@@ -304,8 +299,8 @@
                             Tax is not payable on reverse charge basis. This is a computer generated invoice and does
                             not require signature.<br />
                             <br />
-                            <strong>Amma's Spices</strong> — 3121, Sobha Petunia, Virannapalaya, Nagwara, 560045,
-                            Bangalore, Karnataka, India. | GSTIN: 123457890
+                            <strong>Amma's Spices</strong> —  Shop No. UFF29 Signature Global,
+                                        Sector 95A Gurugram, Haryana 122505
                         </td>
                     </tr>
 

@@ -29,14 +29,14 @@ class OrderNotificationService
         try {
             // Construct the message based on whether order number is provided
 
-            $message = "Thank you for your order! Order #{$orderNumber} for Rs {$amount} has been placed successfully. -Amma's Spices"; // Changed from 'message' to 'text'
-            $response = $this->smsService->sendSms('91' . $mobile, $message, "1707176847344339122");
+            // $message = "Thank you for your order! Order #{$orderNumber} for Rs {$amount} has been placed successfully. -Amma's Spices"; // Changed from 'message' to 'text'
+            // $response = $this->smsService->sendSms('91' . $mobile, $message, "1707176847344339122");
 
 
 
 
-            $AdminMessage = "Order Alert: {$orderNumber} placed by {$name} for Rs {$amount}. Login to process -Amma's Spices"; // Changed from 'message' to 'text'
-            $AdminResponse = $this->smsService->sendSms('919008741100', $AdminMessage, "1707176848125331222");
+            // $AdminMessage = "Order Alert: {$orderNumber} placed by {$name} for Rs {$amount}. Login to process -Amma's Spices"; // Changed from 'message' to 'text'
+            // $AdminResponse = $this->smsService->sendSms('919008741100', $AdminMessage, "1707176848125331222");
 
 
             // $optionsOrder = [
@@ -83,13 +83,13 @@ class OrderNotificationService
 
 
 
-            if ($response) {
-                Log::info('SMS sent successfully', [
-                    'mobile' => $mobile,
-                    'order_number' => $orderNumber,
-                    'response' => $response,
-                    'admin_response' => $AdminResponse,
-                ]);
+            // if ($response) {
+            //     Log::info('SMS sent successfully', [
+            //         'mobile' => $mobile,
+            //         'order_number' => $orderNumber,
+            //         'response' => $response,
+            //         'admin_response' => $AdminResponse,
+            //     ]);
 
                 // Log::info('Whatsapp Order Alert SMS sent successfully', [
                 //     'whatsappResponse' => $whatsappOrder,
@@ -101,16 +101,16 @@ class OrderNotificationService
 
 
 
-                return true;
-            } else {
-                Log::error('SMS sending failed', [
-                    'mobile' => $mobile,
-                    'order_number' => $orderNumber,
-                    'response' => $response,
-                    'admin_response' => $AdminResponse,
-                ]);
-                return false;
-            }
+            //     return true;
+            // } else {
+            //     Log::error('SMS sending failed', [
+            //         'mobile' => $mobile,
+            //         'order_number' => $orderNumber,
+            //         'response' => $response,
+            //         'admin_response' => $AdminResponse,
+            //     ]);
+            //     return false;
+            // }
         } catch (\Exception $e) {
             Log::error('SMS API Error: ' . $e->getMessage(), [
                 'mobile' => $mobile,

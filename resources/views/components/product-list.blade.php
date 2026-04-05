@@ -75,7 +75,7 @@
     /* ── Thumbnail ── */
     .product-card__thumb {
         position: relative;
-        height: 195px;
+        height: 295px;
         overflow: hidden;
         flex-shrink: 0;
         background: #111;
@@ -97,7 +97,7 @@
 
     .product-card__slide img {
         width: 100%;
-        height: 100%;
+        height: 100% !important;
         object-fit: cover;
         display: block;
         filter: brightness(0.88);
@@ -164,8 +164,13 @@
         color: #ccc;
     }
 
-    .product-card__arrow--prev { left: 9px; }
-    .product-card__arrow--next { right: 9px; }
+    .product-card__arrow--prev {
+        left: 9px;
+    }
+
+    .product-card__arrow--next {
+        right: 9px;
+    }
 
     /* Show arrows only when the card is hovered */
     .product-card:hover .product-card__arrow {
@@ -216,7 +221,7 @@
 
     /* ── Card Body ── */
     .product-card__body {
-        padding: 18px 18px 14px;
+        padding: 15px 15px 8px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -531,21 +536,21 @@
 
             // Build image list — access ->images directly so Laravel lazy-loads
             // if the controller didn't eager-load. Use ->loadMissing() in the
-            // controller (see comment below) to avoid N+1 in production.
-            $sliderImages = collect([$product->product_image]);
-            foreach ($product->images as $img) {
-                if (!empty($img->image)) {
-                    $sliderImages->push($img->image);
-                }
-            }
-            $sliderId = 'pslider-' . $product->product_id;
+// controller (see comment below) to avoid N+1 in production.
+$sliderImages = collect([$product->product_image]);
+foreach ($product->images as $img) {
+    if (!empty($img->image)) {
+        $sliderImages->push($img->image);
+    }
+}
+$sliderId = 'pslider-' . $product->product_id;
             $hasMultiple = $sliderImages->count() > 1;
 
             $categoryTitle = $product->category->title ?? null;
         @endphp
 
         <div class="col-md-3">
-            <div class="product-card" >
+            <div class="product-card">
 
                 {{-- ── Wishlist ── --}}
                 <a data-id="{{ $product->product_id }}" onclick="addTowishListClass(this)"
@@ -559,7 +564,7 @@
                 </a>
 
                 {{-- ── Thumbnail + Slider ── --}}
-                <a href="{{ route('single.product.view', $product->slug) }}" style="text-decoration:none;">
+                <a style="text-decoration:none;">
 
                     <div class="product-card__thumb" id="{{ $sliderId }}" data-slider-id="{{ $sliderId }}"
                         data-count="{{ $sliderImages->count() }}">
@@ -571,26 +576,20 @@
 
                         {{-- ── Prev / Next arrows (only rendered when multiple images) ── --}}
                         @if ($hasMultiple)
-                            <button type="button"
-                                class="product-card__arrow product-card__arrow--prev"
-                                data-slider="{{ $sliderId }}"
-                                data-dir="-1"
-                                aria-label="Previous image">
+                            <button type="button" class="product-card__arrow product-card__arrow--prev"
+                                data-slider="{{ $sliderId }}" data-dir="-1" aria-label="Previous image">
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.8"
-                                    stroke-linecap="round" stroke-linejoin="round">
+                                    stroke="currentColor" stroke-width="2.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <polyline points="15 18 9 12 15 6"></polyline>
                                 </svg>
                             </button>
 
-                            <button type="button"
-                                class="product-card__arrow product-card__arrow--next"
-                                data-slider="{{ $sliderId }}"
-                                data-dir="1"
-                                aria-label="Next image">
+                            <button type="button" class="product-card__arrow product-card__arrow--next"
+                                data-slider="{{ $sliderId }}" data-dir="1" aria-label="Next image">
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2.8"
-                                    stroke-linecap="round" stroke-linejoin="round">
+                                    stroke="currentColor" stroke-width="2.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
                             </button>
@@ -622,6 +621,7 @@
                     <div class="product-card__body">
 
                         {{-- Meta row --}}
+
                         <div class="product-card__meta">
                             <span class="product-card__meta-cat">
                                 {{ $categoryTitle ?? 'Product' }}
@@ -632,8 +632,9 @@
                         </div>
 
                         {{-- Title --}}
-                        <h3 class="product-card__title">{{ $product->product_name }}</h3>
-
+                        <a href="{{ route('single.product.view', $product->slug) }}">
+                            <h3 class="product-card__title">{{ $product->product_name }}</h3>
+                        </a>
                         {{-- Price --}}
                         <div class="product-card__price">
                             <span class="product-card__price-new">
@@ -651,7 +652,7 @@
                 </a>{{-- /product link --}}
 
                 {{-- ── Footer: Cart + Qty ── --}}
-                <div class="product-card__footer" >
+                <div class="product-card__footer">
                     @if ($product->variation->stock > 0)
                         @php
                             $cartQty = 1;
@@ -663,9 +664,10 @@
                             }
                         @endphp
 
-                        <a class="product-card__cart-btn add-to-cart-home add-to-cart-component"  data-product-id="{{ $product->product_id }}">
+                        <a class="product-card__cart-btn add-to-cart-home add-to-cart-component"
+                            data-product-id="{{ $product->product_id }}">
                             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                stroke-width="2.5" >
+                                stroke-width="2.5">
                                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                                 <line x1="3" y1="6" x2="21" y2="6" />
                                 <path d="M16 10a4 4 0 01-8 0" />
@@ -673,7 +675,7 @@
                             Add to Cart
                         </a>
 
-                        <input type="number" class="product-card__qty form-control qty product_quantity" 
+                        <input type="number" class="product-card__qty form-control qty product_quantity"
                             value="{{ $cartQty }}" min="1" max="10" step="1" data-decimals="0"
                             required>
                     @else

@@ -188,7 +188,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Order Received - Amma's Spices Soap Co Admin</title>
+        <title>New Order Received - Amma's Spices Admin</title>
     </head>
 
     <body style="margin:0; padding:0; background:#f5f5f5; font-family: Arial, Helvetica, sans-serif;">
@@ -204,7 +204,7 @@
                         <!-- Header -->
                         <tr>
                             <td align="center" style="padding:25px; border-bottom:1px solid #e5e7eb;">
-                                <img src="{{ asset('assets/images/logo.png') }}" alt="Amma's Spices Soap Co"
+                                <img src="{{ asset('assets/images/logo.png') }}" alt="Amma's Spices"
                                     height="80">
                                 <p style="margin:8px 0 0 0; font-size:12px; color:#6b7280;">
                                     Admin Dashboard – Order Notification
@@ -371,10 +371,10 @@
                             <td align="center"
                                 style="padding:20px; border-top:1px solid #e5e7eb; font-size:12px; color:#6b7280;">
                                 <p style="margin:0;">
-                                    This is an automated notification from the Amma's Spices Soap Co Admin Dashboard.
+                                    This is an automated notification from the Amma's Spices Admin Dashboard.
                                 </p>
                                 <p style="margin:8px 0 0 0;">
-                                    © {{ date('Y') }} Amma's Spices Soap Co. All rights reserved.
+                                    © {{ date('Y') }} Amma's Spices. All rights reserved.
                                 </p>
                             </td>
                         </tr>
