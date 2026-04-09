@@ -159,8 +159,8 @@
                     <!-- Header -->
                     <div class="header">
                         <a href="{{ route('index') }}" class="logo"><img
-                                src="{{ asset('assets/images/logo.png') }}" alt=" Logo" width="105"
-                                height="25"></a>
+                                src="{{ asset('assets/images/logo.png') }}" alt=" Logo" 
+                                height="100"></a>
                     </div>
 
                     <!-- Main Content -->
