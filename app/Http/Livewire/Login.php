@@ -382,7 +382,7 @@ class Login extends Component
             ];
             // dd($user_data);
             // Dispatch job
-            // SendOtpJob::dispatch($user_data);
+            SendOtpJob::dispatch($user_data);
 
             // Success message
             if ($this->isMobileLogin) {
