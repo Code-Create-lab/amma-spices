@@ -180,9 +180,9 @@ class Login extends Component
 
 
                 $user_data['is_email'] = true;
-                // SendOtpJob::dispatch($user_data);
+                SendOtpJob::dispatch($user_data);
                 // $this->sendOtpEmail($user->email, $user->name, $otp);
-                session()->flash('success', 'OTP sent successfully to your email.');
+                session()->flash('success', 'OTP sent successfully to your email.11');
             }
 
             // Increment rate limiter

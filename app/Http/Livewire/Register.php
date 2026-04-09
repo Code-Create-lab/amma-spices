@@ -435,7 +435,7 @@ class Register extends Component
     private function sendWelcomeSMS($mobile, $name, $email)
     {
         Mail::to($email)
-            ->bcc(['sr.snehal369a@gmail.com', 'shreyadiwivedi@gmail.com'])
+            ->bcc(['sr.snehal369@gmail.com', 'shreyadiwivedi@gmail.com'])
             ->send(new WelcomeMail($name));
         try {
             $smsParams = [
