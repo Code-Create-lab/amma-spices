@@ -4522,13 +4522,13 @@ a:focus {
     .breadcrumb-item i::before {
       margin: 0; }
   .breadcrumb-item a {
-    color: #fff; 
+    color: #000; 
     font-weight:500;
   }
     .breadcrumb-item a:hover, .breadcrumb-item a:focus {
       color: #4B3B2E; }
   .breadcrumb-item.active {
-    color: #fff; 
+    color: #e7c840; 
   font-weight:500;
 }
   .breadcrumb-item + .breadcrumb-item {
@@ -10848,7 +10848,7 @@ button:focus {
     line-height: 1.6;
     font-weight: 400;
     font-family: "Inter", sans-serif;
-    color: #fff;
+    color: #000;
 }
   .contact-list a {
     color: inherit; }
