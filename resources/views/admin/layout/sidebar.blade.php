@@ -228,12 +228,12 @@
                     <span class="menu-text">Shipping Fee Manage</span>
                 </a>
             </div>
-              <div class="menu-item  {{ request()->is('admin/shiprocket/*') ? 'active' : '' }}">
+              {{-- <div class="menu-item  {{ request()->is('admin/shiprocket/*') ? 'active' : '' }}">
                 <a href="{{ route('shiprocket.orders') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-shipping-fast"></i></span>
                     <span class="menu-text">Shipment</span>
                 </a>
-            </div>
+            </div> --}}
             {{-- <div class="menu-header">{{ __('keywords.Vendors') }}</div>
                 <div
                     class="menu-item has-sub {{ request()->is('admin/store/*') ? 'active' : '' }} {{ request()->is('stores/waiting_for_approval') ? 'active' : '' }} {{ request()->is('stores/*') ? 'active' : '' }}{{ request()->is('storess/*') ? 'active' : '' }}">

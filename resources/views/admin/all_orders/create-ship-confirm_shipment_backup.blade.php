@@ -974,7 +974,7 @@
             },
             error: function(xhr) {
 
-                let rawMessage = 'Shipment creation failed.';
+                let rawMessage = 'Order Confirmation failed.';
 
                 if (xhr.responseJSON?.message) {
                     rawMessage = extractShiprocketError(xhr.responseJSON.message);
@@ -983,7 +983,7 @@
                 form.find('.alert').remove();
                 form.prepend(`
         <div class="alert alert-danger alert-dismissible fade show">
-            <strong>Shipment Creation Failed</strong><br>
+            <strong>Order Confirmation Failed</strong><br>
             ${formatShiprocketMessage(rawMessage)}
             <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
