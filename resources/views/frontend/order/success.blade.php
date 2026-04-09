@@ -40,6 +40,9 @@
 
         .logo-section {
             margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .logo-section img {
@@ -403,7 +406,7 @@
                 <div class="step-number">2</div>
                 <div class="step-text">Your order will be carefully packaged and dispatched from our warehouse</div>
             </div>
-            
+
         </div>
 
         <div class="buttons">
@@ -413,6 +416,6 @@
             </a>
         </div>
 
-      
+
     </div>
 @endsection

@@ -1,6 +1,10 @@
 @extends('frontend.layouts.app', ['title' => ''])
 
-
+<style>
+    .product-details-quantity .input-group.input-spinner {
+        width: 50%;
+    }
+</style>
 
 @section('content')
     @php
@@ -193,7 +197,7 @@
                                     @if ($price != 0)
                                         <span id="product-price-discount"
                                             @if ($price == 0 || $mrp == $price) style="display: none;" @endif>
-                                        <span class="discount">{{ (int) $percentOff }}%off</span>
+                                            <span class="discount">{{ (int) $percentOff }}%off</span>
                                         </span>
                                     @endif
                                     {{-- @endif --}}
@@ -365,7 +369,8 @@
                                 <div class="details-filter-row details-row-size">
                                     <label for="qty">Qty:</label>
                                     <div class="product-details-quantity">
-                                        <input type="number" id="qty" class="form-control qty" value="1"
+                                        <input type="number" id="qty"
+                                            class="form-control qty product-card__qty  product_quantity" value="1"
                                             min="1" max="10" step="1" data-decimals="0" required>
                                     </div><!-- End .product-details-quantity -->
                                 </div><!-- End .details-filter-row -->
@@ -484,6 +489,26 @@
 
 
             </div><!-- End .container -->
+
+            @if ($recentlyViewedProducts->where('product_id', '!=', $response['id'])->isNotEmpty())
+                <div class="featured-list-slider realted_pro">
+                    <div class="container">
+                        <div class="row" style="display: block;">
+                            <div class="heading">
+                                <h2 class="title  text-center">Related products</h2>
+                                <span class="seprater-img"><img src="{{ asset('assets/img/seprater.png') }}"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            @if ($recentlyViewedProducts->isNotEmpty())
+                                <x-product-list :products="$recentlyViewedProducts->where('product_id', '!=', $response['id'])->reverse()" />
+                            @endif
+
+                        </div>
+                    </div>
+                    <img src="{{ asset('assets/img/related_img.png') }}" class="bg-feture8-sec">
+                </div>
+            @endif
             @if ($related_products->where('product_id', '!=', $response['id'])->isNotEmpty())
                 <div class="featured-list-slider realted_pro">
                     <div class="container">
@@ -880,9 +905,10 @@
                 var foundVariation = variations.find(function(variation) {
                     return variation.attributes.every(attr => {
                         var selectedAttr = selectedAttributes[attr.name];
-                        console.log("selectedAttributes", selectedAttributes,attr)
+                        console.log("selectedAttributes", selectedAttributes, attr)
                         if (!selectedAttr) return false;
-                        return selectedAttr.value === parseInt(attr.value) //.toLowerCase().replace(/\s+/g, '');
+                        return selectedAttr.value === parseInt(attr
+                            .value) //.toLowerCase().replace(/\s+/g, '');
                     });
                 });
                 console.log('foundVariation', variations, foundVariation)
@@ -940,7 +966,7 @@
                     console.log(".slider_images .swiper-slide-active img", imgSrc)
 
                 } else {
-                     console.log("Else foundVariation", foundVariation);
+                    console.log("Else foundVariation", foundVariation);
                     selectedVariationId = foundVariation.id;;
                     selectedPrice = foundVariation.price;
                     selectedMrp = foundVariation.mrp;
@@ -1101,7 +1127,9 @@
             }
 
             if (!$priceDiscountWrap.length) {
-                $priceDiscountWrap = $('<span id="product-price-discount" style="display: none;"><span class="discount"></span></span>');
+                $priceDiscountWrap = $(
+                    '<span id="product-price-discount" style="display: none;"><span class="discount"></span></span>'
+                    );
                 $priceContainer.append($priceDiscountWrap);
             }
 
@@ -1139,7 +1167,8 @@
                 variation._normalizedAttributes = {};
 
                 (variation.attributes || []).forEach(function(attr) {
-                    variation._normalizedAttributes[normalizeAttributeName(attr.name)] = normalizeValue(attr.value);
+                    variation._normalizedAttributes[normalizeAttributeName(attr.name)] =
+                        normalizeValue(attr.value);
                 });
 
                 return variation;
@@ -1154,7 +1183,8 @@
             }
 
             function getButtonLabel($button) {
-                return String($button.data('label') || $.trim($button.text()) || $button.data('value') || '').trim();
+                return String($button.data('label') || $.trim($button.text()) || $button.data('value') || '')
+            .trim();
             }
 
             function cloneSelection(source) {
@@ -1192,7 +1222,8 @@
                     }
 
                     return Object.keys(selection).every(function(attrName) {
-                        return variation._normalizedAttributes[attrName] === selection[attrName].value;
+                        return variation._normalizedAttributes[attrName] === selection[attrName]
+                            .value;
                     });
                 });
             }
@@ -1255,14 +1286,16 @@
                 }
 
                 return variations.find(function(variation) {
-                    var variationAttributeCount = Array.isArray(variation.attributes) ? variation.attributes.length : 0;
+                    var variationAttributeCount = Array.isArray(variation.attributes) ? variation.attributes
+                        .length : 0;
 
                     if (Object.keys(selectedAttributes).length !== variationAttributeCount) {
                         return false;
                     }
 
                     return Object.keys(selectedAttributes).every(function(attrName) {
-                        return variation._normalizedAttributes[attrName] === selectedAttributes[attrName].value;
+                        return variation._normalizedAttributes[attrName] === selectedAttributes[
+                            attrName].value;
                     });
                 }) || null;
             }
@@ -1326,12 +1359,14 @@
 
             function renderCartState(variation) {
                 if (!attributeGroupCount && !variation) {
-                    $addToCartButton.prop('disabled', false).removeClass('disabled').html('<span>add to cart</span>');
+                    $addToCartButton.prop('disabled', false).removeClass('disabled').html(
+                        '<span>add to cart</span>');
                     return;
                 }
 
                 if (!variation) {
-                    $addToCartButton.prop('disabled', true).addClass('disabled').html('<span>Select options</span>');
+                    $addToCartButton.prop('disabled', true).addClass('disabled').html(
+                    '<span>Select options</span>');
                     return;
                 }
 
@@ -1355,7 +1390,8 @@
 
                 if (matchedVariation) {
                     renderPrice(matchedVariation.price, matchedVariation.mrp);
-                    renderGalleryImage(matchedVariation.image ? (storageBaseUrl + '/' + matchedVariation.image) : defaultGalleryImage);
+                    renderGalleryImage(matchedVariation.image ? (storageBaseUrl + '/' + matchedVariation.image) :
+                        defaultGalleryImage);
                 } else {
                     renderPrice(basePrice, baseMrp);
                     renderGalleryImage(defaultGalleryImage);
@@ -1436,7 +1472,8 @@
                                 if ($('#cart_count_header').length > 0) {
                                     $('#cart_count_header').html(response.cart_count).show();
                                 } else {
-                                    $('a.cart__btn').append('<ins id="cart_count_header"></ins>');
+                                    $('a.cart__btn').append(
+                                        '<ins id="cart_count_header"></ins>');
                                     $('#cart_count_header').html(response.cart_count).show();
                                 }
                             } else {

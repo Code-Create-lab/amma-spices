@@ -7725,8 +7725,9 @@ small.form-text {
 
 .modal-content .form-box{
   border: none;
-  box-shadow: 5px 10px 16px rgba(51, 51, 51, 0.05), -5px 10px 16px rgba(51, 51, 51, 0.05); }
-
+  box-shadow: none
+  /* box-shadow: 5px 10px 16px rgba(51, 51, 51, 0.05), -5px 10px 16px rgba(51, 51, 51, 0.05); } */
+}
 .close {
   font-weight: normal;
   font-size: 1.8rem;

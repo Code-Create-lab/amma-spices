@@ -156,12 +156,12 @@
         <tr>
             <td align="center" style="padding: 20px 0;">
                 <div class="email-container">
-                    {{-- <!-- Header -->
+                    <!-- Header -->
                     <div class="header">
                         <a href="{{ route('index') }}" class="logo"><img
                                 src="{{ asset('assets/images/logo.png') }}" alt=" Logo" width="105"
                                 height="25"></a>
-                    </div> --}}
+                    </div>
 
                     <!-- Main Content -->
                     <div class="content">

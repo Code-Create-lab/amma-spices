@@ -105,6 +105,7 @@
                                     <span class="cart-product-qty">{{ $item['quantity'] }}</span>
                                     x ₹{{ number_format($price == 0 ? $mrp : $price, 0, '.', ',') }}
                                 </span>
+                                {{-- @dd($attrs) --}}
                                 @if (count($attrs) > 0)
                                     <p class="product_details_para">({{ implode(', ', $attrs) }})</p>
                                 @endif

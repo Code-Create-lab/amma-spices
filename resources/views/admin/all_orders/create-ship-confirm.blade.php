@@ -33,21 +33,22 @@
                 <div class="card-header card-header-primary">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h4 class="card-title">Create Shipping Order - Shiprocket</h4>
+                            <h4 class="card-title">Confirm Order</h4>
+                            {{-- <h4 class="card-title">Create Shipping Order - Shiprocket</h4> --}}
                             <small>Order #{{ $order->cart_id ?? $order->order_id }}</small>
                         </div>
                         @if ($order->shipment?->status == 'success')
-                            <span class="badge badge-success">Shipment Created</span>
+                            <span class="badge badge-success">Order Confirmed</span>
                         @endif
                     </div>
                 </div>
 
                 <div class="card-body">
-                    @if ($order->shipment?->status == 'success')
+                    {{-- @if ($order->shipment?->status == 'success')
                         <div class="alert alert-info">
                             Shipment created for this order. Waybill: {{ $order->shipment->waybill ?? 'N/A' }}
                         </div>
-                    @endif
+                    @endif --}}
 
                     <form class="forms-sample" id="confirmOrderForm"
                         action="{{ route('ajax.order.confirm', $order->order_id) }}" method="POST"
@@ -245,7 +246,7 @@
                             @endif --}}
 
                         {{-- Shipment Dimensions & Weight --}}
-                        <h5>Shipment Dimensions & Weight</h5>
+                        {{-- <h5>Shipment Dimensions & Weight</h5>
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label>Length (cm) <span class="text-danger">*</span></label>
@@ -290,13 +291,13 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
 
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-md-12">
-                                {{-- <button type="button" class="btn btn-info btn-sm" id="fetch-rates-btn">
+                                <button type="button" class="btn btn-info btn-sm" id="fetch-rates-btn">
                                         <i class="fas fa-sync-alt mr-1"></i> Fetch Delivery Rates
-                                    </button> --}}
+                                    </button>
                                 <button type="button" class="btn btn-info btn-sm" id="fetch-rates-btn"
                                     data-order-id="{{ $order->order_id }}">
                                     <i class="fas fa-sync-alt mr-1"></i> Fetch Delivery Rates
@@ -304,7 +305,7 @@
                                 <small class="text-muted ml-2">Fill all dimensions and click to get delivery partner
                                     rates</small>
                             </div>
-                        </div>
+                        </div> --}}
 
                         {{-- Delivery Agent Selection --}}
                         <div id="delivery-agents-section" class="mt-4">
@@ -369,11 +370,11 @@
                                     <div class="text-danger mb-3">{{ $message }}</div>
                                 @enderror
                             @else
-                                <div class="alert alert-warning" id="no-agents-alert">
+                                {{-- <div class="alert alert-warning" id="no-agents-alert">
                                     <i class="fas fa-info-circle mr-2"></i>
                                     Please fill in all shipment dimensions and weight, then click "Fetch Delivery Rates"
                                     to view available delivery partners.
-                                </div>
+                                </div> --}}
                                 <div id="loading-agents" style="display: none;">
                                     <div class="text-center py-4">
                                         <div class="spinner-border text-primary" role="status">
@@ -424,7 +425,8 @@
                                     {{ $order->shipment->awb ?? 'N/A' }}</div>
                             @else
                                 <button type="submit" class="btn btn-primary" id="confirmOrderBtn">
-                                    <span class="btn-text">Confirm & Create Shipping Order</span>
+                                    <span class="btn-text">Confirm Order</span>
+                                    {{-- <span class="btn-text">Confirm & Create Shipping Order</span> --}}
                                     <span class="btn-loading d-none">
                                         <i class="fas fa-spinner fa-spin mr-1"></i> Processing...
                                     </span>

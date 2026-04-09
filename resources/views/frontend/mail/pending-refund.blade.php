@@ -97,7 +97,7 @@
                     <tr>
                         <td
                             style="padding: 20px; background-color: #f9f9f9; border-top: 1px solid #eee; text-align: center; font-size: 12px; color: #666;">
-                            <p style="margin: 0 0 5px 0;">This is an automated notification from ZAKHEC Admin System</p>
+                            <p style="margin: 0 0 5px 0;">This is an automated notification from Amma's Spices Admin System</p>
                             <p style="margin: 0;">Please do not reply to this email</p>
                         </td>
                     </tr>

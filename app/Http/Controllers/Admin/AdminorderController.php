@@ -708,7 +708,7 @@ class AdminorderController extends Controller
                     if (strtolower($row->order_status) === 'pending') {
                         if (strtolower($row->payment_status) === 'paid') {
                             $html .= '<button
-                                class="btn btn-primary btn-sm mr-1 mb-1 open-confirm-modal"
+                                class="btn btn-primary btn-sm mr-1 mb-1 open-confirm-modal" id="confirmOrderBtn"
                                 data-order-id="' . $row->order_id . '">
                                 Confirm Order
                               </button>';
@@ -1023,245 +1023,245 @@ class AdminorderController extends Controller
             }
 
             // Update dimensions
-            $order->update([
-                'length'  => $request->shipment_length,
-                'weight'  => $request->weight,
-                'breadth' => $request->shipment_width,
-                'height'  => $request->shipment_height,
-            ]);
+            // $order->update([
+            //     'length'  => $request->shipment_length,
+            //     'weight'  => $request->weight,
+            //     'breadth' => $request->shipment_width,
+            //     'height'  => $request->shipment_height,
+            // ]);
 
             Log::info('Order dimensions updated', [
                 'order_id' => $order->order_id,
             ]);
 
-            $courierCompanyId = $request->courier_company_id;
-            $shiprocket = new ShiprocketService();
+            // $courierCompanyId = $request->courier_company_id;
+            // $shiprocket = new ShiprocketService();
 
             // 🔐 Lock to prevent duplicate processing
-            $lock = Cache::lock("shiprocket:order:{$order->order_id}", 30);
+            // $lock = Cache::lock("shiprocket:order:{$order->order_id}", 30);
 
-            if (! $lock->get()) {
-                Log::info('Shipment process already running', ['order_id' => $order->order_id]);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Shipment is already being processed. Please refresh shortly.'
-                ]);
-            }
+            // if (! $lock->get()) {
+            //     Log::info('Shipment process already running', ['order_id' => $order->order_id]);
+            //     return response()->json([
+            //         'success' => true,
+            //         'message' => 'Shipment is already being processed. Please refresh shortly.'
+            //     ]);
+            // }
 
-            try {
-                /** STEP 1: CREATE SHIPMENT IF NOT EXISTS */
-                if (!$order->shipment) {
+            // try {
+            //     /** STEP 1: CREATE SHIPMENT IF NOT EXISTS */
+            //     if (!$order->shipment) {
 
-                    Log::info('No shipment found. Creating shipment.');
+            //         Log::info('No shipment found. Creating shipment.');
 
-                    $response = $shiprocket->createOrder($order);
-                    Log::info('Shiprocket createOrder response', $response);
+            //         $response = $shiprocket->createOrder($order);
+            //         Log::info('Shiprocket createOrder response', $response);
 
-                    if (empty($response['shipment_id'])) {
-                        Log::error('Shiprocket order creation failed', ['response' => $response]);
+            //         if (empty($response['shipment_id'])) {
+            //             Log::error('Shiprocket order creation failed', ['response' => $response]);
 
-                        return response()->json([
-                            'success' => false,
-                            'message' => $response
-                        ], 500);
-                    }
+            //             return response()->json([
+            //                 'success' => false,
+            //                 'message' => $response
+            //             ], 500);
+            //         }
 
-                    $shipment = Shipment::updateOrCreate(
-                        ['order_id' => $order->order_id],
-                        [
-                            'shipment_order_id' => $response['order_id'] ?? null,
-                            'shipment_id'       => $response['shipment_id'],
-                            'channel_order_id'  => $response['channel_order_id'] ?? null,
-                            'length'            => $request->shipment_length,
-                            'width'             => $request->shipment_width,
-                            'height'            => $request->shipment_height,
-                            'weight'            => $request->weight,
-                            'status'            => $response['status'] ?? 'NEW',
-                            'awb'               => $response['awb_code'] ?? null,
-                            'response'          => json_encode($response),
-                        ]
-                    );
+            //         $shipment = Shipment::updateOrCreate(
+            //             ['order_id' => $order->order_id],
+            //             [
+            //                 'shipment_order_id' => $response['order_id'] ?? null,
+            //                 'shipment_id'       => $response['shipment_id'],
+            //                 'channel_order_id'  => $response['channel_order_id'] ?? null,
+            //                 'length'            => $request->shipment_length,
+            //                 'width'             => $request->shipment_width,
+            //                 'height'            => $request->shipment_height,
+            //                 'weight'            => $request->weight,
+            //                 'status'            => $response['status'] ?? 'NEW',
+            //                 'awb'               => $response['awb_code'] ?? null,
+            //                 'response'          => json_encode($response),
+            //             ]
+            //         );
 
-                    Log::info('Shipment saved locally', [
-                        'shipment_id' => $shipment->shipment_id
-                    ]);
-                } else {
-                    $shipment = $order->shipment;
-                    Log::info('Existing shipment found', [
-                        'shipment_id' => $shipment->shipment_id
-                    ]);
-                }
+            //         Log::info('Shipment saved locally', [
+            //             'shipment_id' => $shipment->shipment_id
+            //         ]);
+            //     } else {
+            //         $shipment = $order->shipment;
+            //         Log::info('Existing shipment found', [
+            //             'shipment_id' => $shipment->shipment_id
+            //         ]);
+            //     }
 
-                /** STEP 2: ASSIGN COURIER / AWB */
-                if (empty($shipment->awb)) {
+            //     /** STEP 2: ASSIGN COURIER / AWB */
+            //     if (empty($shipment->awb)) {
 
-                    Log::info('AWB missing. Assigning courier.', [
-                        'shipment_id' => $shipment->shipment_id,
-                        'courier_company_id' => $courierCompanyId
-                    ]);
+            //         Log::info('AWB missing. Assigning courier.', [
+            //             'shipment_id' => $shipment->shipment_id,
+            //             'courier_company_id' => $courierCompanyId
+            //         ]);
 
-                    $courierResponse = $shiprocket->assignCourier(
-                        $shipment->shipment_id,
-                        $courierCompanyId
-                    );
+            //         $courierResponse = $shiprocket->assignCourier(
+            //             $shipment->shipment_id,
+            //             $courierCompanyId
+            //         );
 
-                    Log::info('Shiprocket assignCourier response', $courierResponse);
+            //         Log::info('Shiprocket assignCourier response', $courierResponse);
 
-                    $awb = $courierResponse['response']['data']['awb_code'] ?? null;
+            //         $awb = $courierResponse['response']['data']['awb_code'] ?? null;
 
-                    // ✅ Success path
-                    if ($awb) {
-                        $shipment->awb = $awb;
-                        $shipment->status = !empty($courierResponse['response']['data']['pickup_scheduled_date'])
-                            ? 'PICKUP SCHEDULED'
-                            : 'READY TO SHIP';
-                        // $shipment->courier_company_id = $courierResponse['response']['data']['courier_company_id'] ?? null;
-                        $shipment->save();
+            //         // ✅ Success path
+            //         if ($awb) {
+            //             $shipment->awb = $awb;
+            //             $shipment->status = !empty($courierResponse['response']['data']['pickup_scheduled_date'])
+            //                 ? 'PICKUP SCHEDULED'
+            //                 : 'READY TO SHIP';
+            //             // $shipment->courier_company_id = $courierResponse['response']['data']['courier_company_id'] ?? null;
+            //             $shipment->save();
 
-                        Log::info('AWB code saved', [
-                            'shipment_id' => $shipment->shipment_id,
-                            'awb' => $awb
-                        ]);
-                    }
-                    // ⚠️ Duplicate request — safe to ignore
-                    elseif (
-                        ($courierResponse['status_code'] ?? null) == 500 &&
-                        ($courierResponse['message'] ?? '') === 'Duplicate request for pickup generation'
-                    ) {
-                        Log::info('Duplicate courier assignment attempt — safe to ignore', [
-                            'shipment_id' => $shipment->shipment_id
-                        ]);
-                    } else {
-                        Log::error('AWB generation failed', ['response' => $courierResponse]);
+            //             Log::info('AWB code saved', [
+            //                 'shipment_id' => $shipment->shipment_id,
+            //                 'awb' => $awb
+            //             ]);
+            //         }
+            //         // ⚠️ Duplicate request — safe to ignore
+            //         elseif (
+            //             ($courierResponse['status_code'] ?? null) == 500 &&
+            //             ($courierResponse['message'] ?? '') === 'Duplicate request for pickup generation'
+            //         ) {
+            //             Log::info('Duplicate courier assignment attempt — safe to ignore', [
+            //                 'shipment_id' => $shipment->shipment_id
+            //             ]);
+            //         } else {
+            //             Log::error('AWB generation failed', ['response' => $courierResponse]);
 
-                        return response()->json([
-                            'success' => false,
-                            'message' => $courierResponse
-                        ], 500);
-                    }
-                    // if (!$awb) {
-                    //     Log::error('AWB generation failed', ['response' => $courierResponse]);
+            //             return response()->json([
+            //                 'success' => false,
+            //                 'message' => $courierResponse
+            //             ], 500);
+            //         }
+            //         // if (!$awb) {
+            //         //     Log::error('AWB generation failed', ['response' => $courierResponse]);
 
-                    //     return response()->json([
-                    //         'success' => false,
-                    //         'message' => $courierResponse
-                    //     ], 500);
-                    // }
+            //         //     return response()->json([
+            //         //         'success' => false,
+            //         //         'message' => $courierResponse
+            //         //     ], 500);
+            //         // }
 
-                    // $shipment->awb = $awb;
-                    // $shipment->save();
+            //         // $shipment->awb = $awb;
+            //         // $shipment->save();
 
-                    // $shipment->status = !empty($courierResponse['response']['data']['pickup_scheduled_date'])
-                    //     ? 'PICKUP SCHEDULED'
-                    //     : 'READY TO SHIP';
-                    // $shipment->save();
-                }
+            //         // $shipment->status = !empty($courierResponse['response']['data']['pickup_scheduled_date'])
+            //         //     ? 'PICKUP SCHEDULED'
+            //         //     : 'READY TO SHIP';
+            //         // $shipment->save();
+            //     }
 
-                /** STEP 3: GENERATE PICKUP (IDEMPOTENT) */
-                if (!in_array($shipment->status, ['PICKUP SCHEDULED', 'READY TO SHIP'])) {
+            //     /** STEP 3: GENERATE PICKUP (IDEMPOTENT) */
+            //     if (!in_array($shipment->status, ['PICKUP SCHEDULED', 'READY TO SHIP'])) {
 
-                    Log::info('Attempting to schedule pickup', [
-                        'shipment_id' => $shipment->shipment_id
-                    ]);
+            //         Log::info('Attempting to schedule pickup', [
+            //             'shipment_id' => $shipment->shipment_id
+            //         ]);
 
-                    $pickupResponse  = $shiprocket->shipOrder($shipment->shipment_id);
-                    Log::info('Shiprocket shipOrder response', $pickupResponse);
+            //         $pickupResponse  = $shiprocket->shipOrder($shipment->shipment_id);
+            //         Log::info('Shiprocket shipOrder response', $pickupResponse);
 
-                    // ✅ Already scheduled — treat as success
-                    if (
-                        ($pickupResponse['status_code'] ?? null) == 400 &&
-                        ($pickupResponse['message'] ?? '') === 'Already in Pickup Queue.'
-                    ) {
-                        Log::info('Pickup already scheduled', ['shipment_id' => $shipment->shipment_id]);
-                        $shipment->status = 'PICKUP SCHEDULED';
-                        $shipment->save();
-                    }
-                    // ✅ Normal success
-                    elseif (($pickupResponse['response']['status'] ?? null) == 3) {
-                        $shipment->status = 'PICKUP SCHEDULED';
-                        $shipment->save();
-                    }
+            //         // ✅ Already scheduled — treat as success
+            //         if (
+            //             ($pickupResponse['status_code'] ?? null) == 400 &&
+            //             ($pickupResponse['message'] ?? '') === 'Already in Pickup Queue.'
+            //         ) {
+            //             Log::info('Pickup already scheduled', ['shipment_id' => $shipment->shipment_id]);
+            //             $shipment->status = 'PICKUP SCHEDULED';
+            //             $shipment->save();
+            //         }
+            //         // ✅ Normal success
+            //         elseif (($pickupResponse['response']['status'] ?? null) == 3) {
+            //             $shipment->status = 'PICKUP SCHEDULED';
+            //             $shipment->save();
+            //         }
 
-                    // ❌ Actual failure
-                    else {
-                        Log::error('Ship order failed', ['response' => $pickupResponse]);
+            //         // ❌ Actual failure
+            //         else {
+            //             Log::error('Ship order failed', ['response' => $pickupResponse]);
 
-                        return response()->json([
-                            'success' => false,
-                            'message' => $pickupResponse
-                        ], 500);
-                    }
+            //             return response()->json([
+            //                 'success' => false,
+            //                 'message' => $pickupResponse
+            //             ], 500);
+            //         }
 
-                    // if (!isset($shipOrderResponse['response']['status'])) {
-                    //     Log::error('Ship order failed', ['response' => $shipOrderResponse]);
+            //         // if (!isset($shipOrderResponse['response']['status'])) {
+            //         //     Log::error('Ship order failed', ['response' => $shipOrderResponse]);
 
-                    //     return response()->json([
-                    //         'success' => false,
-                    //         'message' => 'Shipment created but shipping failed. Please retry.'
-                    //     ], 500);
-                    // }
+            //         //     return response()->json([
+            //         //         'success' => false,
+            //         //         'message' => 'Shipment created but shipping failed. Please retry.'
+            //         //     ], 500);
+            //         // }
 
-                }
+            //     }
 
-                /** STEP 4: GENERATE LABEL / MANIFEST / INVOICE (ONLY IF MISSING) */
-                if (empty($shipment->label_url)) {
+            //     /** STEP 4: GENERATE LABEL / MANIFEST / INVOICE (ONLY IF MISSING) */
+            //     if (empty($shipment->label_url)) {
 
-                    $label = $shiprocket->generateLabel($shipment->shipment_id);
-                    Log::info('Label generated', $label);
+            //         $label = $shiprocket->generateLabel($shipment->shipment_id);
+            //         Log::info('Label generated', $label);
 
-                    // if (empty($label['label_url'])) {
-                    //     Log::error('Label generation failed', ['response' => $label]);
+            //         // if (empty($label['label_url'])) {
+            //         //     Log::error('Label generation failed', ['response' => $label]);
 
-                    //     return response()->json([
-                    //         'success' => false,
-                    //         'message' => 'Shipment created but label generation failed. Please retry.'
-                    //     ], 500);
-                    // }
-                    if (!empty($label['label_url'])) {
-                        $shipment->label_url = $label['label_url'];
-                        $shipment->save();
-                    } else {
-                        Log::error('Label generation failed', ['response' => $label]);
-                    }
+            //         //     return response()->json([
+            //         //         'success' => false,
+            //         //         'message' => 'Shipment created but label generation failed. Please retry.'
+            //         //     ], 500);
+            //         // }
+            //         if (!empty($label['label_url'])) {
+            //             $shipment->label_url = $label['label_url'];
+            //             $shipment->save();
+            //         } else {
+            //             Log::error('Label generation failed', ['response' => $label]);
+            //         }
 
-                    // $shipment->label_url = $label['label_url'];
-                    // $shipment->save();
-                }
+            //         // $shipment->label_url = $label['label_url'];
+            //         // $shipment->save();
+            //     }
 
-                if (empty($shipment->manifest_url)) {
-                    $manifest = $shiprocket->generateManifest($shipment->shipment_id);
-                    Log::info('Manifest generated', $manifest);
+            //     if (empty($shipment->manifest_url)) {
+            //         $manifest = $shiprocket->generateManifest($shipment->shipment_id);
+            //         Log::info('Manifest generated', $manifest);
 
-                    if (!empty($manifest['manifest_url'])) {
-                        $shipment->manifest_url = $manifest['manifest_url'];
-                        $shipment->save();
-                    }
-                }
+            //         if (!empty($manifest['manifest_url'])) {
+            //             $shipment->manifest_url = $manifest['manifest_url'];
+            //             $shipment->save();
+            //         }
+            //     }
 
-                // $manifest = $shiprocket->generateManifest($shipment->shipment_id);
-                // Log::info('Manifest generated', $manifest);
+            //     // $manifest = $shiprocket->generateManifest($shipment->shipment_id);
+            //     // Log::info('Manifest generated', $manifest);
 
-                // $shipment->manifest_url = $manifest['manifest_url'] ?? null;
-                // $shipment->save();
+            //     // $shipment->manifest_url = $manifest['manifest_url'] ?? null;
+            //     // $shipment->save();
 
-                if (empty($shipment->invoice_url)) {
-                    $invoice = $shiprocket->generateInvoice($shipment->shipment_order_id);
-                    Log::info('Invoice generated', $invoice);
+            //     if (empty($shipment->invoice_url)) {
+            //         $invoice = $shiprocket->generateInvoice($shipment->shipment_order_id);
+            //         Log::info('Invoice generated', $invoice);
 
-                    if (!empty($invoice['invoice_url'])) {
-                        $shipment->invoice_url = $invoice['invoice_url'];
-                        $shipment->save();
-                    }
-                }
+            //         if (!empty($invoice['invoice_url'])) {
+            //             $shipment->invoice_url = $invoice['invoice_url'];
+            //             $shipment->save();
+            //         }
+            //     }
 
-                // $invoice = $shiprocket->generateInvoice($shipment->shipment_order_id);
-                // Log::info('Invoice generated', $invoice);
+            //     // $invoice = $shiprocket->generateInvoice($shipment->shipment_order_id);
+            //     // Log::info('Invoice generated', $invoice);
 
-                // $shipment->invoice_url = $invoice['invoice_url'] ?? null;
-                // $shipment->save();
-            } finally {
-                optional($lock)->release();
-            }
+            //     // $shipment->invoice_url = $invoice['invoice_url'] ?? null;
+            //     // $shipment->save();
+            // } finally {
+            //     optional($lock)->release();
+            // }
 
             /** STEP 5: UPDATE ORDER STATUS */
             $order->update([
@@ -1273,16 +1273,16 @@ class AdminorderController extends Controller
             try {
                 $phone = $order->address?->receiver_phone
                     ?? $order->user?->user_phone;
+                $shippingUrlInhouse = "";
+                // $shippingUrlInhouse = 'https://bodhiblisssoap.com/track?' . http_build_query([
+                //     'o' => $order->cart_id,
+                //     's' => $shipment->awb
+                // ]);
 
-                $shippingUrlInhouse = 'https://bodhiblisssoap.com/track?' . http_build_query([
-                    'o' => $order->cart_id,
-                    's' => $shipment->awb
-                ]);
-
-                if ($phone) {
-                    $message = "Dear Customer, Your order {$order->cart_id} has been confirmed for Rs.{$order->total_price}. You can track your shipment here: {$shippingUrlInhouse}.";
-                    $this->smsService->sendSms('91' . $phone, $message, "1707176846904792259");
-                }
+                // if ($phone) {
+                //     $message = "Dear Customer, Your order {$order->cart_id} has been confirmed for Rs.{$order->total_price}. You can track your shipment here: {$shippingUrlInhouse}.";
+                //     $this->smsService->sendSms('91' . $phone, $message, "1707176846904792259");
+                // }
 
                 Mail::to([
                     auth()->user()?->email,
@@ -1294,7 +1294,8 @@ class AdminorderController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Order confirmed and shipment created successfully'
+                'message' => 'Order confirmed'
+                //  and shipment created successfully
             ]);
         } catch (\Throwable $e) {
 

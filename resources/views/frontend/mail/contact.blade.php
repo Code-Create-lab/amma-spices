@@ -180,13 +180,13 @@
                 <div style="color: #d4d4d4; line-height: 180%; text-align: center;">
                     <p style="font-size: 14px; line-height: 180%; margin: 0;">
                         <span style="font-family: Rubik, sans-serif; font-size: 14px; line-height: 25.2px;">Copyright ©
-                            2025, ZAKH</span><br>
+                            2025, Amma's Spices</span><br>
                         <span style="font-family: Rubik, sans-serif; font-size: 14px; line-height: 25.2px;">
-                            Shop No.9A, Ground Floor, Chennoy Mansion Warden Road, Kemps Corner Near Mucchad Paan Wala.
-                            Opp. St.Stephen church Next to Gangar Optician. Mumbai 400026.
+                            Shop No. UFF29 Signature Global, Sector 95A Gurugram, Haryana 122505
+
                         </span><br>
                         <span style="font-family: Rubik, sans-serif; font-size: 14px; line-height: 25.2px;">
-                            📞 9820166550, 9321319542
+                            📞 880 0952 006
                         </span>
                     </p>
                 </div>

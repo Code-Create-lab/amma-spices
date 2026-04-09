@@ -50,7 +50,7 @@
                     </tr>
 
                     <!-- Tracking -->
-                    <tr>
+                    {{-- <tr>
                         <td align="center" style="padding:10px 30px 30px;">
                             <p style="font-size:14px; color:#374151; margin-bottom:15px;">
                                 You can track your shipment using the link below:
@@ -67,7 +67,7 @@
                                 <span style="word-break:break-all;">{{ $shippingUrlInhouse }}</span>
                             </p>
                         </td>
-                    </tr>
+                    </tr> --}}
 
                     <!-- Footer -->
                     <tr>

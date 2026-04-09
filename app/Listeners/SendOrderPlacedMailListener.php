@@ -20,13 +20,13 @@ class SendOrderPlacedMailListener implements ShouldQueue
         $order = $event->order;
         // dd($order->address, $order);
         Mail::to([
-            'sr.snehal369a@gmail.com',
+            'sr.snehal369@gmail.com',
             'shreyadiwivedi@gmail.com',
             $order->address->receiver_email
         ])->send(new SendOrderPlaced($order , 0));
       
         Mail::to([
-           'sr.snehal369a@gmail.com',
+           'sr.snehal369@gmail.com',
            'shreyadiwivedi@gmail.com'
         ])->send(new SendOrderPlaced($order , 1));
     }

@@ -39,11 +39,11 @@ class OrderPlacedEmailJob implements ShouldQueue
         // dd($this->order);
         Mail::to([$this->order->address->receiver_email])
             ->bcc([
-                'sr.snehal369a@gmail.com', 'shreyadiwivedi@gmail.com',
+                'sr.snehal369@gmail.com', 'shreyadiwivedi@gmail.com',
             ])->send(new SendOrderPlaced($this->order, 0));
 
-        Mail::to(['sr.snehal369a@gmail.com'])->bcc([
-            'sr.snehal369a@gmail.com',
+        Mail::to(['info@ammasspices.com'])->bcc([
+            'sr.snehal369@gmail.com',
             'shreyadiwivedi@gmail.com',
         ])->send(new SendOrderPlaced($this->order, 1));
     }

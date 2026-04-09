@@ -3,6 +3,13 @@
     @php
         $user = auth()->user();
     @endphp
+
+    <style>
+        label {
+            color: #000000;
+            font-weight: bold;
+        }
+    </style>
     <main class="main">
         <div class="page-header">
             <div class="container">
@@ -26,8 +33,8 @@
         <!-- end section -->
         <!-- start section -->
         <section class="checkout-page">
-            <img src="{{asset('assets/img/checkout-top-img.png')}}" class="bg-feture-check-top">
-            <img src="{{asset('assets/img/bg-feture.png')}}" class="bg-feture-check">
+            <img src="{{ asset('assets/img/checkout-top-img.png') }}" class="bg-feture-check-top">
+            <img src="{{ asset('assets/img/bg-feture.png') }}" class="bg-feture-check">
             <div class="container">
                 <form wire:submit="storeOrder">
                     <div class="row justify-content-center coupon-box-in">
@@ -323,8 +330,8 @@
                                 <div class="row mr-b">
                                     <div class="col-sm-12">
                                         <label>Email address {{ $user->email ? '' : '*' }}</label>
-                                        <input wire:model.defer="addressData.receiver_email" type="email" value="{{ $user->email }}"
-                                            class="form-control">
+                                        <input wire:model.defer="addressData.receiver_email" type="email"
+                                            value="{{ $user->email }}" class="form-control">
                                         @if (session()->has('error_addressData.receiver_email'))
                                             <span
                                                 class="text-red-500 text-sm">{{ session('error_addressData.receiver_email') }}</span>
@@ -334,8 +341,8 @@
                                 <div class="row mr-b">
                                     <div class="col-sm-6">
                                         <label>Phone {{ $user->user_phone ? '' : '*' }}</label>
-                                        <input wire:model.defer="addressData.receiver_phone" type="tel" value="{{ $user->user_phone }}"
-                                            class="form-control">
+                                        <input wire:model.defer="addressData.receiver_phone" type="tel"
+                                            value="{{ $user->user_phone }}" class="form-control">
                                         @if (session()->has('error_addressData.receiver_phone'))
                                             <span
                                                 class="text-red-500 text-sm">{{ session('error_addressData.receiver_phone') }}</span>
@@ -523,12 +530,12 @@
                                                 $percentOff =
                                                     $mrp > 0 && $price > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
                                                 $quantity = (int) $item['quantity'];
-                                                $lineTotal = (($price == 0) ? $mrp : $price) * $quantity;
-                                                $subTotal1 += $lineTotal ;
+                                                $lineTotal = ($price == 0 ? $mrp : $price) * $quantity;
+                                                $subTotal1 += $lineTotal;
                                                 // $subTotal += $lineTotal ;
                                                 // dd($lineTotal,$item['quantity']);
                                             @endphp
-                                             {{-- @dd($subTotal1) --}}
+                                            {{-- @dd($subTotal1) --}}
                                             @php
                                                 $attrs = [];
                                             @endphp
@@ -597,7 +604,7 @@
                                                 </td>
                                             @endif
                                         </tr>
-                                       
+
                                         <tr class="summary-total">
                                             <td>Total:</td>
                                             <td> ₹{{ number_format(round($subTotal1 - ($discount ?? 0) + $shippingCharge), 2, '.', ',') }}
@@ -742,7 +749,7 @@
                     </div>
                 </form>
             </div>
-            <img src="{{asset('assets/img/checkout-bottom-img.png')}}" class="bg-feture-check-bot">
+            <img src="{{ asset('assets/img/checkout-bottom-img.png') }}" class="bg-feture-check-bot">
         </section>
 
 
