@@ -1306,7 +1306,7 @@ class AdminorderController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Shipment process failed: ' . $e->getMessage()
+                'message' => 'Order Confirmation failed: ' . $e->getMessage()
             ], 500);
         }
     }

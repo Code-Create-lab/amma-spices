@@ -7,18 +7,19 @@
     <title>Payment Successful</title>
 </head>
 
-<body style="margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background:#ffffff; color:#000000;">
+<body style="margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; background:#f5f5f5; color:#000000;">
 
     <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td align="center" style="padding:30px 15px;">
 
                 <!-- Container -->
-                <table width="600" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                <table width="600" cellpadding="0" cellspacing="0"
+                    style="border-collapse:collapse; background:#ffffff; border-radius:8px; padding:30px;">
 
                     <!-- Logo -->
                     <tr>
-                        <td align="center" style="padding-bottom:25px;">
+                        <td align="center" style="padding: 30px 30px 25px 30px;">
                             <img src="{{ asset('assets/images/logo.png') }}" alt="Amma's Spices"
                                 style="max-width:140px;">
                         </td>
@@ -26,7 +27,7 @@
 
                     <!-- Title -->
                     <tr>
-                        <td style="padding-bottom:20px;">
+                        <td style="padding: 0 30px 20px 30px;">
                             <h2 style="margin:0; font-size:22px; font-weight:600;">
                                 Payment Successful
                             </h2>
@@ -35,7 +36,7 @@
 
                     <!-- Message -->
                     <tr>
-                        <td style="font-size:14px; line-height:22px; padding-bottom:20px;">
+                        <td style="font-size:14px; line-height:22px; padding: 0 30px 20px 30px;">
                             Hi {{ $order->address->receiver_name ?? 'Valued Customer' }},<br><br>
                             Thank you for your payment. Your transaction has been completed successfully.
                         </td>
@@ -43,7 +44,7 @@
 
                     <!-- Payment Details -->
                     <tr>
-                        <td style="font-size:14px; line-height:22px; padding-bottom:20px;">
+                        <td style="font-size:14px; line-height:22px; padding: 0 30px 20px 30px;">
                             <strong>Order ID:</strong> #{{ $order->cart_id ?? ($order->order_id ?? 'N/A') }}<br>
                             <strong>Company:</strong> Amma's Spices<br>
                             <strong>Payment Amount:</strong> ₹{{ number_format($order->total_price ?? 0, 2) }}<br>
@@ -59,13 +60,13 @@
 
                     <!-- Order Items -->
                     <tr>
-                        <td style="padding-bottom:10px;">
+                        <td style="padding: 0 30px 10px 30px;">
                             <strong>Order Items</strong>
                         </td>
                     </tr>
 
                     <tr>
-                        <td>
+                        <td style="padding: 0 30px;">
                             <table width="100%" cellpadding="8" cellspacing="0"
                                 style="border-collapse:collapse; font-size:14px;">
                                 <tr style="border-bottom:1px solid #cccccc;">
@@ -95,7 +96,7 @@
 
                     <!-- Contact Info -->
                     <tr>
-                        <td align="center" style="padding-top:25px; font-size:14px; line-height:22px;">
+                        <td align="center" style="padding: 25px 30px 0 30px; font-size:14px; line-height:22px;">
                             If you have any questions, please contact our support team.
                         </td>
                     </tr>
@@ -103,8 +104,8 @@
                     <!-- Footer -->
                     <tr>
                         <td align="center"
-                            style="padding-top:30px; font-size:13px; line-height:20px; border-top:1px solid #dddddd;">
-                            Contact us at <strong>info@ammasspices.com </strong> or <strong>+91 880 0952 006</strong>.
+                            style="padding: 30px 30px 30px 30px; font-size:13px; line-height:20px; border-top:1px solid #dddddd; margin-top:30px;">
+                            Contact us at <strong>info@ammasspices.com</strong> or <strong>+91 880 0952 006</strong>.
                             <br><br>
                             © {{ date('Y') }} Amma's Spices. All rights reserved.
                         </td>

@@ -37,7 +37,8 @@
                             <small>Order #{{ $order->cart_id ?? $order->order_id }}</small>
                         </div>
                         @if ($order->shipment?->status == 'success')
-                            <span class="badge badge-success">Shipment Created</span>
+                            <span class="badge badge-success">Order Created</span>
+                            {{-- <span class="badge badge-success">Shipment Created</span> --}}
                         @endif
                     </div>
                 </div>
@@ -942,7 +943,8 @@
                     // Show success message
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
-                            title: 'Shipment Created',
+                            title: 'Order Confirmed',
+                            // title: 'Shipment Created',
                             html: formatShiprocketMessage(response.message),
                             icon: 'success',
                             width: 600,

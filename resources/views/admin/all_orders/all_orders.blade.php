@@ -502,10 +502,10 @@
             // Confirm Order - Show SweetAlert then open shipping modal
             $(document).on('click', '.open-confirm-modal', function() {
                 let orderId = $(this).data('order-id');
-
+                    //  and create shipment
                 Swal.fire({
                     title: 'Confirm Order',
-                    text: 'Do you want to confirm this order and create shipment?',
+                    text: 'Do you want to confirm this order?',
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
