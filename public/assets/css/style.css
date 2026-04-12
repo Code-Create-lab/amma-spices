@@ -4522,7 +4522,7 @@ a:focus {
     .breadcrumb-item i::before {
       margin: 0; }
   .breadcrumb-item a {
-    color: #000; 
+    color: #fff; 
     font-weight:500;
   }
     .breadcrumb-item a:hover, .breadcrumb-item a:focus {
