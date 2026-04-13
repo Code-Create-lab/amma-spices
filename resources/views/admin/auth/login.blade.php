@@ -12,20 +12,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+     <meta name="keywords"
+        content="Indian spices online, homemade masala Delhi NCR India, authentic Indian spices, buy spices online Delhi NCR, pure spices India, traditional masalas, Amma style cooking, homemade taste spices, fresh ground spices, Delhi NCR spices.">
     <meta name="description"
-        content="ZAKH offers stylish women’s and men’s clothing, trendy outfits, chic fashion accessories, and modern apparel designed for a contemporary lifestyle.">
-    <meta name="keywords"
-        content="ZAKH, women’s fashion, men’s fashion, trendy clothing, stylish outfits, fashion accessories, modern chic style, contemporary wear, women’s apparel">
-    <meta property="og:title" content="ZAKH – Modern Clothing & Accessories for Women and Men">
+        content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
+    <meta property="og:title" content="Authentic Home-made fresh Spice blend’s">
     <meta property="og:description"
-        content="ZAKH offers stylish women’s and men’s clothing, trendy outfits, chic fashion accessories, and modern apparel designed for a contemporary lifestyle.">
-    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+        content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
+    <meta property="og:image" content="{{ asset('assets/images/homebg.jpg') }}">
+    <meta property="og:url" content="ammasspices.com">
+    <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url('/admin/login') }}">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ZAKH – Modern Clothing & Accessories for Women and Men">
+    <meta name="twitter:title" content="Authentic Home-made fresh Spice blend’s">
     <meta name="twitter:description"
-        content="Discover trendy fashion for women and men at ZAKH. Modern styles, chic outfits, and must-have accessories.">
+        content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
     <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
     <meta property="og:site_name" content="ZAKH">
     <meta name="robots" content="noindex, nofollow">

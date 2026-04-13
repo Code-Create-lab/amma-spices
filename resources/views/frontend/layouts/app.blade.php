@@ -12,7 +12,7 @@
         content="Indian spices online, homemade masala Delhi NCR India, authentic Indian spices, buy spices online Delhi NCR, pure spices India, traditional masalas, Amma style cooking, homemade taste spices, fresh ground spices, Delhi NCR spices.">
     <meta name="description"
         content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
-    <meta property="og:title" content="">
+    <meta property="og:title" content="Authentic Home-made fresh Spice blend’s">
     <meta property="og:description"
         content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
     <meta property="og:image" content="{{ asset('assets/images/homebg.jpg') }}">
