@@ -54,4 +54,5 @@ class BlogController extends Controller
 
         return view('frontend.blogs.show', compact('blog', 'related'));
     }
+    
 }

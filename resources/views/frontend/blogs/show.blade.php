@@ -10,7 +10,7 @@
 ═══════════════════════════════════════════════════════ */
 
 .bsp-page {
-    background: #0a0a0a;
+    background: #ffffff;
     color: #d0d0d0;
     min-height: 100vh;
 }
@@ -233,7 +233,7 @@
     margin-bottom: 22px;
 }
 
-.bsp-article p strong { color: #e0e0e0; }
+.bsp-article p strong { color: #eed466; }
 
 .bsp-article h2 {
     font-family: 'Playfair Display', Georgia, serif;
@@ -412,9 +412,9 @@
 }
 
 .bsp-tag {
-    background: #141414;
+    /* background: #141414; */
     border: 1px solid #2a2a2a;
-    color: #777;
+    /* color: #777; */
     font-family: sans-serif; font-size: 12px; font-weight: 500;
     padding: 5px 14px; border-radius: 20px;
     text-decoration: none;
@@ -551,7 +551,7 @@
 
     {{-- ══ HERO ══ --}}
     <div class="bsp-hero">
-        <img src="{{ $blog->thumbnail ? asset('storage/'.$blog->thumbnail) : 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=1400&q=85' }}"
+        <img src="{{ $blog->thumbnail_url }}"
              alt="{{ $blog->title }}">
         <div class="bsp-hero__overlay"></div>
         <div class="bsp-hero__body">
@@ -685,7 +685,7 @@
                     @foreach($related as $rel)
                         <a href="{{ route('customer.blog.show', $rel->slug) }}" class="bsp-rc">
                             <div class="bsp-rc__thumb">
-                                <img src="{{ $rel->thumbnail ? asset('storage/'.$rel->thumbnail) : 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=500&q=75' }}"
+                                <img src="{{ $rel->thumbnail_url }}"
                                      alt="{{ $rel->title }}"
                                      loading="lazy">
                                 @if($rel->category)

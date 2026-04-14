@@ -296,9 +296,8 @@
                         <div class="as-google-score">{{ $reviewAverageFormatted }}</div>
                         <div class="as-google-meta">
                             <div class="as-google-logo">
-                                <span class="gb">G</span><span class="gr">o</span><span
-                                    class="gy">o</span><span class="gb">g</span><span
-                                    class="gg">l</span><span class="gr">e</span>
+                                <span class="gb">G</span><span class="gr">o</span><span class="gy">o</span><span
+                                    class="gb">g</span><span class="gg">l</span><span class="gr">e</span>
                             </div>
                             <div class="as-google-stars">★★★★★</div>
                             <div class="as-google-count">Based on {{ $reviewCount }}
@@ -594,8 +593,12 @@
                                     {{-- Thumbnail --}}
                                     <div class="blog-card__thumb">
                                         @if ($blog->thumbnail)
-                                            <img src="{{ asset('storage/' . $blog->thumbnail) }}"
-                                                alt="{{ $blog->title }}" loading="lazy">
+                                            @php
+                                                $thumbnail = str_starts_with($blog->thumbnail, 'http')
+                                                    ? $blog->thumbnail
+                                                    : asset('storage/' . $blog->thumbnail);
+                                            @endphp
+                                            <img src="{{ $thumbnail }}" alt="{{ $blog->title }}" loading="lazy">
                                         @else
                                             <img src="{{ asset('assets/img/blog-placeholder.jpg') }}"
                                                 alt="{{ $blog->title }}" loading="lazy">

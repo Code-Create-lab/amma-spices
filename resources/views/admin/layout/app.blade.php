@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>
-        {{ config('app.name') }} | {{ $title }}
+        {{ config('app.name') }} | {{ $title ?? "" }}
     </title>
 <!--     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/images/favicon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}">

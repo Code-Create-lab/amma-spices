@@ -223,12 +223,19 @@
                 </a>
             </div>
             <div class="menu-item  {{ request()->is('shippings/*') ? 'active' : '' }}">
-                    <a href="{{ route('shippings.index') }}" class="menu-link">
+                <a href="{{ route('shippings.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fa fa-cubes"></i></span>
                     <span class="menu-text">Shipping Fee Manage</span>
                 </a>
             </div>
-              {{-- <div class="menu-item  {{ request()->is('admin/shiprocket/*') ? 'active' : '' }}">
+
+            <div class="menu-item {{ request()->routeIs('admin.auto-publish.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.auto-publish.index') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fa fa-cubes"></i></span>
+                    <span class="menu-text">Auto Publisher</span>
+                </a>
+            </div>
+            {{-- <div class="menu-item  {{ request()->is('admin/shiprocket/*') ? 'active' : '' }}">
                 <a href="{{ route('shiprocket.orders') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-shipping-fast"></i></span>
                     <span class="menu-text">Shipment</span>
@@ -313,7 +320,7 @@
                     </div> --}}
                 </div>
             </div>
-            
+
             <div class="menu-header">{{ __('keywords.Orders') }}</div>
             <div
                 class="menu-item has-sub {{ request()->is('admin/all_orders') ? 'active' : '' }}
@@ -651,7 +658,8 @@
                             <span class="menu-text">{{ __('keywords.Shipping & Delivery') }}</span>
                         </a>
                     </div>
-                    <div class="menu-item {{ request()->is('admin/gallery-images*') || request()->is('gallery-images*') ? 'active' : '' }}">
+                    <div
+                        class="menu-item {{ request()->is('admin/gallery-images*') || request()->is('gallery-images*') ? 'active' : '' }}">
                         <a href="{{ route('admin.gallery-images.index') }}" class="menu-link">
                             <span class="menu-text">Gallery</span>
                         </a>

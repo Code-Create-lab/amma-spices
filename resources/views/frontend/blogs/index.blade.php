@@ -10,7 +10,7 @@
 ═══════════════════════════════════════════════════════ */
 
 .bsp-page {
-    background: #0a0a0a;
+    background: #ffffff;
     color: #d0d0d0;
     min-height: 100vh;
 }
