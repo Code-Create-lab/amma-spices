@@ -4522,7 +4522,7 @@ a:focus {
     .breadcrumb-item i::before {
       margin: 0; }
   .breadcrumb-item a {
-    color: #fff; 
+    color: #000000; 
     font-weight:500;
   }
     .breadcrumb-item a:hover, .breadcrumb-item a:focus {
@@ -4534,7 +4534,7 @@ a:focus {
   .breadcrumb-item + .breadcrumb-item {
     padding-left: 1rem; }
     .breadcrumb-item + .breadcrumb-item:before {
-      color: #fff;
+      color: #000;
       content: '\f112';
       font-family: "molla";
       padding-right: .7rem;
@@ -17604,6 +17604,7 @@ footer.footer.footer-2,
     background: linear-gradient(180deg, #fff9f1 0%, #ffffff 100%) !important;
     color: var(--text2) !important;
     border-top: 1px solid rgba(75, 59, 46, 0.08);
+    margin-top: 40px;
 }
 
 .footer .widget-title,
