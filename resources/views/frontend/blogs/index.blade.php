@@ -19,7 +19,7 @@
         }
 
         .header-28 .header-search .search-toggle {
-            color: #ffffff;
+            color: #ffffff !important;
         }
 
         .bsp-related {
