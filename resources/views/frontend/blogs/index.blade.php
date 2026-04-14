@@ -52,7 +52,7 @@
             <div class="bsp-hero__overlay"></div>
             <div class="bsp-hero__body">
 
-                <h1 class="bsp-hero__title">Blogs & & Articles</h1>
+                <h1 class="bsp-hero__title">Blogs & Articles</h1>
 
             </div>
         </div>
