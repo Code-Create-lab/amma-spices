@@ -567,7 +567,7 @@
             <div class="blog-section">
                 <div class="container">
                     <div class="as-head">
-                        <h2>Blogs & &amp; Articles</h2>
+                        <h2>Blogs &amp; Articles</h2>
                         <div class="as-divider"><span class="as-divider-dot"></span></div>
                     </div>
 
