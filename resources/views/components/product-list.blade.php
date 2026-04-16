@@ -498,8 +498,8 @@ $products = Product::with(['category','images','variations','cart'])
 
     @media (max-width: 767.98px) {
         .product-card__thumb {
-            height: auto;
-            aspect-ratio: 5 / 6;
+            /* height: auto; */
+            /* aspect-ratio: 5 / 6; */
         }
 
         .product-card__slide img {
@@ -530,23 +530,23 @@ $products = Product::with(['category','images','variations','cart'])
         @endphp
 
         @php
-                    $mrp = $product->variations[0]->mrp ?? $product->base_mrp;
-                    $price = $product->variations[0]->price ?? $product->base_price;
-                    $percentOff = $mrp > 0 && $price > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
+            $mrp = $product->variations[0]->mrp ?? $product->base_mrp;
+            $price = $product->variations[0]->price ?? $product->base_price;
+            $percentOff = $mrp > 0 && $price > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
 
-                    // Build image list — access ->images directly so Laravel lazy-loads
-                    // if the controller didn't eager-load. Use ->loadMissing() in the
+            // Build image list — access ->images directly so Laravel lazy-loads
+            // if the controller didn't eager-load. Use ->loadMissing() in the
             // controller (see comment below) to avoid N+1 in production.
-                    $sliderImages = collect([$product->product_image]);
-                    foreach ($product->images as $img) {
-                        if (!empty($img->image)) {
-                            $sliderImages->push($img->image);
-                        }
-                    }
-                    $sliderId = 'pslider-' . $product->product_id;
-                    $hasMultiple = $sliderImages->count() > 1;
+            $sliderImages = collect([$product->product_image]);
+            foreach ($product->images as $img) {
+                if (!empty($img->image)) {
+                    $sliderImages->push($img->image);
+                }
+            }
+            $sliderId = 'pslider-' . $product->product_id;
+            $hasMultiple = $sliderImages->count() > 1;
 
-                    $categoryTitle = $product->category->title ?? null;
+            $categoryTitle = $product->category->title ?? null;
         @endphp
 
         <div class="col-md-3">
