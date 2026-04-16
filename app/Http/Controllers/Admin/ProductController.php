@@ -714,7 +714,7 @@ class ProductController extends Controller
 
         $enternew = NULL;
         $enternewim = NULL;
-        if ($request->images != NULL) {
+        if ($request->hasFile('images')) {
             $deleteold = ProductImage::where('product_id', $getProduct->product_id)
                 ->where('type', 1)
                 ->get();
@@ -730,12 +730,11 @@ class ProductController extends Controller
                 ->where('type', 1)
                 ->delete();
 
-            foreach ($images as $image) {
+            foreach ($request->file('images') as $image) {
                 $fileName = $image->getClientOriginalName();
                 $fileName = str_replace(" ", "-", $fileName);
                 if ($this->storage_space != "same_server") {
                     $product_image_name = $image->getClientOriginalName();
-                    $product_image = $request->file('product_image');
                     $filePath1 = '/product/' . $product_image_name;
                     Storage::disk($this->storage_space)->put($filePath1, fopen($image, 'r+'), 'public');
                 } else {
@@ -745,7 +744,7 @@ class ProductController extends Controller
                 }
 
                 // dd($filePath1);
-                $enternewim = ProductImage::insert([
+                $enternewim = ProductImage::create([
                     'product_id' => $getProduct->product_id,
                     'image' => $filePath1,
                     'type' => 1

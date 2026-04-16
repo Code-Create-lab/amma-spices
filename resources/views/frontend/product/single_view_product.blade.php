@@ -89,59 +89,67 @@
                                 <div class="row">
                                     <div class="product-images-container">
                                         {{-- Main Image Carousel --}}
-                                        <div class="owl-carousel owl-theme product-img-list owl-simple" data-toggle="owl"
-                                            data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
-                                            @foreach ($response['images'] as $index => $media)
-                                                @php
-                                                    $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
-                                                    $videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
-                                                    $isVideo = in_array(strtolower($extension), $videoExtensions);
-                                                    $mediaSrc = asset('storage/' . $media['image']);
-                                                @endphp
+                                        <div class="owl-carousel owl-theme product-img-list owl-simple" id="product-main-carousel" data-toggle="owl"
+                                            data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": false}'>
+                                            @if(!empty($response['images']) && count($response['images']) > 0)
+                                                @foreach ($response['images'] as $index => $media)
+                                                    @php
+                                                        $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
+                                                        $videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
+                                                        $isVideo = in_array(strtolower($extension), $videoExtensions);
+                                                        $mediaSrc = asset('storage/' . $media['image']);
+                                                    @endphp
 
+                                                    <div class="items-list">
+                                                        @if ($isVideo)
+                                                            <video controls style="width: 100%; height: auto;">
+                                                                <source src="{{ $mediaSrc }}" type="video/{{ $extension }}">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                        @else
+                                                            <img src="{{ $mediaSrc }}" alt="Product Image {{ $index + 1 }}" @if($index == 0) class="product-image" data-zoom-image="{{ $mediaSrc }}" @endif>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @else
                                                 <div class="items-list">
-                                                    @if ($isVideo)
-                                                        <video controls style="width: 100%; height: auto;">
-                                                            <source src="{{ $mediaSrc }}"
-                                                                type="video/{{ $extension }}">
-                                                            Your browser does not support the video tag.
-                                                        </video>
-                                                    @else
-                                                        <img src="{{ $mediaSrc }}"
-                                                            alt="Product Image {{ $index + 1 }}">
-                                                    @endif
+                                                    <img class="product-image" src="{{ asset('storage/' . $response['image']) }}" alt="{{ $response['name'] }}" data-zoom-image="{{ asset('storage/' . $response['image']) }}">
                                                 </div>
-                                            @endforeach
+                                            @endif
                                         </div>
 
                                         {{-- Thumbnail Carousel --}}
                                         <div class="owl-carousel owl-theme product-thumb-list">
-                                            @foreach ($response['images'] as $index => $media)
-                                                @php
-                                                    $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
-                                                    $videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
-                                                    $isVideo = in_array(strtolower($extension), $videoExtensions);
-                                                    $mediaSrc = asset('storage/' . $media['image']);
-                                                @endphp
+                                            @if(!empty($response['images']) && count($response['images']) > 0)
+                                                @foreach ($response['images'] as $index => $media)
+                                                    @php
+                                                        $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
+                                                        $videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
+                                                        $isVideo = in_array(strtolower($extension), $videoExtensions);
+                                                        $mediaSrc = asset('storage/' . $media['image']);
+                                                    @endphp
 
-                                                <div class="thumb-item" data-index="{{ $index }}">
-                                                    @if ($isVideo)
-                                                        <div class="video-thumb">
-                                                            <video
-                                                                style="width: 100%; height: 80px; object-fit: cover; pointer-events: none;">
-                                                                <source src="{{ $mediaSrc }}"
-                                                                    type="video/{{ $extension }}">
-                                                            </video>
-                                                            <div class="play-icon">
-                                                                <i class="icon-play"></i>
+                                                    <div class="thumb-item" data-index="{{ $index }}">
+                                                        @if ($isVideo)
+                                                            <div class="video-thumb">
+                                                                <video
+                                                                    style="width: 100%; height: 80px; object-fit: cover; pointer-events: none;">
+                                                                    <source src="{{ $mediaSrc }}" type="video/{{ $extension }}">
+                                                                </video>
+                                                                <div class="play-icon">
+                                                                    <i class="icon-play"></i>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @else
-                                                        <img src="{{ $mediaSrc }}"
-                                                            alt="Thumbnail {{ $index + 1 }}">
-                                                    @endif
+                                                        @else
+                                                            <img src="{{ $mediaSrc }}" alt="Thumbnail {{ $index + 1 }}">
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="thumb-item" data-index="0">
+                                                    <img src="{{ asset('storage/' . $response['image']) }}" alt="Main Thumbnail">
                                                 </div>
-                                            @endforeach
+                                            @endif
                                         </div>
                                     </div>
 
