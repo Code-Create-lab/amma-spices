@@ -42,7 +42,7 @@ return [
         'default_return_address_id' => env('ITHINK_RETURN_ADDRESS_ID', '24'),
         'logistics_name'    => env('ITHINK_LOGISTICS_NAME', 'Delhivery'),
     ],
-   'razorpay' => [
+    'razorpay' => [
         'key'    => env('RAZORPAY_KEY'),
         'secret' => env('RAZORPAY_SECRET'),
         'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
@@ -61,6 +61,9 @@ return [
         'sender_id' => env('SMS_SENDER_ID', 'BBSOAP'),
         'peid' => env('SMS_PEID', '1701176414187427388'),
         'default_template_id' => env('SMS_DEFAULT_TEMPLATE_ID', '1707176361958332349'),
+    ],
+    'blog_engine' => [
+        'webhook_secret' => env('BLOG_ENGINE_WEBHOOK_SECRET'),
     ],
 
 
