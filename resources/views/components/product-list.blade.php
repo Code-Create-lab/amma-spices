@@ -97,11 +97,17 @@ $products = Product::with(['category','images','variations','cart'])
 
     .product-card__slide img {
         width: 100%;
+        max-width: 100%;
         height: 100% !important;
         object-fit: cover;
         display: block;
         filter: brightness(0.88);
         transition: transform 0.5s ease, filter 0.3s ease;
+        pointer-events: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .product-card:hover .product-card__slide img {
@@ -498,8 +504,8 @@ $products = Product::with(['category','images','variations','cart'])
 
     @media (max-width: 767.98px) {
         .product-card__thumb {
-            /* height: auto; */
-            /* aspect-ratio: 5 / 6; */
+            height: auto;
+            aspect-ratio: 5 / 6;
         }
 
         .product-card__slide img {
