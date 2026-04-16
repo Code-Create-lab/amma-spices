@@ -684,7 +684,7 @@
                     <div class="container">
                         <div class="row" style="display: block;">
                             <div class="heading">
-                                <h2 class="title  text-center">Related products</h2>
+                                <h2 class="title  text-center">Recently Viewed products</h2>
                                 <span class="seprater-img"><img src="{{ asset('assets/img/seprater.png') }}"></span>
                             </div>
                         </div>
