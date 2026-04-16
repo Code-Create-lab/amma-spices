@@ -11,7 +11,8 @@ class Banner extends Model
     use HasFactory;
     protected $fillable = [
         'uuid',
-        'image'
+        'image',
+        'mobile_banner'
     ];
     protected static function boot()
     {

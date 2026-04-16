@@ -1,4 +1,4 @@
-@extends('admin.layout.app',['title' => 'Banners'])
+@extends('admin.layout.app', ['title' => 'Banners'])
 
 @section('content')
     <div class="container-fluid">
@@ -43,26 +43,30 @@
                             @csrf
 
                             <div class="row">
-                                <div class="col-md-8">
-                                    <label>Previous Image</label>
-                                    <img src="{{ $url_aws . $banner->image }}"
-                                        style="width:100px; height:100px; border-radius:50%;object-fit:cover;object-position:center;" />
-                                </div>
-                                <br>
-                                <div class="col-md-6">
-                                    <label
-                                        class="bmd-label-floating">{{ __('keywords.Image') }}<b>({{ __('keywords.banner image size') }} )</b></label>
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="customFile" name="image"
-                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
-                                        <label class="custom-file-label"
-                                            for="customFile">{{ __('keywords.Choose_File') }}</label>
+                                <div class="col-md-6 mb-4">
+                                    <label class="bmd-label-floating">{{ __('keywords.Image') }} (Desktop) <b>({{ __('keywords.banner image size') }})</b></label>
+                                    <div id="desktop-dropzone" class="dropzone-custom">
+                                        <div class="dz-message" style="{{ $banner->image ? 'display:none;' : '' }}">
+                                            <i class="fa fa-cloud-upload fa-3x mb-3"></i>
+                                            <h5>{{ __('keywords.Choose_File') }} or Drag & Drop</h5>
+                                        </div>
                                     </div>
+                                    <input type="file" id="desktop-input" style="display:none;" />
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label class="bmd-label-floating">Mobile Banner <b>(Optional)</b></label>
+                                    <div id="mobile-dropzone" class="dropzone-custom">
+                                        <div class="dz-message" style="{{ $banner->mobile_banner ? 'display:none;' : '' }}">
+                                            <i class="fa fa-mobile fa-3x mb-3"></i>
+                                            <h5>Choose Mobile Banner</h5>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="mobile-input" style="display:none;" />
                                 </div>
                             </div>
 
                             <br>
-                            <button type="submit" class="btn btn-primary pull-center">{{ __('keywords.Submit') }}</button>
+                            <button type="button" id="submit-all" class="btn btn-primary pull-center">{{ __('keywords.Submit') }}</button>
                             <a href="{{ route('banners') }}" class="btn">{{ __('keywords.Close') }}</a>
                             <div class="clearfix"></div>
                         </form>
@@ -71,13 +75,181 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .dropzone-custom {
+            border: 2px dashed #e7c840 !important;
+            background: #fdfdfd !important;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dropzone-custom:hover {
+            background: #fff9e6 !important;
+            border-color: #d1b435 !important;
+        }
+        .dropzone-custom .dz-message i {
+            color: #e7c840;
+            display: block;
+        }
+        .dropzone-custom .dz-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            z-index: 10;
+        }
+        .dropzone-custom .dz-preview .dz-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+        .dropzone-custom .dz-preview .dz-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .dropzone-custom .dz-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 30;
+            background: rgba(231, 200, 64, 0.9);
+            color: #1a1a1a !important;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            text-decoration: none !important;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: 1px solid #d1b435;
+        }
+        .dropzone-custom .dz-remove:hover {
+            background: #ff4d4d;
+            color: white !important;
+            border-color: #e60000;
+            transform: scale(1.1);
+        }
+        .dropzone-custom .dz-success-mark, .dropzone-custom .dz-error-mark {
+            pointer-events: none;
+            z-index: 25;
+            top: 50% !important;
+            left: 50% !important;
+            margin-left: -27px !important;
+            margin-top: -27px !important;
+        }
+        .dropzone-custom .dz-success-mark svg fill {
+            fill: #e7c840 !important;
+        }
+    </style>
+
     @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
         <script>
+            Dropzone.autoDiscover = false;
+
             $(document).ready(function() {
-                $(".custom-file-input").on("change", function() {
-                    var fileName = $(this).val().split("\\").pop();
-                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                var desktopDz = new Dropzone("#desktop-dropzone", {
+                    url: "#",
+                    autoProcessQueue: false,
+                    maxFiles: 1,
+                    addRemoveLinks: true,
+                    dictRemoveFile: '<i class="fa fa-times"></i>',
+                    acceptedFiles: "image/*",
+                    thumbnailWidth: 300,
+                    thumbnailHeight: 200,
+                    init: function() {
+                        var dz = this;
+                        @if ($banner->image)
+                            var mockFile = { name: "Desktop Banner", size: 12345 };
+                            dz.options.addedfile.call(dz, mockFile);
+                            dz.options.thumbnail.call(dz, mockFile, "{{ $url_aws . $banner->image }}");
+                            dz.emit("complete", mockFile);
+                        @endif
+
+                        this.on("addedfile", function() {
+                            $("#desktop-dropzone .dz-message").hide();
+                            if (this.files[1] != null) this.removeFile(this.files[0]);
+                        });
+                        this.on("removedfile", function() {
+                            if (this.files.length == 0) $("#desktop-dropzone .dz-message").show();
+                        });
+                    }
+                });
+
+                var mobileDz = new Dropzone("#mobile-dropzone", {
+                    url: "#",
+                    autoProcessQueue: false,
+                    maxFiles: 1,
+                    addRemoveLinks: true,
+                    dictRemoveFile: '<i class="fa fa-times"></i>',
+                    acceptedFiles: "image/*",
+                    thumbnailWidth: 200,
+                    thumbnailHeight: 300,
+                    init: function() {
+                        var dz = this;
+                        @if ($banner->mobile_banner)
+                            var mockFile = { name: "Mobile Banner", size: 12345 };
+                            dz.options.addedfile.call(dz, mockFile);
+                            dz.options.thumbnail.call(dz, mockFile, "{{ $url_aws . $banner->mobile_banner }}");
+                            dz.emit("complete", mockFile);
+                        @endif
+
+                        this.on("addedfile", function() {
+                            $("#mobile-dropzone .dz-message").hide();
+                            if (this.files[1] != null) this.removeFile(this.files[0]);
+                        });
+                        this.on("removedfile", function() {
+                            if (this.files.length == 0) $("#mobile-dropzone .dz-message").show();
+                        });
+                    }
+                });
+
+                $("#submit-all").on("click", function(e) {
+                    e.preventDefault();
+                    
+                    var formData = new FormData($("#banner-update-form")[0]);
+                    
+                    if (desktopDz.files.length > 0 && desktopDz.files[0].status) { // Only append if it's a new file (mock files don't have status)
+                         formData.append("image", desktopDz.files[0]);
+                    }
+                    
+                    if (mobileDz.files.length > 0 && mobileDz.files[0].status) {
+                        formData.append("mobile_banner", mobileDz.files[0]);
+                    }
+
+                    $.ajax({
+                        url: $("#banner-update-form").attr("action"),
+                        method: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            window.location.href = "{{ route('banners') }}";
+                        },
+                        error: function(xhr) {
+                            var errors = xhr.responseJSON.errors;
+                            var errorMsg = "";
+                            $.each(errors, function(key, value) {
+                                errorMsg += value[0] + "\n";
+                            });
+                            alert(errorMsg || "Something went wrong!");
+                        }
+                    });
                 });
             });
         </script>

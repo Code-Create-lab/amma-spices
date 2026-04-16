@@ -94,7 +94,12 @@
                     data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
                     @foreach ($banners as $banner)
                         <div class="intro-slide">
-                            <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r" alt="Amma's Spices">
+                            <picture>
+                                @if($banner->mobile_banner)
+                                    <source media="(max-width: 767px)" srcset="{{ asset('storage/' . $banner->mobile_banner) }}">
+                                @endif
+                                <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r" alt="Amma's Spices">
+                            </picture>
                         </div>
                     @endforeach
                 </div>

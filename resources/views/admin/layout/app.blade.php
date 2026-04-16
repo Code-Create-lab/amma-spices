@@ -6,7 +6,7 @@
     <title>
         {{ config('app.name') }} | {{ $title ?? "" }}
     </title>
-<!--     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/images/favicon.png') }}">
+    <!--     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/images/favicon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon.png') }}">
 
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/favicon.png') }}"> -->
@@ -17,13 +17,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{asset('images/icon/favicon.png')}}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{asset('images/icon/favicon.png')}}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{asset('images/icon/favicon.png')}}">
-    
+
 
     <link rel="shortcut icon" href="{{asset('images/icon/favicon.png')}}">
     <meta name="robots" content="noindex, nofollow">
     <link href="{{ asset('assets_old/theme_assets/css/app.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets_old/theme_assets/css/custom.css') }}" rel="stylesheet" />
-    <link href="{{ asset('admin/css/blog.css') }}" rel="stylesheet" />
+    <link href="{{ asset('admin_assets/css/blog.css') }}" rel="stylesheet" />
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.2/iconfont/material-icons.min.css"
         integrity="sha512-y9glprRcVESvYY3suAqBUYXx0ySbQNvbzzgvLy9F2o38Y7XCNeq/No2gnHjV3+Rjyq5ijoPZRMXotpdw6jcG4g=="
@@ -106,17 +106,17 @@
                 <div class="col-md-5" align="right">
                     <div class="col-md-4" align="right">
                         <select class="form-control changeLang">
-                            <option value="en"
-                                {{ session()->get('locale') == 'en' || config('app.locale') == 'en' ? 'selected' : '' }}>
+                            <option value="en" {{ session()->get('locale') == 'en' || config('app.locale') == 'en' ?
+                                'selected' : '' }}>
                                 English</option>
-                            <option value="bu"
-                                {{ session()->get('locale') == 'bu' || config('app.locale') == 'bu' ? 'selected' : '' }}>
+                            <option value="bu" {{ session()->get('locale') == 'bu' || config('app.locale') == 'bu' ?
+                                'selected' : '' }}>
                                 Bulgarian</option>
-                            <option value="in"
-                                {{ session()->get('locale') == 'in' || config('app.locale') == 'in' ? 'selected' : '' }}>
+                            <option value="in" {{ session()->get('locale') == 'in' || config('app.locale') == 'in' ?
+                                'selected' : '' }}>
                                 Hindi</option>
-                            <option value="ch"
-                                {{ session()->get('locale') == 'ch' || config('app.locale') == 'ch' ? 'selected' : '' }}>
+                            <option value="ch" {{ session()->get('locale') == 'ch' || config('app.locale') == 'ch' ?
+                                'selected' : '' }}>
                                 Chinese</option>
                         </select>
                     </div>
@@ -137,33 +137,41 @@
     <!-- END #app -->
     @yield('line-chart')
     @yield('jQuery')
-    <script src="{{ asset('assets_old/theme_assets/js/app.min.js') }}"></script> {{-- Jquery 3.5, JqueryUI  all minified, don't include this libraries again  --}}
+    <script src="{{ asset('assets_old/theme_assets/js/app.min.js') }}"></script> {{-- Jquery 3.5, JqueryUI all minified,
+    don't include this libraries again --}}
     <script type="text/javascript">
         var url = "{{ route('changeLang') }}";
 
-        $(".changeLang").change(function() {
+        $(".changeLang").change(function () {
             window.location.href = url + "?lang=" + $(this).val();
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script> --}}
+    {{--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script> --}}
     <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js') }}"></script>
     <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}">
     </script>
     <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/dataTables.buttons.min.js') }}">
     </script>
-    <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
-    <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
-    <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}">
-    </script>
-    <script src="{{ asset('assets_old/theme_assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js') }}">
-    </script>
+    <script
+        src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
+    <script
+        src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
+    <script
+        src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+    <script
+        src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+    <script
+        src="{{ asset('assets_old/theme_assets/plugins/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}">
+        </script>
+    <script
+        src="{{ asset('assets_old/theme_assets/plugins/datatables.net-responsive/js/dataTables.responsive.min.js') }}">
+        </script>
     <script
         src="{{ asset('assets_old/theme_assets/plugins/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}">
-    </script>
+        </script>
     <script src="{{ asset('assets_old/theme_assets/plugins/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/4.33.2/tagify.min.js"></script>
     @yield('postload-section')
