@@ -25044,7 +25044,7 @@ p.tag-line-text {
 }
 
 .intro-slide::after {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 248, 238, 0.55) 38%, rgba(255, 255, 255, 0.05) 75%);
+  /* background: linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 248, 238, 0.55) 38%, rgba(255, 255, 255, 0.05) 75%); */
 }
 
 .baneer-img-r {
