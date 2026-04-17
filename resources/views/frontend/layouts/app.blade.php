@@ -48,7 +48,7 @@
     @if (Route::currentRouteName() !== 'index')
         <style>
             main {
-                margin-top: 12rem;
+                margin-top: 10rem;
             }
         </style>
     @endif
