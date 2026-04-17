@@ -49,6 +49,18 @@ document.addEventListener("DOMContentLoaded", function() {
             cartInput.value = "{{ $order->cart_id }}";
             form.appendChild(cartInput);
 
+            var restoreAuthInput = document.createElement('input');
+            restoreAuthInput.type = 'hidden';
+            restoreAuthInput.name = 'restore_auth';
+            restoreAuthInput.value = @json($restoreAuthAfterPayment ? '1' : '0');
+            form.appendChild(restoreAuthInput);
+
+            var authRestoreSignatureInput = document.createElement('input');
+            authRestoreSignatureInput.type = 'hidden';
+            authRestoreSignatureInput.name = 'auth_restore_signature';
+            authRestoreSignatureInput.value = @json($authRestoreSignature);
+            form.appendChild(authRestoreSignatureInput);
+
             document.body.appendChild(form);
             form.submit();
         },

@@ -31,6 +31,7 @@ class Orders extends Model
         'store_approval',
         'store_id',
         'user_id',
+        'is_guest_checkout',
         'address_id',
         'total_products_mrp',
         'price_without_delivery',
@@ -54,6 +55,10 @@ class Orders extends Model
         'height',
         'is_view',
 
+    ];
+
+    protected $casts = [
+        'is_guest_checkout' => 'boolean',
     ];
 
     /**

@@ -287,6 +287,7 @@ class Login extends Component
 
             // Login user
             Auth::login($user);
+            session()->forget(['guestUser', 'checkout_mode', 'guest_checkout_address_uuids', 'guest_checkout_email', 'guest_order_access']);
 
             // Merge session cart to database
             $this->mergeSessionCartToDatabase();
@@ -299,9 +300,7 @@ class Login extends Component
                 'username' => $this->username
             ]);
 
-            // Redirect to cart
-            // return redirect()->route('getCartItems');
-            return redirect()->route('index');
+            return redirect()->to($this->getPostLoginRedirectUrl());
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->isLoading = false;
             throw $e;
@@ -426,6 +425,35 @@ class Login extends Component
     private function generateSecureOtp(): string
     {
         return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function getPostLoginRedirectUrl(): string
+    {
+        $referer = (string) request()->headers->get('referer', '');
+        $refererPath = rtrim((string) parse_url($referer, PHP_URL_PATH), '/');
+        $refererHost = (string) parse_url($referer, PHP_URL_HOST);
+
+        $cartPath = rtrim(route('getCartItems', [], false), '/');
+        $checkoutPath = rtrim(route('checkout.index', [], false), '/');
+        $loginPaths = [
+            rtrim(route('login.index', [], false), '/'),
+            rtrim(route('customer.login.index', [], false), '/'),
+        ];
+
+        if (in_array($refererPath, [$cartPath, $checkoutPath], true)) {
+            return route('checkout.index');
+        }
+
+        if (
+            $referer &&
+            $refererHost === request()->getHost() &&
+            $refererPath &&
+            !in_array($refererPath, $loginPaths, true)
+        ) {
+            return $referer;
+        }
+
+        return route('index');
     }
 
     /**

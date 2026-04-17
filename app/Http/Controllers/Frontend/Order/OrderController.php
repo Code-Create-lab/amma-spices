@@ -40,13 +40,52 @@ use Razorpay\Api\Api;
 
 class OrderController extends Controller
 {
-    public function index()
+    private function getGuestOrderAccess(): ?array
     {
-        $orders = Orders::with(['orderItems.variation.variation_attributes.attribute.attribute', 'address'])
-            ->where('user_id', Auth::id())
+        $guestOrderAccess = session('guest_order_access');
+
+        if (!is_array($guestOrderAccess) || empty($guestOrderAccess['user_id'])) {
+            return null;
+        }
+
+        return $guestOrderAccess;
+    }
+
+    private function rememberGuestOrderAccess(Orders $order): void
+    {
+        if (!$order->is_guest_checkout) {
+            session()->forget('guest_order_access');
+            return;
+        }
+
+        session()->put('guest_order_access', [
+            'user_id' => (int) $order->user_id,
+            'email' => (string) ($order->address?->receiver_email ?? $order->user?->email ?? ''),
+            'last_order_id' => (int) $order->order_id,
+        ]);
+    }
+
+    public function index(Request $request)
+    {
+        $guestOrderAccess = $this->getGuestOrderAccess();
+        $isGuestOrderView = !Auth::check() && !empty($guestOrderAccess);
+
+        if (!Auth::check() && !$isGuestOrderView) {
+            return redirect()->route('customer.login.index');
+        }
+
+        $viewerUserId = Auth::id() ?? $guestOrderAccess['user_id'];
+
+        $ordersQuery = Orders::with(['orderItems.variation.variation_attributes.attribute.attribute', 'address'])
+            ->where('user_id', $viewerUserId)
             ->where('order_status','!=','failed')
-            ->orderBy('order_id', 'desc')
-            ->paginate(4);
+            ->orderBy('order_id', 'desc');
+
+        if ($isGuestOrderView) {
+            $ordersQuery->where('is_guest_checkout', true);
+        }
+
+        $orders = $ordersQuery->paginate(4);
 
         // $razorPayOrders = Orders::with([
         //     'payment'
@@ -54,9 +93,22 @@ class OrderController extends Controller
         //     $q->whereIn('payment_status', ['pending', 'created', 'initiated']);
         // })->orderBy('order_id', 'desc')->get();
 
-         $razorPayOrders = Orders::with('payment')->where('user_id', Auth::id())
-        ->whereIn('payment_status', ['Pending', 'created', 'initiated','pending'])
-         ->orderBy('order_id', 'desc')->get();
+        $razorPayOrders = collect();
+
+        if (Auth::check()) {
+            $razorPayOrders = Orders::with('payment')->where('user_id', Auth::id())
+                ->whereIn('payment_status', ['Pending', 'created', 'initiated','pending'])
+                ->orderBy('order_id', 'desc')->get();
+        }
+
+        $showGuestLoginPrompt = $isGuestOrderView
+            ? Orders::where('user_id', $viewerUserId)
+                ->where('order_status', '!=', 'failed')
+                ->where('is_guest_checkout', false)
+                ->exists()
+            : false;
+
+        $guestOrderEmail = $guestOrderAccess['email'] ?? null;
 
 
         // $cancelOrderCount = Orders::where('user_id', Auth::id())->where('payment_method', "COD")->get();
@@ -151,7 +203,10 @@ class OrderController extends Controller
         }
 
         return view('frontend.order.index', [
-            'orders' => $orders
+            'orders' => $orders,
+            'isGuestOrderView' => $isGuestOrderView,
+            'showGuestLoginPrompt' => $showGuestLoginPrompt,
+            'guestOrderEmail' => $guestOrderEmail,
         ]);
     }
 
@@ -668,9 +723,11 @@ class OrderController extends Controller
     {
         try {
             $decryptedId = Crypt::decrypt($orderId);
-            // dd($decryptedId);
             $order = Orders::findOrFail($decryptedId);
-            return view('frontend.order.success', compact('order'));
+
+            $this->rememberGuestOrderAccess($order);
+
+            return redirect()->route('customer.orders.index');
         } catch (\Exception $e) {
             abort(404); // or show error page
         }
@@ -868,11 +925,30 @@ class OrderController extends Controller
     }
     public function deleteAddress(Request $request, $address_id)
     {
-        $address = Address::where('uuid', $address_id)->firstOrFail();
+        $query = Address::where('uuid', $address_id);
+
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+        } else {
+            $guestAddressUuids = array_values(array_filter((array) session('guest_checkout_address_uuids', [])));
+
+            abort_if(!in_array($address_id, $guestAddressUuids, true), 403);
+            $query->whereIn('uuid', $guestAddressUuids);
+        }
+
+        $address = $query->firstOrFail();
         $address->update([
             'is_deleted' => true
         ]);
-        return Redirect::route('checkout')->with('success', 'Address Deleted Successfully');
+
+        if (!Auth::check()) {
+            session()->put(
+                'guest_checkout_address_uuids',
+                array_values(array_diff((array) session('guest_checkout_address_uuids', []), [$address_id]))
+            );
+        }
+
+        return Redirect::route('checkout.index')->with('success', 'Address Deleted Successfully');
     }
 
 

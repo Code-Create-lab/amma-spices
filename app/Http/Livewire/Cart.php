@@ -411,29 +411,27 @@ class Cart extends Component
 
     public function checkout()
     {
-        // Check if user is logged in
-        if (Auth::check()) {
-            // Logged in user cart from DB
-            $cart_items = ModelCart::with(['product', 'variation'])
-                ->where('user_id', Auth::id())
-                ->get();
-        } else {
-            // Guest cart from session
-
-            // $this->dispatch('toast', [
-            //     'type' => 'error',
-            //     'success' => true,
-            //     'message' => "Please Login to proceed to checkout",
-            // ]);
+        if (!Auth::check()) {
             $this->dispatch('show-login-modal');
-            // return;
             return;
-
-
-            $cart_items = collect(session('cart', [])); // returns empty array if null
         }
 
-        // Check if cart is empty
+        return $this->redirectToCheckout();
+    }
+
+    public function guestCheckout()
+    {
+        session()->put('checkout_mode', 'guest');
+
+        return $this->redirectToCheckout();
+    }
+
+    protected function redirectToCheckout()
+    {
+        $cart_items = Auth::check()
+            ? ModelCart::with(['product', 'variation'])->where('user_id', Auth::id())->get()
+            : collect(session('cart', []));
+
         if ($cart_items->isEmpty()) {
             $this->dispatch('toast', [
                 'type' => 'error',
