@@ -4,6 +4,194 @@
     .product-details-quantity .input-group.input-spinner {
         width: 50%;
     }
+
+    <style>.product-details-quantity .input-group.input-spinner {
+        width: 50%;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PRODUCT GALLERY  (PGC — custom, no Owl dependency)
+    ═══════════════════════════════════════════════════ */
+    .pgc {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 12px;
+        width: 100%;
+    }
+
+    /* ── Stage ───────────────────────────────────────── */
+    .pgc__stage {
+        position: relative;
+        flex: 1 1 0%;
+        min-width: 0;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #ffffffff;
+        aspect-ratio: 1 / 1;
+    }
+
+    .pgc__slide {
+        display: none;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pgc__slide.is-active {
+        display: flex;
+    }
+
+    .pgc__slide img,
+    .pgc__slide video {
+        max-width: 100%;
+        max-height: 100%;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        border-radius: 8px;
+    }
+
+    /* ── Nav arrows ──────────────────────────────────── */
+    .pgc__nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background .2s, opacity .2s, transform .15s;
+        font-size: 15px;
+        color: #333;
+        padding: 0;
+    }
+
+    .pgc__nav:hover {
+        background: #fff;
+        transform: translateY(-50%) scale(1.08);
+    }
+
+    .pgc__nav--prev {
+        left: 10px;
+    }
+
+    .pgc__nav--next {
+        right: 10px;
+    }
+
+    .pgc__nav.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Slide counter badge */
+    .pgc__counter {
+        position: absolute;
+        bottom: 10px;
+        right: 14px;
+        background: rgba(0, 0, 0, .45);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 20px;
+        letter-spacing: .4px;
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    /* ── Thumbnails ──────────────────────────────────── */
+    .pgc__thumbs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 74px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        max-height: 480px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .pgc__thumbs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .pgc__thumb {
+        width: 74px;
+        height: 74px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid #e8e8e8;
+        transition: border-color .2s, box-shadow .2s;
+        position: relative;
+        background: #f4f4f4;
+    }
+
+    .pgc__thumb:hover {
+        border-color: #bbb;
+    }
+
+    .pgc__thumb.is-active {
+        border-color: #c96;
+        /* match your brand accent */
+        box-shadow: 0 0 0 1px #c96;
+    }
+
+    .pgc__thumb img,
+    .pgc__thumb video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        pointer-events: none;
+    }
+
+    /* Video thumb overlay */
+    .pgc__play {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, .28);
+        color: #fff;
+        font-size: 17px;
+    }
+
+    /* ── Mobile ──────────────────────────────────────── */
+    @media (max-width: 575px) {
+        .pgc {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pgc__thumbs {
+            flex-direction: row;
+            width: 100%;
+            max-height: none;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding-bottom: 2px;
+        }
+
+        .pgc__thumb {
+            width: 62px;
+            height: 62px;
+        }
+    }
+</style>
 </style>
 
 @section('content')
@@ -85,68 +273,80 @@
                 <div class="product-details-top">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="product-gallery product-gallery-vertical">
-                                <div class="row">
-                                    <div class="product-images-container">
-                                        {{-- Main Image Carousel --}}
-                                        <div class="owl-carousel owl-theme product-img-list owl-simple" data-toggle="owl"
-                                            data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
-                                            @foreach ($response['images'] as $index => $media)
-                                                @php
-                                                    $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
-                                                    $videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
-                                                    $isVideo = in_array(strtolower($extension), $videoExtensions);
-                                                    $mediaSrc = asset('storage/' . $media['image']);
-                                                @endphp
+                            <div class="pgc" id="productGallery">
 
-                                                <div class="items-list">
-                                                    @if ($isVideo)
-                                                        <video controls style="width: 100%; height: auto;">
-                                                            <source src="{{ $mediaSrc }}"
-                                                                type="video/{{ $extension }}">
-                                                            Your browser does not support the video tag.
-                                                        </video>
-                                                    @else
-                                                        <img src="{{ $mediaSrc }}"
-                                                            alt="Product Image {{ $index + 1 }}">
-                                                    @endif
-                                                </div>
-                                            @endforeach
+                                {{-- ── Thumbnails ────────────────────────────────── --}}
+                                <div class="pgc__thumbs" id="pgcThumbs">
+                                    @if(!empty($response['images']) && count($response['images']) > 0)
+                                        @foreach ($response['images'] as $index => $media)
+                                            @php
+                                                $ext = strtolower(pathinfo($media['image'], PATHINFO_EXTENSION));
+                                                $isVid = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
+                                                $src = asset('storage/' . $media['image']);
+                                            @endphp
+                                            <div class="pgc__thumb {{ $index === 0 ? 'is-active' : '' }}"
+                                                data-pgc-index="{{ $index }}" data-pgc-src="{{ $src }}"
+                                                data-pgc-type="{{ $isVid ? 'video' : 'image' }}" data-pgc-ext="{{ $ext }}">
+                                                @if($isVid)
+                                                    <video src="{{ $src }}" muted preload="metadata"></video>
+                                                    <span class="pgc__play"><i class="icon-play"></i></span>
+                                                @else
+                                                    <img src="{{ $src }}" alt="Thumb {{ $index + 1 }}" loading="lazy">
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="pgc__thumb is-active" data-pgc-index="0"
+                                            data-pgc-src="{{ asset('storage/' . $response['image']) }}" data-pgc-type="image">
+                                            <img src="{{ asset('storage/' . $response['image']) }}"
+                                                alt="{{ $response['name'] }}" loading="lazy">
                                         </div>
+                                    @endif
+                                </div>
 
-                                        {{-- Thumbnail Carousel --}}
-                                        <div class="owl-carousel owl-theme product-thumb-list">
-                                            @foreach ($response['images'] as $index => $media)
-                                                @php
-                                                    $extension = pathinfo($media['image'], PATHINFO_EXTENSION);
-                                                    $videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
-                                                    $isVideo = in_array(strtolower($extension), $videoExtensions);
-                                                    $mediaSrc = asset('storage/' . $media['image']);
-                                                @endphp
+                                {{-- ── Main Stage ─────────────────────────────────── --}}
+                                <div class="pgc__stage" id="pgcStage">
 
-                                                <div class="thumb-item" data-index="{{ $index }}">
-                                                    @if ($isVideo)
-                                                        <div class="video-thumb">
-                                                            <video
-                                                                style="width: 100%; height: 80px; object-fit: cover; pointer-events: none;">
-                                                                <source src="{{ $mediaSrc }}"
-                                                                    type="video/{{ $extension }}">
-                                                            </video>
-                                                            <div class="play-icon">
-                                                                <i class="icon-play"></i>
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                        <img src="{{ $mediaSrc }}"
-                                                            alt="Thumbnail {{ $index + 1 }}">
-                                                    @endif
-                                                </div>
-                                            @endforeach
+                                    {{-- Slides --}}
+                                    @if(!empty($response['images']) && count($response['images']) > 0)
+                                        @foreach ($response['images'] as $index => $media)
+                                            @php
+                                                $ext = strtolower(pathinfo($media['image'], PATHINFO_EXTENSION));
+                                                $isVid = in_array($ext, ['mp4', 'webm', 'ogg', 'mov']);
+                                                $src = asset('storage/' . $media['image']);
+                                            @endphp
+                                            <div class="pgc__slide {{ $index === 0 ? 'is-active' : '' }}"
+                                                data-pgc-index="{{ $index }}">
+                                                @if($isVid)
+                                                    <video controls preload="metadata">
+                                                        <source src="{{ $src }}" type="video/{{ $ext }}">
+                                                    </video>
+                                                @else
+                                                    <img src="{{ $src }}" alt="{{ $response['name'] }} – image {{ $index + 1 }}">
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="pgc__slide is-active" data-pgc-index="0">
+                                            <img src="{{ asset('storage/' . $response['image']) }}"
+                                                alt="{{ $response['name'] }}">
                                         </div>
-                                    </div>
+                                    @endif
 
-                                </div><!-- End .row -->
-                            </div><!-- End .product-gallery -->
+                                    {{-- Navigation --}}
+                                    <button class="pgc__nav pgc__nav--prev is-hidden" id="pgcPrev"
+                                        aria-label="Previous image">
+                                        <i class="icon-angle-left"></i>
+                                    </button>
+                                    <button class="pgc__nav pgc__nav--next" id="pgcNext" aria-label="Next image">
+                                        <i class="icon-angle-right"></i>
+                                    </button>
+
+                                    {{-- Slide counter --}}
+                                    <span class="pgc__counter" id="pgcCounter"></span>
+                                </div>
+
+                            </div>
                         </div><!-- End .col-md-6 -->
 
                         <div class="col-md-6">
@@ -185,8 +385,8 @@
                                 <div class="product-price" id="product-price">
                                     {{-- @dd($response['variations'][0]['price'] ?? $response['base_price'] ) --}}
                                     {{-- @if ($response['variations'][0]['price'] ?? $response['base_price'] == 0)
-                                        <span class="new-price">
-                                            ₹{{ number_format($price, 0, '.', ',') }}</span>
+                                    <span class="new-price">
+                                        ₹{{ number_format($price, 0, '.', ',') }}</span>
                                     @else --}}
                                     @if ($price != 0 || $price)
                                         <span class="old-price 1"> ₹{{ $mrp }}</span>
@@ -195,8 +395,8 @@
                                     <span class="new-price" id="product-price-current">
                                         ₹{{ number_format($price == 0 ? $mrp : $price, 0, '.', ',') }}</span>
                                     @if ($price != 0)
-                                        <span id="product-price-discount"
-                                            @if ($price == 0 || $mrp == $price) style="display: none;" @endif>
+                                        <span id="product-price-discount" @if ($price == 0 || $mrp == $price) style="display: none;"
+                                        @endif>
                                             <span class="discount">{{ (int) $percentOff }}%off</span>
                                         </span>
                                     @endif
@@ -206,8 +406,8 @@
                                 <span class="gst-n-text">(GST Included)</span>
 
                                 {{-- ────────────────────────────────────────────────
-     VARIATION ATTRIBUTES  (Color · Size · Weight/any)
-     ──────────────────────────────────────────────── --}}
+                                VARIATION ATTRIBUTES (Color · Size · Weight/any)
+                                ──────────────────────────────────────────────── --}}
                                 @if (!empty($response['variation_attributes']))
                                     @foreach ($response['variation_attributes'] as $attributeName => $attributeValues)
                                         @php
@@ -244,7 +444,7 @@
                                                                         if (
                                                                             $attr['name'] === 'Color' &&
                                                                             strtolower($attr['value']) ===
-                                                                                strtolower($attribute['value'])
+                                                                            strtolower($attribute['value'])
                                                                         ) {
                                                                             $hasStock = true;
                                                                             break 2;
@@ -260,12 +460,9 @@
                                                         <li>
                                                             <button type="button"
                                                                 class="swatch-color attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
-                                                                data-attr="{{ $attrType }}"
-                                                                data-value="{{ $colorHex }}"
-                                                                data-label="{{ $attribute['value'] }}"
-                                                                data-id="{{ $attribute['id'] }}"
-                                                                style="--swatch-color: {{ $colorHex }};"
-                                                                {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}
+                                                                data-attr="{{ $attrType }}" data-value="{{ $colorHex }}"
+                                                                data-label="{{ $attribute['value'] }}" data-id="{{ $attribute['id'] }}"
+                                                                style="--swatch-color: {{ $colorHex }};" {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}
                                                                 aria-label="{{ $attribute['value'] }}{{ !$hasStock ? ' – Out of Stock' : '' }}">
                                                                 <span class="swatch-inner"></span>
                                                                 @if (!$hasStock)
@@ -288,7 +485,7 @@
                                                                         if (
                                                                             $attr['name'] === 'Size' &&
                                                                             strtolower($attr['value']) ===
-                                                                                strtolower($attribute['value'])
+                                                                            strtolower($attribute['value'])
                                                                         ) {
                                                                             $hasStock = true;
                                                                             break 2;
@@ -304,11 +501,8 @@
                                                         <li>
                                                             <button type="button"
                                                                 class="pill-btn attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
-                                                                data-attr="{{ $attrType }}"
-                                                                data-value="{{ $sizeVal }}"
-                                                                data-label="{{ $attribute['value'] }}"
-                                                                data-id="{{ $attribute['id'] }}"
-                                                                {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
+                                                                data-attr="{{ $attrType }}" data-value="{{ $sizeVal }}"
+                                                                data-label="{{ $attribute['value'] }}" data-id="{{ $attribute['id'] }}" {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
                                                                 {{ strtoupper($attribute['value']) }}
                                                             </button>
                                                         </li>
@@ -326,9 +520,9 @@
                                                                     foreach ($variation['attributes'] as $attr) {
                                                                         if (
                                                                             strtolower($attr['name']) ===
-                                                                                strtolower($attributeName) &&
+                                                                            strtolower($attributeName) &&
                                                                             strtolower($attr['value']) ===
-                                                                                strtolower($attribute['value'])
+                                                                            strtolower($attribute['value'])
                                                                         ) {
                                                                             $hasStock = true;
                                                                             break 2;
@@ -343,11 +537,8 @@
                                                         <li>
                                                             <button type="button"
                                                                 class="pill-btn pill-btn--weight attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
-                                                                data-attr="{{ $attrType }}"
-                                                                data-value="{{ $attrVal }}"
-                                                                data-label="{{ $attribute['value'] }}"
-                                                                data-id="{{ $attribute['id'] }}"
-                                                                {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
+                                                                data-attr="{{ $attrType }}" data-value="{{ $attrVal }}"
+                                                                data-label="{{ $attribute['value'] }}" data-id="{{ $attribute['id'] }}" {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
                                                                 {{ $attribute['value'] }}
                                                                 @if (!$hasStock)
                                                                     <span class="oos-tag">Out of stock</span>
@@ -370,8 +561,8 @@
                                     <label for="qty">Qty:</label>
                                     <div class="product-details-quantity">
                                         <input type="number" id="qty"
-                                            class="form-control qty product-card__qty  product_quantity" value="1"
-                                            min="1" max="10" step="1" data-decimals="0" required>
+                                            class="form-control qty product-card__qty  product_quantity" value="1" min="1"
+                                            max="10" step="1" data-decimals="0" required>
                                     </div><!-- End .product-details-quantity -->
                                 </div><!-- End .details-filter-row -->
 
@@ -384,9 +575,9 @@
                                         <a data-id="{{ $response['id'] }}"
                                             class="{{ $isInWishlist ? 'remove-from-wishlist liked' : 'add-to-wishlist' }} wishlist  btn-product btn-wishlist"
                                             title="Wishlist">
-                                            <svg class="wish-icon" title="Like Safebox SVG File" width="21"
-                                                height="21" viewBox="0 0 24 24" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
+                                            <svg class="wish-icon" title="Like Safebox SVG File" width="21" height="21"
+                                                viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
                                                 <path
                                                     d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
                                                 </path>
@@ -416,12 +607,11 @@
                         </li>
                         {{-- @endif --}}
                         {{-- @if ($response['shipping'] != '')
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-shipping-link" data-toggle="tab"
-                                    href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab"
-                                    aria-selected="false">Shipping &
-                                    Returns</a>
-                            </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="product-shipping-link" data-toggle="tab" href="#product-shipping-tab"
+                                role="tab" aria-controls="product-shipping-tab" aria-selected="false">Shipping &
+                                Returns</a>
+                        </li>
                         @endif --}}
                         <li class="nav-item">
                             <a class="nav-link" id="product-review-link" data-toggle="tab" href="#product-review-tab"
@@ -463,8 +653,7 @@
                                                         <!-- End .ratings-val -->
                                                     </div><!-- End .ratings -->
                                                 </div><!-- End .rating-container -->
-                                                <span
-                                                    class="review-date">{{ $review->created_at->diffForHumans() }}</span>
+                                                <span class="review-date">{{ $review->created_at->diffForHumans() }}</span>
                                             </div><!-- End .col -->
                                             <div class="col">
                                                 {{-- <h4>{{$review->title}}</h4> --}}
@@ -495,7 +684,7 @@
                     <div class="container">
                         <div class="row" style="display: block;">
                             <div class="heading">
-                                <h2 class="title  text-center">Related products</h2>
+                                <h2 class="title  text-center">Recently Viewed products</h2>
                                 <span class="seprater-img"><img src="{{ asset('assets/img/seprater.png') }}"></span>
                             </div>
                         </div>
@@ -520,78 +709,7 @@
                         </div>
                         <div class="row">
                             @if ($related_products->isNotEmpty())
-                                @foreach ($related_products->where('product_id', '!=', $response['id'])->reverse() as $product)
-                                    @php
-                                        $isInWishlistLoopRelatedProd = $wishlist->contains(
-                                            'product_id',
-                                            $product->product_id,
-                                        );
-                                    @endphp
-                                    @if ($product->variation != null)
-                                        <div class="col-md-3" data-product-id="{{ $product->product_id }}">
-                                            <div class="container-full-sf">
-                                                <div class="container-full-sf-in">
-                                                    <a data-id="{{ $product->product_id }}"
-                                                        title="{{ $isInWishlistLoopRelatedProd ? ' Added to wishlist' : ' Add to wishlist' }}"
-                                                        class=" {{ $isInWishlistLoopRelatedProd ? 'remove-from-wishlist liked' : 'add-to-wishlist' }} wishlist-link-product"><svg
-                                                            class="wish-icon" title="Like Safebox SVG File"
-                                                            width="21" height="21" viewBox="0 0 24 24"
-                                                            stroke-width="2" stroke-linecap="round"
-                                                            stroke-linejoin="round">
-                                                            <path
-                                                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                                            </path>
-                                                        </svg></a>
-                                                    <a href="{{ route('single.product.view', $product->slug) }}">
-                                                        <div class="prod-div">
-                                                            <img class="product-img"
-                                                                src="{{ asset('storage/' . $product->product_image) }}"
-                                                                alt="{{ $product->product_name }}">
-                                                        </div>
-                                                        <h3 class="product-title">{{ $product->product_name }}</h3>
-                                                    </a>
-                                                    <div class="prod-price">
-
-                                                        @if ($price != 0)
-                                                            <span class="old-price">
-                                                                ₹{{ number_format($product->base_mrp, 0) }}</span>
-                                                        @endif
-
-                                                        <span class="new-price">
-                                                            ₹{{ number_format($product->base_price == 0 ? $product->base_mrp : $product->base_price, 0) }}</span>
-                                                    </div>
-                                                </div>
-
-                                                @if ($product->variation->stock > 0)
-                                                    <div class="cart-box-btn d-flex gap-10 align-items-center justify-content-center"
-                                                        data-product-id="{{ $product->product_id }}">
-                                                        <a class="add-to-cart-home add-to-cart">
-                                                            <span>Add to cart</span>
-                                                        </a>
-                                                        <div class="product-details-quantity">
-                                                            <input type="number"
-                                                                class="form-control qty product_quantity" value="1"
-                                                                min="1" max="10" step="1"
-                                                                data-decimals="0" required>
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <div
-                                                        class="cart-box-btn d-flex gap-10 align-items-center justify-content-center">
-                                                        <a class="add-to-cart-home disabled">
-                                                            <span>Out of Stock</span>
-                                                        </a>
-                                                    </div>
-                                                @endif
-                                                {{-- @if ($product->variation->stock > 0)
-                                                    <a class="add-to-cart-home add-to-cartJS"><span>Add To Cart</span></a>
-                                                @else
-                                                    <a class="add-to-cart-home add-to-cartJS"><span>Out of stock</span></a>
-                                                @endif --}}
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
+                                <x-product-list :products="$related_products->where('product_id', '!=', $response['id'])->reverse()" />
                             @endif
 
                         </div>
@@ -606,10 +724,10 @@
 
     <script src="{{ asset('assets/js/bootstrap-input-spinner.js') }}"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
 
-            $('.copy-coupon-code').on('click', function() {
+            $('.copy-coupon-code').on('click', function () {
                 const code = $(this).data('coupon-code');
                 const span = $(this).find('.button-text');
 
@@ -693,7 +811,7 @@
             }
             console.log(variations, 'variations');
 
-            $('.product-gallery-item').on('click', function(e) {
+            $('.product-gallery-item').on('click', function (e) {
                 e.preventDefault();
 
                 // Get current main image data
@@ -717,13 +835,13 @@
             });
 
             // Quantity Increase / Decrease
-            $(".cart-plus-btn-single").click(function() {
+            $(".cart-plus-btn-single").click(function () {
                 let $input = $(this).siblings("input.qty");
                 let currentVal = parseInt($input.val()) || 0;
                 $input.val(currentVal + 1).change();
             });
 
-            $('.cart-minus-btn-single').click(function() {
+            $('.cart-minus-btn-single').click(function () {
                 let $qty = $(this).siblings('.qty');
                 let currentVal = parseInt($qty.val()) || 1;
                 if (currentVal > 1) {
@@ -768,7 +886,7 @@
             }
 
             console.log(firstColorBtn, 'firstColorBtn', selectedAttributes);
-            $('[data-attr="Balck"]').each(function() {
+            $('[data-attr="Balck"]').each(function () {
                 const btnColor = $(this).data('value').toLowerCase().replace(/\s+/g, '');
 
                 console.log("btnColor", btnColor);
@@ -813,7 +931,7 @@
               });
 
               */
-            $(document).on('click', '.attribute-btn', function() {
+            $(document).on('click', '.attribute-btn', function () {
                 if ($(this).prop('disabled') || $(this).hasClass('oos')) return;
 
                 var attrName = $(this).data('attr');
@@ -875,7 +993,7 @@
                     }
                 });
 
-                $('[data-attr="colour"]').each(function() {
+                $('[data-attr="colour"]').each(function () {
                     const btnColor = $(this).data('value').toLowerCase().replace(/\s+/g, '');
 
                     console.log("btnColor", btnColor);
@@ -902,7 +1020,7 @@
             function updateProductDetails() {
 
                 console.log("variations", variations)
-                var foundVariation = variations.find(function(variation) {
+                var foundVariation = variations.find(function (variation) {
                     return variation.attributes.every(attr => {
                         var selectedAttr = selectedAttributes[attr.name];
                         console.log("selectedAttributes", selectedAttributes, attr)
@@ -1001,7 +1119,7 @@
             }
 
             // Add to Cart Click
-            $('.add-to-cartJS').click(function() {
+            $('.add-to-cartJS').click(function () {
                 // if (selectedVariationId) {
 
                 console.log("add-to-cartJS", selectedAttributes)
@@ -1019,7 +1137,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: cartData,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             $('#cart-count-span').html('(' + response.cart_count +
                                 ' Items)');
@@ -1063,7 +1181,7 @@
                             toastr.error(response.message);
                         }
                     },
-                    error: function(error) {
+                    error: function (error) {
                         toastr.error(error.responseJSON?.message ||
                             'Something went wrong.');
                     }
@@ -1074,7 +1192,7 @@
             });
 
             // Image Change on Hover
-            $(document).on('mouseenter', '.thumbnail', function() {
+            $(document).on('mouseenter', '.thumbnail', function () {
                 changeImage(this);
             });
 
@@ -1091,7 +1209,7 @@
     </script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var variations = Array.isArray(window.variationsData) ? window.variationsData : [];
             var $variantGroups = $('.variation-group');
             var attributeGroupCount = $variantGroups.length;
@@ -1129,7 +1247,7 @@
             if (!$priceDiscountWrap.length) {
                 $priceDiscountWrap = $(
                     '<span id="product-price-discount" style="display: none;"><span class="discount"></span></span>'
-                    );
+                );
                 $priceContainer.append($priceDiscountWrap);
             }
 
@@ -1163,10 +1281,10 @@
                 return normalizedName;
             }
 
-            variations = variations.map(function(variation) {
+            variations = variations.map(function (variation) {
                 variation._normalizedAttributes = {};
 
-                (variation.attributes || []).forEach(function(attr) {
+                (variation.attributes || []).forEach(function (attr) {
                     variation._normalizedAttributes[normalizeAttributeName(attr.name)] =
                         normalizeValue(attr.value);
                 });
@@ -1184,13 +1302,13 @@
 
             function getButtonLabel($button) {
                 return String($button.data('label') || $.trim($button.text()) || $button.data('value') || '')
-            .trim();
+                    .trim();
             }
 
             function cloneSelection(source) {
                 var copy = {};
 
-                Object.keys(source).forEach(function(key) {
+                Object.keys(source).forEach(function (key) {
                     copy[key] = {
                         id: source[key].id,
                         value: source[key].value
@@ -1216,12 +1334,12 @@
             }
 
             function hasMatchingVariation(selection, requireInStock) {
-                return variations.some(function(variation) {
+                return variations.some(function (variation) {
                     if (requireInStock && Number(variation.stock || 0) <= 0) {
                         return false;
                     }
 
-                    return Object.keys(selection).every(function(attrName) {
+                    return Object.keys(selection).every(function (attrName) {
                         return variation._normalizedAttributes[attrName] === selection[attrName]
                             .value;
                     });
@@ -1231,11 +1349,11 @@
             function refreshOptionStates() {
                 var selectionChanged = false;
 
-                $variantGroups.each(function() {
+                $variantGroups.each(function () {
                     var $group = $(this);
                     var attrName = normalizeAttributeName($group.data('attr-type'));
 
-                    $group.find('.attribute-btn').each(function() {
+                    $group.find('.attribute-btn').each(function () {
                         var $button = $(this);
                         var candidateSelection = cloneSelection(selectedAttributes);
 
@@ -1258,7 +1376,7 @@
 
                     var $selected = $group.find('.attribute-btn.selected').first();
                     if (!$selected.length || !isSelectable($selected)) {
-                        var $fallback = $group.find('.attribute-btn').filter(function() {
+                        var $fallback = $group.find('.attribute-btn').filter(function () {
                             return isSelectable($(this));
                         }).first();
 
@@ -1285,7 +1403,7 @@
                     return variations[0];
                 }
 
-                return variations.find(function(variation) {
+                return variations.find(function (variation) {
                     var variationAttributeCount = Array.isArray(variation.attributes) ? variation.attributes
                         .length : 0;
 
@@ -1293,7 +1411,7 @@
                         return false;
                     }
 
-                    return Object.keys(selectedAttributes).every(function(attrName) {
+                    return Object.keys(selectedAttributes).every(function (attrName) {
                         return variation._normalizedAttributes[attrName] === selectedAttributes[
                             attrName].value;
                     });
@@ -1319,41 +1437,78 @@
                 }
             }
 
+            var isVariationImageActive = false;
+
             function renderGalleryImage(imageUrl) {
                 var resolvedImage = imageUrl || defaultGalleryImage;
                 if (!resolvedImage) {
                     return;
                 }
 
-                var $firstMainImage = $mainGallery.find('.items-list img').first();
-                var $firstThumbImage = $thumbGallery.find('.thumb-item img').first();
-
-                if ($firstMainImage.length) {
-                    $firstMainImage.attr('src', resolvedImage);
-                }
-
-                if ($firstThumbImage.length) {
-                    $firstThumbImage.attr('src', resolvedImage);
-                }
+                var isVariation = (resolvedImage !== defaultGalleryImage);
 
                 if ($mainGallery.hasClass('owl-loaded')) {
-                    $mainGallery.trigger('to.owl.carousel', [0, 300]);
+                    if (isVariation) {
+                        if (!isVariationImageActive) {
+                            // Add variant image at index 0 safely
+                            var newMainHtml = '<div class="items-list"><img src="' + resolvedImage + '" style="width: 100%; height: auto; max-width: 100%; object-fit: contain; pointer-events: none;" alt="Variant"></div>';
+                            var newThumbHtml = '<div class="thumb-item"><img src="' + resolvedImage + '" alt="Variant Thumb"></div>';
 
-                    clearTimeout(gallerySyncTimer);
-                    gallerySyncTimer = setTimeout(function() {
-                        var $activeMainImage = $mainGallery.find('.owl-item.active img').first();
-                        var $activeThumbImage = $thumbGallery.find('.owl-item.active img').first();
+                            $mainGallery.trigger('add.owl.carousel', [newMainHtml, 0]).trigger('refresh.owl.carousel');
+                            $thumbGallery.trigger('add.owl.carousel', [newThumbHtml, 0]).trigger('refresh.owl.carousel');
 
-                        if ($activeMainImage.length) {
-                            $activeMainImage.attr('src', resolvedImage);
+                            isVariationImageActive = true;
+                        } else {
+                            // Update the currently added variant image (which is at non-cloned index 0)
+                            // Owl Carousel keeps the original non-cloned items first in DOM inside .owl-stage
+                            $mainGallery.find('.owl-item:not(.cloned) .items-list img').first().attr('src', resolvedImage);
+                            $thumbGallery.find('.owl-item:not(.cloned) .thumb-item img').first().attr('src', resolvedImage);
+
+                            // Also update cloned ones just in case
+                            $mainGallery.find('.owl-item.cloned .items-list img[alt="Variant"]').attr('src', resolvedImage);
+                            $thumbGallery.find('.owl-item.cloned .thumb-item img[alt="Variant Thumb"]').attr('src', resolvedImage);
                         }
 
-                        if ($activeThumbImage.length) {
-                            $activeThumbImage.attr('src', resolvedImage);
+                        $mainGallery.trigger('to.owl.carousel', [0, 300]);
+
+                        clearTimeout(gallerySyncTimer);
+                        gallerySyncTimer = setTimeout(function () {
+                            $thumbGallery.find('.thumb-item').removeClass('active');
+                            $thumbGallery.find('.owl-item:not(.cloned)').first().find('.thumb-item').addClass('active');
+                        }, 325);
+
+                    } else {
+                        // User deselected variant or picked one with no image; fall back to default
+                        if (isVariationImageActive) {
+                            // Safe removal pattern: snap to next slide before destroying the current focal slide
+                            $mainGallery.trigger('to.owl.carousel', [1, 0]);
+                            $thumbGallery.trigger('to.owl.carousel', [1, 0]);
+
+                            setTimeout(function () {
+                                $mainGallery.trigger('remove.owl.carousel', [0]).trigger('refresh.owl.carousel');
+                                $thumbGallery.trigger('remove.owl.carousel', [0]).trigger('refresh.owl.carousel');
+
+                                $mainGallery.trigger('to.owl.carousel', [0, 0]);
+                                $thumbGallery.trigger('to.owl.carousel', [0, 0]);
+                            }, 50);
+
+                            isVariationImageActive = false;
+                        } else {
+                            $mainGallery.trigger('to.owl.carousel', [0, 300]);
                         }
 
-                        $thumbGallery.find('.thumb-item').removeClass('active').first().addClass('active');
-                    }, 325);
+                        clearTimeout(gallerySyncTimer);
+                        gallerySyncTimer = setTimeout(function () {
+                            $thumbGallery.find('.thumb-item').removeClass('active');
+                            $thumbGallery.find('.owl-item:not(.cloned)').first().find('.thumb-item').addClass('active');
+                        }, 325);
+                    }
+                } else {
+                    // Fallback if carousel isn't initialized yet
+                    var $firstMainImage = $mainGallery.find('.items-list img').first();
+                    var $firstThumbImage = $thumbGallery.find('.thumb-item img').first();
+                    if ($firstMainImage.length) $firstMainImage.attr('src', resolvedImage);
+                    if ($firstThumbImage.length) $firstThumbImage.attr('src', resolvedImage);
                 }
             }
 
@@ -1366,7 +1521,7 @@
 
                 if (!variation) {
                     $addToCartButton.prop('disabled', true).addClass('disabled').html(
-                    '<span>Select options</span>');
+                        '<span>Select options</span>');
                     return;
                 }
 
@@ -1401,14 +1556,14 @@
             }
 
             function initializeSelections() {
-                $variantGroups.each(function() {
+                $variantGroups.each(function () {
                     var $group = $(this);
-                    var $preferred = $group.find('.attribute-btn.selected').filter(function() {
+                    var $preferred = $group.find('.attribute-btn.selected').filter(function () {
                         return isSelectable($(this));
                     }).first();
 
                     if (!$preferred.length) {
-                        $preferred = $group.find('.attribute-btn').filter(function() {
+                        $preferred = $group.find('.attribute-btn').filter(function () {
                             return isSelectable($(this));
                         }).first();
                     }
@@ -1424,7 +1579,7 @@
                 syncVariantState();
             }
 
-            $(document).on('click', '.variation-group .attribute-btn', function() {
+            $(document).on('click', '.variation-group .attribute-btn', function () {
                 var $button = $(this);
 
                 if (!isSelectable($button)) {
@@ -1437,7 +1592,7 @@
 
             initializeSelections();
 
-            $addToCartButton.on('click', function(e) {
+            $addToCartButton.on('click', function (e) {
                 if ($(this).prop('disabled') || $(this).hasClass('disabled')) {
                     e.preventDefault();
                     return;
@@ -1463,7 +1618,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: cartData,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             $('#cart-count-span').html('(' + response.cart_count + ' Items)');
                             $('.cart-total-span').html(response.cart_total);
@@ -1496,7 +1651,7 @@
                             toastr.error(response.message);
                         }
                     },
-                    error: function(error) {
+                    error: function (error) {
                         toastr.error(error.responseJSON?.message || 'Something went wrong.');
                     }
                 });
@@ -1505,7 +1660,7 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Initialize main swiper after DOM is ready
             setTimeout(() => {
                 // Get all video elements in main slider
@@ -1519,7 +1674,7 @@
                 // Handle swiper slide change to pause videos
                 const mainSwiper = document.querySelector('.product-image-slider');
                 if (mainSwiper && mainSwiper.swiper) {
-                    mainSwiper.swiper.on('slideChange', function() {
+                    mainSwiper.swiper.on('slideChange', function () {
                         // Pause all videos
                         mainVideos.forEach(video => {
                             video.pause();
@@ -1551,7 +1706,7 @@
         }
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
 
 
             // Get elements
@@ -1561,7 +1716,7 @@
 
             // Decrease quantity
             if (minusBtn) {
-                minusBtn.addEventListener('click', function() {
+                minusBtn.addEventListener('click', function () {
                     let currentValue = parseInt(qtyInput.value) || 1;
                     if (currentValue > 1) {
                         qtyInput.value = currentValue - 1;
@@ -1571,7 +1726,7 @@
 
             // Increase quantity
             if (plusBtn) {
-                plusBtn.addEventListener('click', function() {
+                plusBtn.addEventListener('click', function () {
                     let currentValue = parseInt(qtyInput.value) || 1;
                     qtyInput.value = currentValue + 1;
                 });
@@ -1579,7 +1734,7 @@
 
             // Optional: Prevent non-numeric input
             if (qtyInput) {
-                qtyInput.addEventListener('input', function() {
+                qtyInput.addEventListener('input', function () {
                     this.value = this.value.replace(/[^0-9]/g, '');
                     if (this.value === '' || parseInt(this.value) < 1) {
                         this.value = 1;
@@ -1588,13 +1743,13 @@
             }
 
             // Update total price when checkboxes change
-            $('.fbt-checkbox').on('change', function() {
+            $('.fbt-checkbox').on('change', function () {
                 updateFbtTotalPrice();
             });
 
             function updateFbtTotalPrice() {
                 let total = 0;
-                $('.fbt-product-item').each(function() {
+                $('.fbt-product-item').each(function () {
                     const checkbox = $(this).find('.fbt-checkbox');
                     if (checkbox.is(':checked')) {
                         const price = parseFloat($(this).data('product-price')) || 0;
@@ -1605,14 +1760,14 @@
             }
 
             // Add all checked products to cart
-            $('.fbt-add-to-cart-btn').on('click', function() {
+            $('.fbt-add-to-cart-btn').on('click', function () {
                 const $button = $(this);
                 const $btnText = $button.find('.btn-text');
                 const $btnLoading = $button.find('.btn-loading');
 
                 // Get all checked products
                 const selectedProducts = [];
-                $('.fbt-product-item').each(function() {
+                $('.fbt-product-item').each(function () {
                     const $item = $(this);
                     const $checkbox = $item.find('.fbt-checkbox');
 
@@ -1668,7 +1823,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     data: cartData,
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             // Update cart count and total
                             $('#cart-count-span').html('(' + response.cart_count + ' Items)');
@@ -1698,7 +1853,7 @@
                             addProductsToCart(products, index + 1, $button, $btnText, $btnLoading);
                         }
                     },
-                    error: function(error) {
+                    error: function (error) {
                         toastr.error('Error adding ' + product.product_name);
                         // Continue with next product even if one fails
                         addProductsToCart(products, index + 1, $button, $btnText, $btnLoading);
@@ -1822,7 +1977,7 @@
     </script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var $mainEl = $('.product-img-list');
             var $thumbEl = $('.product-thumb-list');
 
@@ -1889,11 +2044,12 @@
             });
 
             // Set first thumbnail as active
-            $('.product-thumb-list .thumb-item').first().addClass('active');
+            $('.product-thumb-list .owl-item:not(.cloned)').first().find('.thumb-item').addClass('active');
 
             // Click on thumbnail to change main image
-            $('.product-thumb-list .thumb-item').on('click', function() {
-                var index = $(this).data('index');
+            $('.product-thumb-list').on('click', '.thumb-item', function () {
+                // Use native Owl structural index to avoid caching bugs when slides are dynamically added
+                var index = $(this).closest('.owl-item').index();
 
                 // Remove active class from all thumbnails
                 $('.product-thumb-list .thumb-item').removeClass('active');
@@ -1908,13 +2064,13 @@
                 $mainCarousel.trigger('stop.owl.autoplay');
 
                 // Optionally restart autoplay after 5 seconds
-                setTimeout(function() {
+                setTimeout(function () {
                     $mainCarousel.trigger('play.owl.autoplay', [3000]);
                 }, 5000);
             });
 
             // Sync thumbnails when main carousel changes (including autoplay)
-            $mainCarousel.on('changed.owl.carousel', function(event) {
+            $mainCarousel.on('changed.owl.carousel', function (event) {
                 var currentIndex = event.item.index;
                 var itemCount = event.item.count;
 
@@ -1927,5 +2083,275 @@
                 $('.product-thumb-list .thumb-item').eq(normalizedIndex).addClass('active');
             });
         });
+    </script>
+
+    <script>
+        /* ═══════════════════════════════════════════════════════════
+           PGC – Product Gallery Controller
+           Zero Owl-carousel dependency. Fixes the variant-active-
+           border-on-wrong-slide bug by managing state directly.
+        ═══════════════════════════════════════════════════════════ */
+        window.PGC = (function ($) {
+            'use strict';
+
+            var $stage = $('#pgcStage');
+            var $thumbsWrap = $('#pgcThumbs');
+            var $prevBtn = $('#pgcPrev');
+            var $nextBtn = $('#pgcNext');
+            var $counter = $('#pgcCounter');
+
+            var currentIndex = 0;
+            var variantSlotActive = false;    // is the prepended variant slide present?
+            var VARIANT_ATTR = 'data-pgc-variant';
+
+            /* ─── helpers ────────────────────────────────────────── */
+            function slides() { return $stage.find('.pgc__slide'); }
+            function thumbs() { return $thumbsWrap.find('.pgc__thumb'); }
+            function total() { return slides().length; }
+
+            function updateCounter() {
+                if (total() <= 1) { $counter.hide(); return; }
+                $counter.text((currentIndex + 1) + ' / ' + total()).show();
+            }
+
+            function updateNav() {
+                $prevBtn.toggleClass('is-hidden', currentIndex === 0);
+                $nextBtn.toggleClass('is-hidden', currentIndex >= total() - 1);
+            }
+
+            function scrollThumbIntoView(index) {
+                var $t = thumbs().eq(index);
+                if (!$t.length) return;
+                var el = $t[0];
+                // horizontal (mobile) or vertical (desktop) scroll
+                var parent = $thumbsWrap[0];
+                var isHorizontal = getComputedStyle(parent).flexDirection === 'row';
+                if (isHorizontal) {
+                    parent.scrollTo({ left: el.offsetLeft - parent.offsetWidth / 2 + el.offsetWidth / 2, behavior: 'smooth' });
+                } else {
+                    parent.scrollTo({ top: el.offsetTop - parent.offsetHeight / 2 + el.offsetHeight / 2, behavior: 'smooth' });
+                }
+            }
+
+            /* ─── goTo ────────────────────────────────────────────── */
+            function goTo(index, instant) {
+                var t = total();
+                index = Math.max(0, Math.min(index, t - 1));
+                if (index === currentIndex && instant !== true) {
+                    /* already here – still refresh active states for safety */
+                }
+                currentIndex = index;
+
+                slides().removeClass('is-active').eq(index).addClass('is-active');
+                thumbs().removeClass('is-active').eq(index).addClass('is-active');
+
+                scrollThumbIntoView(index);
+                updateNav();
+                updateCounter();
+            }
+
+            /* ─── variant image slot (index 0) ───────────────────── */
+            /* Called by renderGalleryImage in the variant-selection JS */
+            function setVariantImage(imageUrl) {
+                if (!imageUrl) {
+                    /* Remove variant slot if present */
+                    if (variantSlotActive) {
+                        $stage.find('[' + VARIANT_ATTR + ']').remove();
+                        $thumbsWrap.find('[' + VARIANT_ATTR + ']').remove();
+                        variantSlotActive = false;
+
+                        /* Ensure we don't jump to a now-invalid index */
+                        goTo(0, true);
+                    }
+                    return;
+                }
+
+                var slideHtml =
+                    '<div class="pgc__slide" ' + VARIANT_ATTR + '="1">' +
+                    '<img src="' + imageUrl + '" alt="Variant Image"></div>';
+
+                var thumbHtml =
+                    '<div class="pgc__thumb" ' + VARIANT_ATTR + '="1">' +
+                    '<img src="' + imageUrl + '" alt="Variant Thumb" loading="lazy"></div>';
+
+                if (variantSlotActive) {
+                    /* Just update the image src — no DOM insertion, no index shift */
+                    $stage.find('[' + VARIANT_ATTR + '] img').attr('src', imageUrl);
+                    $thumbsWrap.find('[' + VARIANT_ATTR + '] img').attr('src', imageUrl);
+                } else {
+                    /* Prepend once */
+                    $stage.prepend(slideHtml);
+                    $thumbsWrap.prepend(thumbHtml);
+                    variantSlotActive = true;
+                }
+
+                /* Navigate to the variant slot (always index 0 after prepend) */
+                goTo(0, true);
+            }
+
+            /* ─── touch / swipe ──────────────────────────────────── */
+            var touchStartX = 0, touchStartY = 0;
+
+            $stage[0].addEventListener('touchstart', function (e) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            $stage[0].addEventListener('touchend', function (e) {
+                var dx = e.changedTouches[0].clientX - touchStartX;
+                var dy = e.changedTouches[0].clientY - touchStartY;
+                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                    goTo(dx < 0 ? currentIndex + 1 : currentIndex - 1);
+                }
+            }, { passive: true });
+
+            /* ─── events ─────────────────────────────────────────── */
+            $thumbsWrap.on('click', '.pgc__thumb', function () {
+                goTo($(this).index());
+            });
+
+            $prevBtn.on('click', function () { goTo(currentIndex - 1); });
+            $nextBtn.on('click', function () { goTo(currentIndex + 1); });
+
+            /* Keyboard arrow support when gallery is focused */
+            $stage.attr('tabindex', '0').on('keydown', function (e) {
+                if (e.key === 'ArrowLeft') goTo(currentIndex - 1);
+                if (e.key === 'ArrowRight') goTo(currentIndex + 1);
+            });
+
+            /* Pause any playing video when navigating away */
+            slides().on('transitionend', function () {
+                slides().not('.is-active').find('video').each(function () {
+                    this.pause();
+                });
+            });
+
+            /* ─── init ───────────────────────────────────────────── */
+            (function init() {
+                goTo(0, true);
+            })();
+
+            /* ─── public API ─────────────────────────────────────── */
+            return { goTo: goTo, setVariantImage: setVariantImage };
+
+        }(jQuery));
+    </script>
+
+    <script>
+        /* ═══════════════════════════════════════════════════════════
+           QTY controls + FBT + share (unchanged logic, cleaned up)
+        ═══════════════════════════════════════════════════════════ */
+        $(document).ready(function () {
+
+            /* ── Qty input ─────────────────────────────────────── */
+            var qtyInput = document.getElementById('qty');
+            var minusBtn = document.querySelector('.qty-minus');
+            var plusBtn = document.querySelector('.qty-plus');
+
+            if (minusBtn) {
+                minusBtn.addEventListener('click', function () {
+                    var v = parseInt(qtyInput.value) || 1;
+                    if (v > 1) qtyInput.value = v - 1;
+                });
+            }
+            if (plusBtn) {
+                plusBtn.addEventListener('click', function () {
+                    qtyInput.value = (parseInt(qtyInput.value) || 1) + 1;
+                });
+            }
+            if (qtyInput) {
+                qtyInput.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (!this.value || parseInt(this.value) < 1) this.value = 1;
+                });
+            }
+
+            /* ── Coupon copy ───────────────────────────────────── */
+            $('.copy-coupon-code').on('click', function () {
+                var code = $(this).data('coupon-code');
+                var $span = $(this).find('.button-text');
+                $span.text('Copying…');
+                navigator.clipboard.writeText(code).then(function () {
+                    $span.text('Copied!');
+                    setTimeout(function () { $span.text('Copy'); }, 1500);
+                });
+            });
+
+            /* ── FBT total ─────────────────────────────────────── */
+            $('.fbt-checkbox').on('change', updateFbtTotal);
+            function updateFbtTotal() {
+                var total = 0;
+                $('.fbt-product-item').each(function () {
+                    if ($(this).find('.fbt-checkbox').is(':checked')) {
+                        total += parseFloat($(this).data('product-price')) || 0;
+                    }
+                });
+                $('.fbt-total-amount').text('₹' + total.toLocaleString('en-IN'));
+            }
+
+            /* ── FBT add-all ───────────────────────────────────── */
+            $('.fbt-add-to-cart-btn').on('click', function () {
+                var $btn = $(this);
+                var selected = [];
+                $('.fbt-product-item').each(function () {
+                    if ($(this).find('.fbt-checkbox').is(':checked')) {
+                        selected.push({
+                            product_id: $(this).data('product-id'),
+                            product_name: $(this).data('product-name'),
+                            variation_id: $(this).data('variation-id') || '',
+                            quantity: 1
+                        });
+                    }
+                });
+                if (!selected.length) { toastr.warning('Please select at least one product.'); return; }
+                $btn.prop('disabled', true).find('.btn-text').hide();
+                $btn.find('.btn-loading').show();
+                addProductsSequentially(selected, 0, $btn);
+            });
+
+            function addProductsSequentially(products, i, $btn) {
+                if (i >= products.length) {
+                    $btn.prop('disabled', false).find('.btn-text').show();
+                    $btn.find('.btn-loading').hide();
+                    toastr.success('Products added to cart!');
+                    window.dispatchEvent(new CustomEvent('cart-updated'));
+                    return;
+                }
+                $.ajax({
+                    url: '{{ route('addToCart') }}',
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    data: { product_id: products[i].product_id, variation_id: products[i].variation_id, attributes: [], quantity: 1 },
+                    complete: function (res) {
+                        var r = res.responseJSON || {};
+                        if (r.success) updateCartUI(r);
+                        addProductsSequentially(products, i + 1, $btn);
+                    }
+                });
+            }
+
+            function updateCartUI(r) {
+                $('#cart-count-span').html('(' + r.cart_count + ' Items)');
+                $('.cart-total-span').html(r.cart_total);
+                if (r.cart_count > 0) {
+                    if ($('#cart_count_header').length) {
+                        $('#cart_count_header').html(r.cart_count).show();
+                    } else {
+                        $('a.cart__btn').append('<ins id="cart_count_header"></ins>');
+                        $('#cart_count_header').html(r.cart_count).show();
+                    }
+                } else {
+                    $('#cart_count_header').hide();
+                }
+            }
+        });
+
+        /* ── iOS video fix ───────────────────────────────────────── */
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            document.querySelectorAll('video').forEach(function (v) {
+                v.setAttribute('playsinline', '');
+                v.setAttribute('webkit-playsinline', '');
+            });
+        }
     </script>
 @endsection

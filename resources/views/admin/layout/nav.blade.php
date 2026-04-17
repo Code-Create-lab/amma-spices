@@ -57,7 +57,9 @@
                 <a class="dropdown-item d-flex align-items-center"
                     href="{{ route('passchange') }}">{{ __('keywords.Change Password') }} <i
                         class="fa fa-key fa-fw ml-auto text-gray-400 f-s-16"></i></a>
-                @if (auth()->user()->settings == 1)
+
+                        {{-- @dd(auth()->user()?->settings) --}}
+                @if (auth()->user()?->settings == 1)
                     <a class="dropdown-item d-flex align-items-center"
                         href="{{ route('app_details') }}">{{ __('keywords.Admin Setting') }} <i
                             class="fa fa-wrench fa-fw ml-auto text-gray-400 f-s-16"></i></a>

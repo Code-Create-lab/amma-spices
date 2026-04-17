@@ -54,16 +54,16 @@
                                                     // $shippingCharge = $getShippingCharge->shipping_charge ?? 0;
                                                     $percentOff =
                                                         $mrp > 0 && $price > 0
-                                                            ? round((($mrp - $price) / $mrp) * 100)
-                                                            : 0;
+                                                        ? round((($mrp - $price) / $mrp) * 100)
+                                                        : 0;
                                                 } else {
                                                     $mrp = $item['variation']->mrp ?? $item['product']->base_mrp;
                                                     $price = $item['variation']->price ?? $item['product']->base_price;
                                                     // $shippingCharge = $getShippingCharge->shipping_charge ?? 0;
                                                     $percentOff =
                                                         $mrp > 0 && $price > 0
-                                                            ? round((($mrp - $price) / $mrp) * 100)
-                                                            : 0;
+                                                        ? round((($mrp - $price) / $mrp) * 100)
+                                                        : 0;
                                                 }
                                             @endphp
 
@@ -129,11 +129,10 @@
                                                         wire:click="updateQuantityFromJS({{ $item['variation_id'] }},{{ $item['product']->product_id }}, {{ $item['quantity'] - 1 }})">-</button>
                                                     <input type="number" class="form-control"
                                                         value="{{ $item['quantity'] }}" min="1"
-                                                        max="{{ $item['variation']->stock }}" step="1"
-                                                        data-decimals="0" required>
+                                                        max="{{ $item['variation']->stock }}" step="1" data-decimals="0"
+                                                        required readonly>
                                                     @if ($item['quantity'] + 1 > $item['variation']->stock)
-                                                        <button class="qty-plus"
-                                                            wire:click="stockNotAvailable">+</button>
+                                                        <button class="qty-plus" wire:click="stockNotAvailable">+</button>
                                                     @else
                                                         <button type="button" class="qty-plus"
                                                             wire:click="updateQuantityFromJS({{ $item['variation_id'] }},{{ $item['product']->product_id }}, {{ $item['quantity'] + 1 }})">+</button>
@@ -274,7 +273,8 @@
                                     </tbody>
                                 </table><!-- End .table table-summary -->
 
-                                {{-- <a wire:click="checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED
+                                {{-- <a wire:click="checkout"
+                                    class="btn btn-outline-primary-2 btn-order btn-block">PROCEED
                                     TO
                                     CHECKOUT</a> --}}
                                 <a wire:click="checkout" class="btn btn-outline-primary-2 btn-order btn-block">
@@ -371,7 +371,7 @@
             // Livewire.dispatch('main-cart-updated');
             $(el).closest('tr').hide();
 
-            setTimeout(function() {
+            setTimeout(function () {
                 var getTotalPrice = $('.cart-total-price').html();
                 $("#sub-total").html(getTotalPrice);
                 console.log("getTotalPrice", getTotalPrice);

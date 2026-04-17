@@ -56,9 +56,15 @@ class BannerController extends Controller
 
     public function store(BannerStoreRequest $request)
     {
-        Banner::create([
+        $data = [
             'image' => $this->uploadBannerImage($request->file('image')),
-        ]);
+        ];
+
+        if ($request->hasFile('mobile_banner')) {
+            $data['mobile_banner'] = $this->uploadBannerImage($request->file('mobile_banner'));
+        }
+
+        Banner::create($data);
 
         return redirect()->back()->with('success', 'Banner Added Successfully');
     }
@@ -88,11 +94,20 @@ class BannerController extends Controller
     public function update(BannerUpdateRequest $request, $uuid)
     {
         $banner = Banner::where('uuid', $uuid)->firstOrFail();
+        // dd($request->file('mobile_banner'));
+        $data = [];
         if ($request->hasFile('image')) {
             $this->deleteBannerImage($banner->image);
-            $banner->update([
-                'image' => $this->uploadBannerImage($request->file('image')),
-            ]);
+            $data['image'] = $this->uploadBannerImage($request->file('image'));
+        }
+
+        if ($request->hasFile('mobile_banner')) {
+            $this->deleteBannerImage($banner->mobile_banner);
+            $data['mobile_banner'] = $this->uploadBannerImage($request->file('mobile_banner'));
+        }
+
+        if (!empty($data)) {
+            $banner->update($data);
         }
 
         return redirect()->route('banners')->with('success', 'Banner Updated Successfully');
@@ -103,6 +118,7 @@ class BannerController extends Controller
         $banner = Banner::where('uuid', $uuid)->firstOrFail();
         if ($banner) {
             $this->deleteBannerImage($banner->image);
+            $this->deleteBannerImage($banner->mobile_banner);
             $banner->delete();
             return redirect()->route('banners')->with('success', 'Banner Deleted Successfully');
         }

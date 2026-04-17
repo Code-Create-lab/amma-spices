@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Blog extends Model
 {
@@ -29,6 +30,7 @@ class Blog extends Model
         'published_at',
         'meta_title',
         'meta_description',
+        'schedule_id',
     ];
 
     protected $casts = [
@@ -38,7 +40,18 @@ class Blog extends Model
         'updated_at'   => 'datetime',
         'deleted_at'   => 'datetime',
     ];
- 
+
+
+    public function getThumbnailUrlAttribute(): string
+    {
+        if (empty($this->thumbnail)) {
+            return 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=1400&q=85';
+        }
+
+        return str_starts_with($this->thumbnail, 'http')
+            ? $this->thumbnail
+            : asset('storage/' . $this->thumbnail);
+    }
     // ── SCOPES ────────────────────────────────────────────
 
     /** Only published posts — used on frontend */
@@ -123,5 +136,11 @@ class Blog extends Model
                 $blog->slug = Str::slug($blog->title);
             }
         });
+    }
+
+    // Inside the Blog class:
+    public function schedule(): BelongsTo
+    {
+        return $this->belongsTo(AutoPublishSchedule::class, 'schedule_id');
     }
 }

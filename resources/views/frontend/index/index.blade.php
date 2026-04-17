@@ -94,7 +94,12 @@
                     data-owl-options='{"nav": false, "autoplay":true, "autoplayTimeout":3000, "dots": false, "loop": true}'>
                     @foreach ($banners as $banner)
                         <div class="intro-slide">
-                            <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r" alt="Amma's Spices">
+                            <picture>
+                                @if($banner->mobile_banner)
+                                    <source media="(max-width: 767px)" srcset="{{ asset('storage/' . $banner->mobile_banner) }}">
+                                @endif
+                                <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r" alt="Amma's Spices">
+                            </picture>
                         </div>
                     @endforeach
                 </div>
@@ -296,9 +301,8 @@
                         <div class="as-google-score">{{ $reviewAverageFormatted }}</div>
                         <div class="as-google-meta">
                             <div class="as-google-logo">
-                                <span class="gb">G</span><span class="gr">o</span><span
-                                    class="gy">o</span><span class="gb">g</span><span
-                                    class="gg">l</span><span class="gr">e</span>
+                                <span class="gb">G</span><span class="gr">o</span><span class="gy">o</span><span
+                                    class="gb">g</span><span class="gg">l</span><span class="gr">e</span>
                             </div>
                             <div class="as-google-stars">★★★★★</div>
                             <div class="as-google-count">Based on {{ $reviewCount }}
@@ -594,8 +598,12 @@
                                     {{-- Thumbnail --}}
                                     <div class="blog-card__thumb">
                                         @if ($blog->thumbnail)
-                                            <img src="{{ asset('storage/' . $blog->thumbnail) }}"
-                                                alt="{{ $blog->title }}" loading="lazy">
+                                            @php
+                                                $thumbnail = str_starts_with($blog->thumbnail, 'http')
+                                                    ? $blog->thumbnail
+                                                    : asset('storage/' . $blog->thumbnail);
+                                            @endphp
+                                            <img src="{{ $thumbnail }}" alt="{{ $blog->title }}" loading="lazy">
                                         @else
                                             <img src="{{ asset('assets/img/blog-placeholder.jpg') }}"
                                                 alt="{{ $blog->title }}" loading="lazy">

@@ -52,6 +52,7 @@ use App\Http\Controllers\Driverapi\DriverstatusController;
 use App\Http\Controllers\Driverapi\DriversupportController;
 use App\Http\Controllers\IthickLogisticsController;
 use App\Http\Controllers\ShiprocketWebhookController;
+use App\Http\Controllers\WebhookBlogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,8 @@ use App\Http\Controllers\ShiprocketWebhookController;
 */
 
 Route::post('webhooks/ithinklogistics', [IthickLogisticsController::class, 'receive']);    
+
+Route::post('/webhook/blog', [WebhookBlogController::class, 'handle']);
 
 Route::post('/webhook', [ShiprocketWebhookController::class, 'handle']);
 Route::get('/getOrders', [ShiprocketWebhookController::class, 'getOrders']);

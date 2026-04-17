@@ -2,8 +2,9 @@
 
 
 @section('content')
- <!-- start section -->
-              <div class="page-header">
+    <!-- start section -->
+    <main class="main">
+        <div class="page-header">
             <div class="container">
                 <div class="row" style="display: block;">
                     <div class="heading">
@@ -21,10 +22,11 @@
                 </ol>
             </div><!-- End .container -->
         </nav><!-- End .breadcrumb-nav -->
-    
-    <div class="container common-class-page">
-        <div class="row">
-            {!! $terms_and_conditions[0]->description !!}
+
+        <div class="container common-class-page">
+            <div class="row">
+                {!! $terms_and_conditions[0]->description !!}
+            </div>
         </div>
-    </div>
+    </main>
 @endsection

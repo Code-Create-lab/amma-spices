@@ -25,6 +25,7 @@ class BannerStoreRequest extends FormRequest
     {
         return [
             'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'mobile_banner' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }

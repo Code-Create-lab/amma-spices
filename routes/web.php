@@ -137,6 +137,8 @@ use App\Http\Controllers\ShiprocketWebhookController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
 
+use App\Http\Controllers\Admin\AutoPublishController;
+
 use App\Models\Orders;
 use App\Mail\ConfirmOrderWithShipment;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -802,7 +804,24 @@ Route::group(['middleware' => ['verifylicense']], function () {
         return app(\App\Http\Controllers\Installer\InstallController::class)->databaseVerifyPost();
     });
 
+    Route::prefix('admin')
+        ->name('admin.')
+        ->group(function () {
+
+            Route::resource('auto-publish', AutoPublishController::class)
+                ->parameters(['auto-publish' => 'autoPublish']);
+
+            Route::post('auto-publish/{autoPublish}/toggle-status', [AutoPublishController::class, 'toggleStatus'])
+                ->name('auto-publish.toggle-status');
+
+            Route::post('auto-publish/{autoPublish}/trigger-now', [AutoPublishController::class, 'triggerNow'])
+                ->name('auto-publish.trigger-now');
+        });
     Route::namespace("Admin")->prefix('admin')->group(function () {
+
+
+       
+
         Route::view('/powergrid', 'powergrid-demo');
         Route::get('/', [LoginController::class, 'adminLogin'])->name('adminLogin');
         Route::get('/login', [LoginController::class, 'adminLogin'])->name('login');
