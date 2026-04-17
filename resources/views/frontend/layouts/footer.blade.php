@@ -30,7 +30,8 @@
                         <ul class="widget-list">
                             <li><a href="{{ route('frontend.terms_and_conditions') }}">Terms & conditions</a></li>
                             {{-- <li><a href="#">Return & Exchange Policy</a></li> --}}
-                            <li><a href="{{ route('frontend.shipping_and_delivery') }}">Shipping & delivery</a></li>
+                            {{-- <li><a href="{{ route('frontend.shipping_and_delivery') }}">Shipping & delivery</a></li> --}}
+                            <li><a href="{{ route('frontend.cancellation_and_refund') }}">Cancellation & Refund Policy</a></li>
                             <li><a href="{{ route('frontend.privacy_policy') }}">Privacy policy</a></li>
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->
