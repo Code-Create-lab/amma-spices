@@ -9,6 +9,27 @@
             color: #000000;
             font-weight: bold;
         }
+
+        .guest-checkout-banner {
+            background: #f7f3ec;
+            border: 1px solid #e6dccd;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            padding: 18px 20px;
+        }
+
+        .guest-checkout-banner h4 {
+            color: #2d241b;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .guest-checkout-banner p {
+            color: #64584c;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
     </style>
     <main class="main">
         <div class="page-header">
@@ -221,6 +242,15 @@
                     <div class="row align-items-start">
 
                         <div class="col-lg-8">
+                            @guest
+                                <div class="guest-checkout-banner">
+                                    <h4>Guest Checkout</h4>
+                                    <p>
+                                        Fill your delivery details to continue. We use the email you enter to create or
+                                        match a customer profile for this order, without exposing saved account data.
+                                    </p>
+                                </div>
+                            @endguest
 
                             {{-- @dd($this->addresses) --}}
                             @foreach ($this->addresses as $address)
@@ -329,9 +359,9 @@
                                 </div>
                                 <div class="row mr-b">
                                     <div class="col-sm-12">
-                                        <label>Email address {{ $user->email ? '' : '*' }}</label>
+                                        <label>Email address {{ $user?->email ? '' : '*' }}</label>
                                         <input wire:model.defer="addressData.receiver_email" type="email"
-                                            value="{{ $user->email }}" class="form-control">
+                                            value="{{ $user?->email }}" class="form-control">
                                         @if (session()->has('error_addressData.receiver_email'))
                                             <span
                                                 class="text-red-500 text-sm">{{ session('error_addressData.receiver_email') }}</span>
@@ -340,9 +370,9 @@
                                 </div>
                                 <div class="row mr-b">
                                     <div class="col-sm-6">
-                                        <label>Phone {{ $user->user_phone ? '' : '*' }}</label>
+                                        <label>Phone {{ $user?->user_phone ? '' : '*' }}</label>
                                         <input wire:model.defer="addressData.receiver_phone" type="tel"
-                                            value="{{ $user->user_phone }}" class="form-control">
+                                            value="{{ $user?->user_phone }}" class="form-control">
                                         @if (session()->has('error_addressData.receiver_phone'))
                                             <span
                                                 class="text-red-500 text-sm">{{ session('error_addressData.receiver_phone') }}</span>
@@ -752,8 +782,139 @@
             <img src="{{ asset('assets/img/checkout-bottom-img.png') }}" class="bg-feture-check-bot">
         </section>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const storageKey = 'bodhi_bliss_checkout';
+                const isLoggedIn = @json((bool) auth()->check());
+                const guestFieldNames = [
+                    'type',
+                    'firstName',
+                    'lastName',
+                    'receiver_email',
+                    'receiver_phone',
+                    'alternate_phone',
+                    'house_no',
+                    'society',
+                    'city',
+                    'state',
+                    'pincode',
+                    'landmark',
+                ];
 
-        <script></script>
+                const getStorageState = () => {
+                    try {
+                        return JSON.parse(localStorage.getItem(storageKey) || '{}');
+                    } catch (error) {
+                        return {};
+                    }
+                };
+
+                const setStorageState = (payload) => {
+                    const currentState = getStorageState();
+                    localStorage.setItem(storageKey, JSON.stringify({
+                        ...currentState,
+                        ...payload,
+                        updatedAt: new Date().toISOString(),
+                    }));
+                };
+
+                const getFieldElement = (fieldName) => document.querySelector(
+                    `[wire\\:model\\.defer="addressData.${fieldName}"], [wire\\:model="addressData.${fieldName}"]`
+                );
+
+                const getGuestAddressFromForm = () => guestFieldNames.reduce((address, fieldName) => {
+                    const field = getFieldElement(fieldName);
+
+                    if (field) {
+                        address[fieldName] = field.value ?? '';
+                    }
+
+                    return address;
+                }, {});
+
+                const hydrateGuestForm = () => {
+                    if (isLoggedIn) {
+                        localStorage.removeItem(storageKey);
+                        return;
+                    }
+
+                    const savedState = getStorageState();
+                    const savedAddress = savedState.address || {};
+
+                    guestFieldNames.forEach((fieldName) => {
+                        const field = getFieldElement(fieldName);
+                        const savedValue = savedAddress[fieldName];
+
+                        if (!field || !savedValue || field.value) {
+                            return;
+                        }
+
+                        field.value = savedValue;
+                        field.dispatchEvent(new Event('input', {
+                            bubbles: true
+                        }));
+                        field.dispatchEvent(new Event('change', {
+                            bubbles: true
+                        }));
+                    });
+                };
+
+                const persistGuestCheckoutState = () => {
+                    if (isLoggedIn) {
+                        return;
+                    }
+
+                    const currentState = getStorageState();
+
+                    setStorageState({
+                        mode: 'guest',
+                        startedFromCart: currentState.startedFromCart ?? true,
+                        path: window.location.pathname,
+                        address: getGuestAddressFromForm(),
+                        user: currentState.user || {},
+                    });
+                };
+
+                hydrateGuestForm();
+
+                const observer = new MutationObserver(() => {
+                    hydrateGuestForm();
+                });
+
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                });
+
+                document.addEventListener('input', function(event) {
+                    if (event.target.matches('[wire\\:model\\.defer^="addressData."], [wire\\:model^="addressData."]')) {
+                        persistGuestCheckoutState();
+                    }
+                });
+
+                document.addEventListener('change', function(event) {
+                    if (event.target.matches('[wire\\:model\\.defer^="addressData."], [wire\\:model^="addressData."]')) {
+                        persistGuestCheckoutState();
+                    }
+                });
+
+                window.addEventListener('guest-checkout-synced', function(event) {
+                    const detail = event.detail?.[0] || event.detail || {};
+                    const currentState = getStorageState();
+
+                    setStorageState({
+                        mode: 'guest',
+                        startedFromCart: currentState.startedFromCart ?? true,
+                        address: detail.address || getGuestAddressFromForm(),
+                        user: {
+                            id: detail.guest_user_id ?? currentState.user?.id ?? null,
+                            email: detail.email ?? currentState.user?.email ?? null,
+                            phone: detail.phone ?? currentState.user?.phone ?? null,
+                        },
+                    });
+                });
+            });
+        </script>
         <!-- end section -->
     </main>
 </div>

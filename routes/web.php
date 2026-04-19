@@ -1622,9 +1622,10 @@ Route::get('orders/address/delete/{uuid}', [CustomerOrderContoller::class, 'dele
 Route::get('/track', [CustomerOrderContoller::class, 'trackOrder'])
     ->name('tracking');
 
-Route::middleware(['frontend.auth'])->group(function () {
+Route::get('/checkout', [CustomerOrderContoller::class, 'checkout'])->name('checkout.index');
+Route::get('/orders', [CustomerOrderContoller::class, 'index'])->name('customer.orders.index');
 
-    Route::get('/checkout', [CustomerOrderContoller::class, 'checkout'])->name('checkout.index');
+Route::middleware(['frontend.auth'])->group(function () {
     Route::post('checkout', [CustomerOrderContoller::class, 'storeOrder'])->name('checkout');
 
 
@@ -1640,7 +1641,6 @@ Route::middleware(['frontend.auth'])->group(function () {
     //Order Routes
 
     Route::get('/success/order/{cart_id}', [CustomerOrderContoller::class, 'successOrder'])->name('successOrder');
-    Route::get('/orders', [CustomerOrderContoller::class, 'index'])->name('customer.orders.index');
     Route::get('/track-orders', [CustomerOrderContoller::class, 'getTrackOrder'])->name('customer.track-orders.index');
     Route::post('orders/address/store', [CustomerOrderContoller::class, 'addressStore'])->name('orders.address.store');
     Route::post('orders/address/update', [CustomerOrderContoller::class, 'updateAddress'])->name('orders.address.update');

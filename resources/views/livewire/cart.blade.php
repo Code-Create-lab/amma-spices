@@ -277,9 +277,25 @@
                                     class="btn btn-outline-primary-2 btn-order btn-block">PROCEED
                                     TO
                                     CHECKOUT</a> --}}
-                                <a wire:click="checkout" class="btn btn-outline-primary-2 btn-order btn-block">
-                                    PROCEED TO CHECKOUT
-                                </a>
+                                @auth
+                                    <a wire:click="checkout" class="btn btn-outline-primary-2 btn-order btn-block">
+                                        PROCEED TO CHECKOUT
+                                    </a>
+                                @else
+                                    <div class="guest-checkout-actions">
+                                        <p class="guest-checkout-copy mb-3">
+                                            Sign in for saved details, or continue as guest for faster checkout.
+                                        </p>
+                                        <button type="button" class="btn btn-outline-dark-2 btn-order btn-block mb-2"
+                                            onclick="prepareLoginCheckout(event)">
+                                            LOGIN
+                                        </button>
+                                        <a wire:click="guestCheckout" class="btn btn-outline-primary-2 btn-order btn-block"
+                                            onclick="rememberGuestCheckout()">
+                                            GUEST CHECKOUT
+                                        </a>
+                                    </div>
+                                @endauth
 
 
                             </div><!-- End .summary -->
@@ -310,8 +326,34 @@
         .modal-content {
             width: auto;
         } */
+
+        .guest-checkout-copy {
+            color: #5f5f5f;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+        }
     </style>
     <script>
+        const guestCheckoutStorageKey = 'bodhi_bliss_checkout';
+
+        function rememberCheckoutIntent(mode) {
+            const currentState = JSON.parse(localStorage.getItem(guestCheckoutStorageKey) || '{}');
+            currentState.mode = mode;
+            currentState.startedFromCart = true;
+            currentState.updatedAt = new Date().toISOString();
+            localStorage.setItem(guestCheckoutStorageKey, JSON.stringify(currentState));
+        }
+
+        function rememberGuestCheckout() {
+            rememberCheckoutIntent('guest');
+        }
+
+        function prepareLoginCheckout(event) {
+            rememberCheckoutIntent('login');
+            showLoginModal(event);
+        }
+
         function changeQuantity(button, change) {
             const quantityDiv = button.closest('.quantity');
             const input = quantityDiv.querySelector('.qty-text');

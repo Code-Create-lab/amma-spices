@@ -30,6 +30,42 @@ class RazorpayController extends Controller
         $this->razorpayService = $razorpayService;
     }
 
+    private function makeAuthRestoreSignature(Orders $order, bool $shouldRestoreAuth): string
+    {
+        return hash_hmac(
+            'sha256',
+            implode('|', [
+                $order->order_id,
+                $order->user_id,
+                $order->cart_id,
+                (int) $shouldRestoreAuth,
+            ]),
+            (string) config('app.key')
+        );
+    }
+
+    private function shouldRestoreAuthSession(Request $request, Orders $order): bool
+    {
+        $shouldRestoreAuth = filter_var($request->input('restore_auth', false), FILTER_VALIDATE_BOOLEAN);
+        $providedSignature = (string) $request->input('auth_restore_signature', '');
+
+        if (!$shouldRestoreAuth || $providedSignature === '') {
+            return false;
+        }
+
+        return hash_equals(
+            $this->makeAuthRestoreSignature($order, true),
+            $providedSignature
+        );
+    }
+
+    private function restoreAuthSessionIfAllowed(Request $request, Orders $order): void
+    {
+        if ($this->shouldRestoreAuthSession($request, $order)) {
+            Auth::loginUsingId($order->user_id);
+        }
+    }
+
     /**
      * Show checkout page with Razorpay order
      */
@@ -42,7 +78,7 @@ class RazorpayController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
-                'code'    => 404
+                'code' => 404
             ]);
         }
 
@@ -50,16 +86,16 @@ class RazorpayController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'This order is already paid.',
-                'code'    => 422
+                'code' => 422
             ]);
         }
 
         // Create Razorpay order
         $response = $this->razorpayService->createOrder([
             'order_id' => $cart_id,
-            'amount'   => $order->total_price,
+            'amount' => $order->total_price,
             'currency' => 'INR',
-            'receipt'  => $cart_id,
+            'receipt' => $cart_id,
         ]);
 
         $razorpayOrderId = $response['order']->id ?? null;
@@ -68,7 +104,7 @@ class RazorpayController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create Razorpay order.',
-                'code'    => 500
+                'code' => 500
             ]);
         }
 
@@ -77,10 +113,14 @@ class RazorpayController extends Controller
         $order->razorpay_order_id = $razorpayOrderId;
         $order->save();
 
+        $shouldRestoreAuth = Auth::check() && session('checkout_mode') !== 'guest';
+
         return view('payment.checkout', [
-            'order'           => $order,
+            'order' => $order,
             'razorpayOrderId' => $razorpayOrderId,
-            'razorpayKey'     => config('services.razorpay.key'),
+            'razorpayKey' => config('services.razorpay.key'),
+            'restoreAuthAfterPayment' => $shouldRestoreAuth,
+            'authRestoreSignature' => $this->makeAuthRestoreSignature($order, $shouldRestoreAuth),
         ]);
     }
 
@@ -175,8 +215,8 @@ class RazorpayController extends Controller
             // Update order
             $order->update([
                 'payment_status' => 'paid',
-                'order_status'   => 'Pending',
-                'paid_at'        => now(),
+                'order_status' => 'Pending',
+                'paid_at' => now(),
             ]);
 
             // Generate provider reference
@@ -187,20 +227,20 @@ class RazorpayController extends Controller
             DB::table('order_payments')->updateOrInsert(
                 ['payment_id' => $paymentId],
                 [
-                    'order_id'              => $order->order_id,
-                    'payment_id'            => $paymentId,
-                    'mode'                  => 'razorpay',
-                    'transaction_number'    => $razorpayOrderId,
-                    'transaction_date'      => now(),
-                    'method'                => $paymentMethod,
-                    'currency'              => $payment['currency'] ?? 'INR',
-                    'amount'                => ($payment['amount'] ?? 0) / 100,
-                    'payment_status'        => 'Paid',
+                    'order_id' => $order->order_id,
+                    'payment_id' => $paymentId,
+                    'mode' => 'razorpay',
+                    'transaction_number' => $razorpayOrderId,
+                    'transaction_date' => now(),
+                    'method' => $paymentMethod,
+                    'currency' => $payment['currency'] ?? 'INR',
+                    'amount' => ($payment['amount'] ?? 0) / 100,
+                    'payment_status' => 'Paid',
                     'provider_reference_id' => $providerReference,
-                    'json_response'         => json_encode($payment),
-                    'transaction_type'      => 'CAPTURED',
-                    'created_at'            => now(),
-                    'updated_at'            => now(),
+                    'json_response' => json_encode($payment),
+                    'transaction_type' => 'CAPTURED',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             );
 
@@ -220,7 +260,7 @@ class RazorpayController extends Controller
             $user = User::find($order->user_id);
             if ($user) {
                 try {
-                    if ($order->address->receiver_email !=  $user->email) {
+                    if ($order->address->receiver_email != $user->email) {
 
                         Mail::to([$order->address->receiver_email, $user->email])->send(new PaymentSuccess($order));
                     } else {
@@ -300,7 +340,7 @@ class RazorpayController extends Controller
             // Update order
             $order->update([
                 'payment_status' => 'failed',
-                'order_status'   => 'failed',
+                'order_status' => 'failed',
             ]);
 
             // Log failed payment
@@ -310,20 +350,20 @@ class RazorpayController extends Controller
             DB::table('order_payments')->updateOrInsert(
                 ['payment_id' => $paymentId],
                 [
-                    'order_id'              => $order->order_id,
-                    'payment_id'            => $paymentId,
-                    'mode'                  => 'razorpay',
-                    'transaction_number'    => $razorpayOrderId,
-                    'transaction_date'      => now(),
-                    'method'                => $paymentMethod,
-                    'currency'              => $payment['currency'] ?? 'INR',
-                    'amount'                => ($payment['amount'] ?? 0) / 100,
-                    'payment_status'        => 'FAILED',
+                    'order_id' => $order->order_id,
+                    'payment_id' => $paymentId,
+                    'mode' => 'razorpay',
+                    'transaction_number' => $razorpayOrderId,
+                    'transaction_date' => now(),
+                    'method' => $paymentMethod,
+                    'currency' => $payment['currency'] ?? 'INR',
+                    'amount' => ($payment['amount'] ?? 0) / 100,
+                    'payment_status' => 'FAILED',
                     'provider_reference_id' => $providerReference,
-                    'json_response'         => json_encode($payment),
-                    'transaction_type'      => 'FAILED',
-                    'created_at'            => now(),
-                    'updated_at'            => now(),
+                    'json_response' => json_encode($payment),
+                    'transaction_type' => 'FAILED',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             );
 
@@ -389,7 +429,7 @@ class RazorpayController extends Controller
             // Update order
             $order->update([
                 'payment_status' => 'failed',
-                'order_status'   => 'failed',
+                'order_status' => 'failed',
             ]);
 
             // Log failed payment
@@ -400,17 +440,17 @@ class RazorpayController extends Controller
             DB::table('order_payments')->updateOrInsert(
                 ['payment_id' => $paymentId],
                 [
-                    'order_id'              => $order->order_id,
-                    'payment_id'            => $paymentId,
-                    'mode'                  => 'razorpay',
-                    'transaction_number'    => $order->razorpay_order_id,
-                    'transaction_date'      => now(),
-                    'method'                => $paymentMethod,
-                    'currency'              => 'INR',
-                    'amount'                => $order->total_price,
-                    'payment_status'        => 'FAILED',
+                    'order_id' => $order->order_id,
+                    'payment_id' => $paymentId,
+                    'mode' => 'razorpay',
+                    'transaction_number' => $order->razorpay_order_id,
+                    'transaction_date' => now(),
+                    'method' => $paymentMethod,
+                    'currency' => 'INR',
+                    'amount' => $order->total_price,
+                    'payment_status' => 'FAILED',
                     'provider_reference_id' => $providerReference,
-                    'json_response'         => json_encode([
+                    'json_response' => json_encode([
                         'status' => 'abandoned',
                         'reason' => 'Payment not completed - No payment data available',
                         'order_id' => $order->order_id,
@@ -418,9 +458,9 @@ class RazorpayController extends Controller
                         'order_date' => $order->order_date,
                         'marked_failed_at' => now(),
                     ]),
-                    'transaction_type'      => 'FAILED',
-                    'created_at'            => now(),
-                    'updated_at'            => now(),
+                    'transaction_type' => 'FAILED',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             );
 
@@ -447,7 +487,7 @@ class RazorpayController extends Controller
                 'order_id' => $order->order_id,
                 'payment_id' => $paymentId
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Webhook payment failure handling failed: ' . $e->getMessage(), [
@@ -455,7 +495,7 @@ class RazorpayController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
         }
-         return response()->json(['success' => true]);
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -473,16 +513,16 @@ class RazorpayController extends Controller
                     ->with('error', 'Payment verification failed');
             }
 
-            $payload   = $verification['payload'];
+            $payload = $verification['payload'];
             $paymentId = $request->razorpay_payment_id;
-            $api       = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+            $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
 
             // Fetch payment details from Razorpay
             $paymentDetails = $api->payment->fetch($paymentId);
-            $paymentMethod  = $paymentDetails->method ?? 'razorpay';
-            $status         = $paymentDetails->status ?? 'created';
+            $paymentMethod = $paymentDetails->method ?? 'razorpay';
+            $status = $paymentDetails->status ?? 'created';
 
-            Log::info('payment details fetched',['details' => $paymentDetails]);
+            Log::info('payment details fetched', ['details' => $paymentDetails]);
 
 
             // Find order using razorpay_order_id
@@ -501,7 +541,7 @@ class RazorpayController extends Controller
                     'payment_status' => $order->payment_status
                 ]);
 
-                Auth::loginUsingId($order->user_id);
+                $this->restoreAuthSessionIfAllowed($request, $order);
                 $encryptedId = Crypt::encrypt($order->order_id);
                 return redirect()->route('customer.orders.order_success', ['orderId' => $encryptedId]);
             }
@@ -521,34 +561,34 @@ class RazorpayController extends Controller
                 case 'captured':
                     $order->update([
                         'payment_status' => 'paid',
-                        'order_status'   => 'Pending',
-                        'paid_at'        => now(),
+                        'order_status' => 'Pending',
+                        'paid_at' => now(),
                     ]);
 
                     DB::table('order_payments')->updateOrInsert(
                         ['payment_id' => $paymentId],
                         [
-                            'order_id'              => $order->order_id,
-                            'payment_id'            => $paymentId,
-                            'mode'                  => 'razorpay',
-                            'transaction_number'    => $razorpay_order_id,
-                            'transaction_date'      => now(),
-                            'method'                => $paymentMethod,
-                            'currency'              => $payload['currency'] ?? 'INR',
-                            'amount'                => ($payload['amount'] ?? ($order->total_price)),
-                            'payment_status'        => 'Paid',
+                            'order_id' => $order->order_id,
+                            'payment_id' => $paymentId,
+                            'mode' => 'razorpay',
+                            'transaction_number' => $razorpay_order_id,
+                            'transaction_date' => now(),
+                            'method' => $paymentMethod,
+                            'currency' => $payload['currency'] ?? 'INR',
+                            'amount' => ($payload['amount'] ?? ($order->total_price)),
+                            'payment_status' => 'Paid',
                             'provider_reference_id' => $providerReference,
-                            'json_response'         => json_encode($payload),
-                            'transaction_type'      => 'CAPTURED',
-                            'created_at'            => now(),
-                            'updated_at'            => now(),
+                            'json_response' => json_encode($payload),
+                            'transaction_type' => 'CAPTURED',
+                            'created_at' => now(),
+                            'updated_at' => now(),
                         ]
                     );
 
                     $user = User::find($order->user_id);
 
-                    try{
-                        if ($order->address->receiver_email !=  $user->email) {
+                    try {
+                        if ($order->address->receiver_email != $user->email) {
 
                             Mail::to([$order->address->receiver_email, $user->email])->send(new PaymentSuccess($order));
                         } else {
@@ -560,8 +600,7 @@ class RazorpayController extends Controller
                             'order_id' => $order->order_id,
                             'email' => $user->email
                         ]);
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         Log::error('Failed to send email notification:', [
                             'order_id' => $order->order_id,
                             'error' => $e->getMessage()
@@ -596,8 +635,8 @@ class RazorpayController extends Controller
                         'amount' => ($payload['amount'] ?? ($order->total_price))
                     ]);
 
-                    Auth::loginUsingId($order->user_id);
-                    Cart::where('user_id', Auth::id() ?? $order->user_id)->delete();
+                    $this->restoreAuthSessionIfAllowed($request, $order);
+                    Cart::where('user_id', $order->user_id)->delete();
                     $encryptedId = Crypt::encrypt($order->order_id);
                     DB::commit();
 
@@ -606,7 +645,7 @@ class RazorpayController extends Controller
                 case 'failed':
                     $order->update([
                         'payment_status' => 'failed',
-                        'order_status'   => 'failed',
+                        'order_status' => 'failed',
                     ]);
 
                     DB::commit();
@@ -617,26 +656,26 @@ class RazorpayController extends Controller
                 default:
                     $order->update([
                         'payment_status' => 'pending',
-                        'order_status'   => 'pending',
+                        'order_status' => 'pending',
                     ]);
 
                     DB::table('order_payments')->updateOrInsert(
                         ['payment_id' => $paymentId],
                         [
-                            'order_id'              => $order->order_id,
-                            'payment_id'            => $paymentId,
-                            'mode'                  => 'razorpay',
-                            'transaction_number'    => $razorpay_order_id,
-                            'transaction_date'      => now(),
-                            'method'                => $paymentMethod,
-                            'currency'              => $payload['currency'] ?? 'INR',
-                            'amount'                => ($payload['amount'] ?? ($order->total_price)),
-                            'payment_status'        => 'PENDING',
+                            'order_id' => $order->order_id,
+                            'payment_id' => $paymentId,
+                            'mode' => 'razorpay',
+                            'transaction_number' => $razorpay_order_id,
+                            'transaction_date' => now(),
+                            'method' => $paymentMethod,
+                            'currency' => $payload['currency'] ?? 'INR',
+                            'amount' => ($payload['amount'] ?? ($order->total_price)),
+                            'payment_status' => 'PENDING',
                             'provider_reference_id' => $providerReference,
-                            'json_response'         => json_encode($payload),
-                            'transaction_type'      => 'PENDING',
-                            'created_at'            => now(),
-                            'updated_at'            => now(),
+                            'json_response' => json_encode($payload),
+                            'transaction_type' => 'PENDING',
+                            'created_at' => now(),
+                            'updated_at' => now(),
                         ]
                     );
 
@@ -660,7 +699,7 @@ class RazorpayController extends Controller
     {
         $request->validate([
             'payment_id' => 'required|string',
-            'amount'     => 'sometimes|numeric|min:1'
+            'amount' => 'sometimes|numeric|min:1'
         ]);
 
         try {
@@ -670,13 +709,13 @@ class RazorpayController extends Controller
 
             if (isset($response['success']) && $response['success']) {
                 DB::table('order_refunds')->insert([
-                    'payment_id'            => $request->payment_id,
-                    'refund_amount'         => ($request->amount ?? 0),
-                    'refund_status'         => 'SUCCESS',
-                    'refund_response'       => json_encode($response),
+                    'payment_id' => $request->payment_id,
+                    'refund_amount' => ($request->amount ?? 0),
+                    'refund_status' => 'SUCCESS',
+                    'refund_response' => json_encode($response),
                     'transaction_reference' => 'RFD-' . strtoupper(Str::random(10)),
-                    'created_at'            => now(),
-                    'updated_at'            => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
 
@@ -686,7 +725,7 @@ class RazorpayController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Refund failed',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }

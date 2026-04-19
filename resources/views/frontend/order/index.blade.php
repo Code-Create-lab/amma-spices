@@ -398,6 +398,39 @@
     .no-orders h3 { color: #4B3B2E; font-size: 20px; margin-bottom: 8px; }
     .no-orders p  { color: #8a7060; font-size: 14px; }
 
+    .guest-orders-banner {
+        background: #fff;
+        border: 1px solid #e8d9c8;
+        border-radius: 6px;
+        padding: 20px 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 4px rgba(75,59,46,0.07);
+    }
+    .guest-orders-banner h3 {
+        color: #4B3B2E;
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    .guest-orders-banner p {
+        color: #8a7060;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    .guest-orders-banner .guest-email {
+        color: #2c1f14;
+        font-weight: 700;
+    }
+    .guest-orders-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+    .guest-orders-actions .btn {
+        min-width: 220px;
+    }
+
     /* Divider */
     .fk-divider { border: none; border-top: 1px solid #e8d9c8; margin: 14px 0; }
 
@@ -442,11 +475,30 @@
             <div class="container">
                 <div class="row">
 
-                    @if (Route::currentRouteName() != 'customer.track-orders.index')
+                    @if (!$isGuestOrderView && Route::currentRouteName() != 'customer.track-orders.index')
                         @include('frontend.layouts.sidebar')
                     @endif
 
                     <div class="col-md-8 mx-auto">
+
+                        @if ($isGuestOrderView)
+                            <div class="guest-orders-banner">
+                                <h3>Guest Orders</h3>
+                                <p>
+                                    Showing guest checkout orders for
+                                    <span class="guest-email">{{ $guestOrderEmail }}</span>.
+                                    Logged-in orders stay hidden until you sign in.
+                                </p>
+
+                                @if ($showGuestLoginPrompt)
+                                    <div class="guest-orders-actions">
+                                        <button type="button" class="btn btn-primary" onclick="openOrdersLoginModal()">
+                                            View All My Orders
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
 
                         @if ($orders->isNotEmpty())
                             <div class="fk-orders-grid">
@@ -492,7 +544,7 @@
                                                 </a>
                                             @endif
 
-                                            @if ($order->order_status === 'Completed')
+                                            @if (!$isGuestOrderView && $order->order_status === 'Completed')
                                                 <a class="invoice-dow" target="_blank"
                                                    href="{{ route('order.invoice', $order->cart_id) }}"
                                                    onclick="event.stopPropagation()">
@@ -589,7 +641,7 @@
                                                             <th>Qty</th>
                                                             <th>Price</th>
                                                             <th>Total</th>
-                                                            @if ($order->order_status == 'Completed')
+                                                            @if (!$isGuestOrderView && $order->order_status == 'Completed')
                                                                 <th>Review</th>
                                                             @endif
                                                         </tr>
@@ -627,7 +679,7 @@
                                                                 <td>{{ $item->quantity }}</td>
                                                                 <td>₹{{ $item->variation->price == 0 ? $item->variation->mrp : $item->variation->price }}</td>
                                                                 <td>₹{{ $lineTotal }}</td>
-                                                                @if ($order->order_status == 'Completed')
+                                                                @if (!$isGuestOrderView && $order->order_status == 'Completed')
                                                                 <td>
                                                                     <div class="review-pop">
                                                                         @if ($item->review)
@@ -771,71 +823,73 @@
     </div>
 
     {{-- ── Review Modals ── --}}
-    @foreach ($orders as $order)
-        @foreach ($order->orderItems as $item)
-            <div class="modal fade" id="reviewModal-{{ $item->store_order_id }}"
-                 tabindex="-1"
-                 aria-labelledby="reviewModalLabel-{{ $item->store_order_id }}"
-                 aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content" style="border:none;border-radius:6px;overflow:hidden;">
-                        <div class="modal-header" style="background:#4B3B2E;border:none;">
-                            <h5 class="modal-title" style="color:#FFF7ED;font-size:15px;font-weight:700;">
-                                Rate &amp; Review
-                            </h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                    style="color:#FFF7ED;opacity:1;background:none;border:none;font-size:20px;">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body" style="padding:20px;">
-                            <form action="{{ route('frontend.order.review.store', $item->store_order_id) }}" method="POST">
-                                @csrf
-                                <p style="font-size:13px;font-weight:600;color:#4B3B2E;margin-bottom:16px;">
-                                    {{ $item->product_name }}
-                                </p>
-                                <div class="mb-3">
-                                    <label class="form-label" style="font-size:13px;font-weight:600;color:#4B3B2E;">
-                                        Rating <span class="text-danger">*</span>
-                                    </label>
-                                    <div class="star-rating d-flex align-items-center"
-                                         data-item-id="{{ $item->store_order_id }}">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            <i class="la la-star star me-1"
-                                               data-value="{{ $i }}"
-                                               style="font-size:30px;cursor:pointer;color:#ccc;"></i>
-                                        @endfor
+    @if (!$isGuestOrderView)
+        @foreach ($orders as $order)
+            @foreach ($order->orderItems as $item)
+                <div class="modal fade" id="reviewModal-{{ $item->store_order_id }}"
+                     tabindex="-1"
+                     aria-labelledby="reviewModalLabel-{{ $item->store_order_id }}"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="border:none;border-radius:6px;overflow:hidden;">
+                            <div class="modal-header" style="background:#4B3B2E;border:none;">
+                                <h5 class="modal-title" style="color:#FFF7ED;font-size:15px;font-weight:700;">
+                                    Rate &amp; Review
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                        style="color:#FFF7ED;opacity:1;background:none;border:none;font-size:20px;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:20px;">
+                                <form action="{{ route('frontend.order.review.store', $item->store_order_id) }}" method="POST">
+                                    @csrf
+                                    <p style="font-size:13px;font-weight:600;color:#4B3B2E;margin-bottom:16px;">
+                                        {{ $item->product_name }}
+                                    </p>
+                                    <div class="mb-3">
+                                        <label class="form-label" style="font-size:13px;font-weight:600;color:#4B3B2E;">
+                                            Rating <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="star-rating d-flex align-items-center"
+                                             data-item-id="{{ $item->store_order_id }}">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="la la-star star me-1"
+                                                   data-value="{{ $i }}"
+                                                   style="font-size:30px;cursor:pointer;color:#ccc;"></i>
+                                            @endfor
+                                        </div>
+                                        <input type="hidden" name="rating"
+                                               id="rating-input-{{ $item->store_order_id }}" required>
                                     </div>
-                                    <input type="hidden" name="rating"
-                                           id="rating-input-{{ $item->store_order_id }}" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="review-{{ $item->store_order_id }}"
-                                           class="form-label" style="font-size:13px;font-weight:600;color:#4B3B2E;">
-                                        Your Review <span class="text-danger">*</span>
-                                    </label>
-                                    <textarea class="form-control"
-                                              id="review-{{ $item->store_order_id }}"
-                                              name="review" rows="4"
-                                              placeholder="Share your experience..."
-                                              style="border-color:#e8d9c8;font-size:13px;"
-                                              required></textarea>
-                                </div>
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                                            data-dismiss="modal">Cancel</button>
-                                    <button type="submit"
-                                            style="background:#4B3B2E;color:#FFF7ED;border:none;padding:8px 22px;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;">
-                                        Submit Review
-                                    </button>
-                                </div>
-                            </form>
+                                    <div class="mb-3">
+                                        <label for="review-{{ $item->store_order_id }}"
+                                               class="form-label" style="font-size:13px;font-weight:600;color:#4B3B2E;">
+                                            Your Review <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea class="form-control"
+                                                  id="review-{{ $item->store_order_id }}"
+                                                  name="review" rows="4"
+                                                  placeholder="Share your experience..."
+                                                  style="border-color:#e8d9c8;font-size:13px;"
+                                                  required></textarea>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-dismiss="modal">Cancel</button>
+                                        <button type="submit"
+                                                style="background:#4B3B2E;color:#FFF7ED;border:none;padding:8px 22px;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;">
+                                            Submit Review
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
         @endforeach
-    @endforeach
+    @endif
 
 </main>
 
@@ -846,6 +900,13 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    function openOrdersLoginModal() {
+        if (typeof rememberCheckoutIntent === 'function') {
+            rememberCheckoutIntent('login');
+        }
+
+        $('#loginModal').modal('show');
+    }
     /* ── Accordion Toggle ── */
     function toggleOrder(cartId, event) {
         // Don't toggle when clicking links/buttons inside header

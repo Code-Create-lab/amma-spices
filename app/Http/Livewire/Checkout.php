@@ -30,6 +30,11 @@ use Livewire\Attributes\Computed;
 use App\Models\Shipping;
 use App\Jobs\OrderPlacedEmailJob;
 use App\Jobs\SendOrderNotificationJob;
+use App\Jobs\SendMailJob;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 
 class Checkout extends Component
@@ -81,16 +86,16 @@ class Checkout extends Component
     public function dehydrate()
     {
         // Ensure all properties are primitives before serialization
-        $this->address_id = (string)$this->address_id;
-        $this->discount = (float)$this->discount;
-        $this->final_price = (float)$this->final_price;
-        $this->coupon_id = (int)$this->coupon_id;
-        $this->subTotal = (float)$this->subTotal;
-        $this->total_saving = (float)$this->total_saving;
-        $this->addressForm = (bool)$this->addressForm;
-        $this->coupon_code = (string)$this->coupon_code;
-        $this->cart_items_count_checkOut = (int)$this->cart_items_count_checkOut;
-        $this->cart_total_checkOut = (float)$this->cart_total_checkOut;
+        $this->address_id = (string) $this->address_id;
+        $this->discount = (float) $this->discount;
+        $this->final_price = (float) $this->final_price;
+        $this->coupon_id = (int) $this->coupon_id;
+        $this->subTotal = (float) $this->subTotal;
+        $this->total_saving = (float) $this->total_saving;
+        $this->addressForm = (bool) $this->addressForm;
+        $this->coupon_code = (string) $this->coupon_code;
+        $this->cart_items_count_checkOut = (int) $this->cart_items_count_checkOut;
+        $this->cart_total_checkOut = (float) $this->cart_total_checkOut;
 
         // Ensure arrays are properly formatted
         if (!is_array($this->cart_items_checkOut)) {
@@ -104,20 +109,180 @@ class Checkout extends Component
         }
     }
 
+    protected function getGuestSessionUser(): ?User
+    {
+        if ($this->guestUser instanceof User) {
+            return $this->guestUser;
+        }
+
+        $sessionUser = session('guestUser');
+
+        if ($sessionUser instanceof User) {
+            $this->guestUser = $sessionUser;
+            return $sessionUser;
+        }
+
+        if (is_object($sessionUser) && isset($sessionUser->id)) {
+            $user = User::find($sessionUser->id);
+
+            if ($user) {
+                $this->guestUser = $user;
+                return $user;
+            }
+        }
+
+        return null;
+    }
+
+    protected function getCheckoutUser(): ?User
+    {
+        return Auth::user() ?? $this->getGuestSessionUser();
+    }
+
+    protected function getCheckoutUserId(): ?int
+    {
+        return $this->getCheckoutUser()?->id;
+    }
+
+    protected function guestAddressUuids(): array
+    {
+        return array_values(array_filter((array) session('guest_checkout_address_uuids', [])));
+    }
+
+    protected function rememberGuestAddress(Address $address): void
+    {
+        $addressUuids = $this->guestAddressUuids();
+        $addressUuids[] = $address->uuid;
+
+        session()->put('guest_checkout_address_uuids', array_values(array_unique($addressUuids)));
+    }
+
+    protected function accessibleAddressesQuery(): Builder
+    {
+        if (Auth::check()) {
+            return Address::query()
+                ->where('user_id', Auth::id())
+                ->where('is_deleted', 0);
+        }
+
+        $guestAddressUuids = $this->guestAddressUuids();
+
+        if (empty($guestAddressUuids)) {
+            return Address::query()->whereRaw('0 = 1');
+        }
+
+        return Address::query()
+            ->whereIn('uuid', $guestAddressUuids)
+            ->where('is_deleted', 0);
+    }
+
+    protected function syncGuestCheckoutSession(User $user, string $email): void
+    {
+        $this->guestUser = $user->fresh();
+
+        session()->put('guestUser', $this->guestUser);
+        session()->put('checkout_mode', 'guest');
+        session()->put('guest_checkout_email', $email);
+    }
+
+    protected function rememberGuestOrderAccess(?Orders $order = null): void
+    {
+        $checkoutUser = $this->getCheckoutUser();
+
+        if (!$checkoutUser) {
+            return;
+        }
+
+        session()->put('guest_order_access', [
+            'user_id' => (int) $checkoutUser->id,
+            'email' => (string) ($order?->address?->receiver_email ?? $this->addressData['receiver_email'] ?? $checkoutUser->email ?? ''),
+            'last_order_id' => $order?->order_id,
+        ]);
+    }
+
+    protected function resetGuestAddressContextIfEmailChanged(string $email): void
+    {
+        $sessionEmail = strtolower((string) session('guest_checkout_email', ''));
+
+        if ($sessionEmail && $sessionEmail !== $email) {
+            session()->forget('guest_checkout_address_uuids');
+        }
+    }
+
+    protected function createGuestUserPayload(string $email, string $plainPassword): array
+    {
+        $payload = [
+            'name' => trim($this->addressData['firstName'] . ' ' . $this->addressData['lastName']) ?: 'Guest Customer',
+            'email' => $email,
+            'reg_date' => Carbon::now(),
+            'password' => Hash::make($plainPassword),
+        ];
+
+        if (Schema::hasColumn('users', 'status')) {
+            $payload['status'] = 1;
+        }
+
+        if (Schema::hasColumn('users', 'is_guest')) {
+            $payload['is_guest'] = 1;
+        }
+
+        return $payload;
+    }
+
+    protected function resolveGuestCheckoutUser(): User
+    {
+        $email = strtolower(trim((string) ($this->addressData['receiver_email'] ?? '')));
+
+        $this->resetGuestAddressContextIfEmailChanged($email);
+
+        $existingUser = User::query()
+            ->whereRaw('LOWER(email) = ?', [$email])
+            ->first();
+
+        if ($existingUser) {
+            $updates = [];
+            $fullName = trim($this->addressData['firstName'] . ' ' . $this->addressData['lastName']);
+
+            if (blank($existingUser->name) && filled($fullName)) {
+                $updates['name'] = $fullName;
+            }
+
+            if (!empty($updates)) {
+                $existingUser->update($updates);
+            }
+
+            $this->syncGuestCheckoutSession($existingUser, $email);
+
+            return $existingUser->fresh();
+        }
+
+        // New guest user — generate readable password, skip mobile number
+        $plainPassword = Str::random(10);
+
+        $guestUser = new User();
+        $guestUser->forceFill($this->createGuestUserPayload($email, $plainPassword));
+        $guestUser->save();
+
+        // Dispatch welcome mail with credentials via queue
+        SendMailJob::dispatch($guestUser->email, new \App\Mail\GuestWelcomeMail($guestUser->fresh(), $plainPassword));
+
+        $this->syncGuestCheckoutSession($guestUser, $email);
+
+        return $guestUser->fresh();
+    }
+
     // Computed properties for complex data
     public function getAddressesProperty()
     {
-        if (!Auth::id()) {
-
-            $guestUserId =  session('guestUser')->id ?? null;
-        }
-        return Address::where('user_id', Auth::id() ??  $guestUserId)->where('is_deleted', 0)->get();
+        return $this->accessibleAddressesQuery()->get();
     }
 
     public function getSelectedAddressProperty()
     {
         if ($this->address_id) {
-            return Address::where('uuid', $this->address_id)->first();
+            return $this->accessibleAddressesQuery()
+                ->where('uuid', $this->address_id)
+                ->first();
         }
         return null;
     }
@@ -133,12 +298,14 @@ class Checkout extends Component
     protected function rules()
     {
         $user = auth()->user();
+        $isAuthenticated = Auth::check();
+
         return [
             'addressData.type' => 'required',
             'addressData.firstName' => 'required|string|min:2|max:50',
             'addressData.lastName' => 'required|string|min:2|max:50',
-            'addressData.receiver_email' => [$user->email ? 'nullable' : 'required', 'email', 'max:255'],
-            'addressData.receiver_phone' => [$user->user_phone ? 'nullable' : 'required', 'string', 'min:10', 'max:15', 'regex:/^[0-9+\-\s()]+$/'],
+            'addressData.receiver_email' => [$isAuthenticated && filled($user?->email) ? 'nullable' : 'required', 'email', 'max:255'],
+            'addressData.receiver_phone' => [$isAuthenticated && filled($user?->user_phone) ? 'nullable' : 'required', 'string', 'min:10', 'max:15', 'regex:/^[0-9+\-\s()]+$/'],
             'addressData.alternate_phone' => 'string|min:10|max:15|regex:/^[0-9+\-\s()]+$/',
             'addressData.house_no' => 'required|string|min:1|max:100',
             'addressData.society' => 'required|string|min:2|max:255',
@@ -191,8 +358,7 @@ class Checkout extends Component
     #[Computed]
     public function first_addresses()
     {
-        // dd(auth()->user()->addressess);
-        return auth()->user()->addresses; // or however you fetch addresses
+        return auth()->user()?->addresses ?? collect();
     }
 
     public function mount()
@@ -211,6 +377,13 @@ class Checkout extends Component
         $this->cart_total_checkOut = 0.0;
         $this->cart_items_checkOut = [];
         $this->getCouponList = [];
+
+        if (Auth::check()) {
+            session()->forget(['guestUser', 'checkout_mode', 'guest_checkout_address_uuids', 'guest_checkout_email']);
+            $this->guestUser = null;
+        } else {
+            $this->guestUser = $this->getGuestSessionUser();
+        }
 
         $this->payment_option = 'ONLINE';
         if ($this->addresses->isNotEmpty()) {
@@ -239,13 +412,13 @@ class Checkout extends Component
             $this->getCouponList = [];
             foreach ($coupons as $coupon) {
                 $this->getCouponList[] = [
-                    'coupon_id' => (int)$coupon->coupon_id,
-                    'coupon_code' => (string)$coupon->coupon_code,
-                    'coupon_description' => (string)($coupon->coupon_description ?? 'Discount Coupon'),
-                    'amount' => (float)$coupon->amount,
-                    'type' => (string)$coupon->type,
-                    'cart_value' => (float)$coupon->cart_value,
-                    'uses_restriction' => (int)$coupon->uses_restriction,
+                    'coupon_id' => (int) $coupon->coupon_id,
+                    'coupon_code' => (string) $coupon->coupon_code,
+                    'coupon_description' => (string) ($coupon->coupon_description ?? 'Discount Coupon'),
+                    'amount' => (float) $coupon->amount,
+                    'type' => (string) $coupon->type,
+                    'cart_value' => (float) $coupon->cart_value,
+                    'uses_restriction' => (int) $coupon->uses_restriction,
                 ];
             }
         } catch (\Exception $e) {
@@ -254,7 +427,7 @@ class Checkout extends Component
         }
 
         if (session()->get('coupon_code')) {
-            $this->coupon_code = (string)session()->get('coupon_code');
+            $this->coupon_code = (string) session()->get('coupon_code');
             $this->apply_coupon(session()->get('coupon_code'), 0);
         }
     }
@@ -262,12 +435,16 @@ class Checkout extends Component
     // ADDED: Method to properly reset address data
     public function resetAddressData(): void
     {
+        $checkoutUser = $this->getCheckoutUser();
+        $fullName = trim((string) ($checkoutUser?->name ?? ''));
+        $nameParts = preg_split('/\s+/', $fullName, 2) ?: [];
+
         $this->addressData = [
             'type' => '',
-            'firstName' => '',
-            'lastName' => '',
-            'receiver_email' => auth()->user()->email ?? '',
-            'receiver_phone' => auth()->user()->user_phone ?? '',
+            'firstName' => (string) ($nameParts[0] ?? ''),
+            'lastName' => (string) ($nameParts[1] ?? ''),
+            'receiver_email' => (string) ($checkoutUser?->email ?? ''),
+            'receiver_phone' => (string) ($checkoutUser?->user_phone ?? ''),
             'alternate_phone' => '',
             'house_no' => '',
             'society' => '',
@@ -283,8 +460,8 @@ class Checkout extends Component
         $this->subTotal = 0.0;
         foreach ($this->cart_items_checkOut as $item) {
             $mrp = $item['variation']['mrp '] ?? $item['product']['base_mrp'];
-            $price = (float)($item['variation']['price'] ?? $item['product']['base_price']);
-            $quantity = (int)$item['quantity'];
+            $price = (float) ($item['variation']['price'] ?? $item['product']['base_price']);
+            $quantity = (int) $item['quantity'];
             $this->subTotal += ($price == 0 ? $mrp : $price) * $quantity;
         }
 
@@ -329,8 +506,8 @@ class Checkout extends Component
                             $variationAttributes[] = [
                                 'attribute' => [
                                     'attribute' => [
-                                        'attribute_name' => (string)($attr->attribute->attribute->name ?? ''),
-                                        'attribute_value' => (string)($attr->attribute->value ?? ''),
+                                        'attribute_name' => (string) ($attr->attribute->attribute->name ?? ''),
+                                        'attribute_value' => (string) ($attr->attribute->value ?? ''),
                                     ]
                                 ]
                             ];
@@ -339,14 +516,14 @@ class Checkout extends Component
                         }
                     }
                     $this->cart_items_checkOut[] = [
-                        'variation_id' => (string)$item->variation_id,
-                        'product_id' => (string)$item->product_id,
-                        'quantity' => (string)$item->quantity,
+                        'variation_id' => (string) $item->variation_id,
+                        'product_id' => (string) $item->product_id,
+                        'quantity' => (string) $item->quantity,
                         'variation' => [
-                            'id' => (int)$item->variation->id,
-                            'price' => (float)$item->variation->price,
-                            'mrp' => (float)$item->variation->mrp,
-                            'stock' => (int)$item->variation->stock,
+                            'id' => (int) $item->variation->id,
+                            'price' => (float) $item->variation->price,
+                            'mrp' => (float) $item->variation->mrp,
+                            'stock' => (int) $item->variation->stock,
                             'variation_attributes' => $variationAttributes,
                         ],
                         'product' => $item->variation->product->toArray(),
@@ -355,8 +532,8 @@ class Checkout extends Component
 
                 }
                 // dd($this->cart_items_checkOut);
-                $this->cart_items_count_checkOut = (int)$cartItems->count();
-                $this->cart_total_checkOut = (float)$cartItems->sum(fn($item) => $item->quantity * $item->variation->mrp);
+                $this->cart_items_count_checkOut = (int) $cartItems->count();
+                $this->cart_total_checkOut = (float) $cartItems->sum(fn($item) => $item->quantity * $item->variation->mrp);
             } else {
                 $cart = session()->get('cart', []);
                 $this->cart_items_checkOut = [];
@@ -368,22 +545,22 @@ class Checkout extends Component
 
                     if ($variation) {
                         $this->cart_items_checkOut[] = [
-                            'variation_id' => (string)$variation->id,
-                            'product_id' => (string)$variation->product->id,
-                            'quantity' => (string)$item['quantity'],
+                            'variation_id' => (string) $variation->id,
+                            'product_id' => (string) $variation->product->id,
+                            'quantity' => (string) $item['quantity'],
                             'variation' => [
-                                'id' => (int)$variation->id,
-                                'price' => (float)$variation->price,
-                                'mrp' => (float)$variation->mrp,
-                                'stock' => (int)$variation->stock,
+                                'id' => (int) $variation->id,
+                                'price' => (float) $variation->price,
+                                'mrp' => (float) $variation->mrp,
+                                'stock' => (int) $variation->stock,
                             ],
                             'product' => $variation->product->toArray(),
                         ];
-                        $cartTotal += (float)($item['quantity'] * $variation->mrp);
+                        $cartTotal += (float) ($item['quantity'] * $variation->mrp);
                     }
                 }
 
-                $this->cart_items_count_checkOut = (int)count($this->cart_items_checkOut);
+                $this->cart_items_count_checkOut = (int) count($this->cart_items_checkOut);
                 $this->cart_total_checkOut = $cartTotal;
             }
 
@@ -416,7 +593,7 @@ class Checkout extends Component
     public function apply_couponJS(...$data)
     {
         $coupon_code_applied = $data[0] ?? null;
-        $isApplied           = $data[1] ?? 0;
+        $isApplied = $data[1] ?? 0;
 
         try {
             // ---- 1. Resolve coupon code ----
@@ -424,13 +601,13 @@ class Checkout extends Component
 
             if (!$coupon_code) {
                 $this->dispatch('couponApplied', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => false,
                     'message' => 'Please enter a coupon code.',
                 ]);
 
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Please enter a coupon code.',
                 ]);
@@ -440,20 +617,20 @@ class Checkout extends Component
 
             if (!$coupon) {
                 $this->dispatch('couponApplied', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => false,
                     'message' => 'Invalid coupon code.',
                 ]);
 
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Invalid coupon code.',
                 ]);
             }
 
             // ---- 2. Get cart for logged-in OR guest ----
-            $cart_total   = 0;
+            $cart_total = 0;
             $total_saving = 0;
 
             if (Auth::check()) {
@@ -468,13 +645,13 @@ class Checkout extends Component
 
                 if ($cart_items->isEmpty()) {
                     $this->dispatch('couponApplied', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => false,
                         'message' => 'Your cart is empty.',
                     ]);
 
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => 'Your cart is empty.',
                     ]);
@@ -506,22 +683,22 @@ class Checkout extends Component
 
                 if ($sessionCart->isEmpty()) {
                     $this->dispatch('couponApplied', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => false,
                         'message' => 'Your cart is empty.',
                     ]);
 
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => 'Your cart is empty.',
                     ]);
                 }
 
-                $cart_total =  round($sessionCart->sum(function ($item) {
+                $cart_total = round($sessionCart->sum(function ($item) {
 
                     // dd($item);
-                    if ($item['price'] == 0 || $item['price'] ==   null) {
+                    if ($item['price'] == 0 || $item['price'] == null) {
 
                         return ($item['mrp'] ?? 0) * ($item['quantity'] ?? 0);
                     } else {
@@ -531,8 +708,8 @@ class Checkout extends Component
                 }), 2);
 
                 $total_saving = $sessionCart->sum(function ($item) {
-                    $mrp      = $item['mrp'] ?? ($item['price'] ?? 0);
-                    $price    = $item['price'] ?? 0;
+                    $mrp = $item['mrp'] ?? ($item['price'] ?? 0);
+                    $price = $item['price'] ?? 0;
                     $quantity = $item['quantity'] ?? 0;
                     return ($mrp - $price) * $quantity;
                 });
@@ -541,13 +718,13 @@ class Checkout extends Component
             // ---- 3. Minimum cart value check ----
             if ($cart_total < $coupon->cart_value) {
                 $this->dispatch('couponApplied', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => false,
                     'message' => 'Minimum cart value should be ₹' . $coupon->cart_value,
                 ]);
 
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Minimum cart value should be ₹' . $coupon->cart_value,
                 ]);
@@ -565,13 +742,13 @@ class Checkout extends Component
 
                 if ($coupon_uses > 1 && $coupon->typecoupon == 1) {
                     $this->dispatch('couponApplied', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => false,
                         'message' => "Maximum use limit reached for this coupon.",
                     ]);
 
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => "Maximum use limit reached for this coupon.",
                     ]);
@@ -579,13 +756,13 @@ class Checkout extends Component
 
                 if ($coupon_uses >= $coupon->uses_restriction) {
                     $this->dispatch('couponApplied', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => false,
                         'message' => "Maximum use limit reached for this coupon.",
                     ]);
 
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => "Maximum use limit reached for this coupon.",
                     ]);
@@ -607,39 +784,39 @@ class Checkout extends Component
             // Extra safety
             if ($cart_total < $discount) {
                 $this->dispatch('couponApplied', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => false,
                     'message' => 'Cart value should not be less than coupon discount',
                 ]);
 
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Cart value should not be less than coupon discount',
                 ]);
             }
 
-            $discount     = min($discount, $cart_total);
-            $final_price  = $cart_total - $discount;
+            $discount = min($discount, $cart_total);
+            $final_price = $cart_total - $discount;
             $total_saving = $total_saving + $discount;
 
             // ---- 6. Store coupon in session (works for guest + logged-in) ----
             session([
                 'applied_coupon' => [
-                    'discount'     => round($discount, 2),
-                    'final_price'  => round($final_price, 2),
-                    'coupon_code'  => $coupon->coupon_code,
-                    'coupon_id'    => $coupon->coupon_id,
+                    'discount' => round($discount, 2),
+                    'final_price' => round($final_price, 2),
+                    'coupon_code' => $coupon->coupon_code,
+                    'coupon_id' => $coupon->coupon_id,
                     'total_saving' => round($total_saving, 2),
                 ]
             ]);
 
-            $this->discount     = round($discount, 2);
-            $this->final_price  = round($final_price, 2);
-            $this->coupon_code  = $coupon->coupon_code;
-            $this->coupon_id    = $coupon->coupon_id;
+            $this->discount = round($discount, 2);
+            $this->final_price = round($final_price, 2);
+            $this->coupon_code = $coupon->coupon_code;
+            $this->coupon_id = $coupon->coupon_id;
             $this->total_saving = round($total_saving, 2);
-            $this->subTotal     = $this->final_price;
+            $this->subTotal = $this->final_price;
 
             session()->put('coupon_code', $this->coupon_code);
 
@@ -649,15 +826,15 @@ class Checkout extends Component
             // ---- 7. Success events ----
             if ($isApplied == 1) {
                 $this->dispatch('toast', [
-                    'type'    => 'success',
+                    'type' => 'success',
                     'success' => true,
                     'message' => "Coupon Applied",
                 ]);
 
                 $this->dispatch('couponApplied', [
-                    'success'     => true,
+                    'success' => true,
                     'coupon_code' => $this->coupon_code,
-                    'message'     => 'Coupon applied successfully!',
+                    'message' => 'Coupon applied successfully!',
                 ]);
             }
         } catch (\Exception $e) {
@@ -667,7 +844,7 @@ class Checkout extends Component
             ]);
 
             $this->dispatch('toast', [
-                'type'    => 'error',
+                'type' => 'error',
                 'success' => true,
                 'message' => $e->getMessage(),
             ]);
@@ -683,7 +860,7 @@ class Checkout extends Component
 
             if (!$coupon_code) {
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Please enter a coupon code.',
                 ]);
@@ -693,14 +870,14 @@ class Checkout extends Component
 
             if (!$coupon) {
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Invalid coupon code.',
                 ]);
             }
 
             // 2. Get cart totals (DB for logged-in, session for guest)
-            $cart_total   = 0;
+            $cart_total = 0;
             $total_saving = 0;
 
             if (Auth::check()) {
@@ -711,7 +888,7 @@ class Checkout extends Component
 
                 if ($cart_items->isEmpty()) {
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => 'Your cart is empty.',
                     ]);
@@ -747,17 +924,17 @@ class Checkout extends Component
 
                 if ($sessionCart->isEmpty()) {
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => 'Your cart is empty.',
                     ]);
                 }
 
 
-                $cart_total =  round($sessionCart->sum(function ($item) {
+                $cart_total = round($sessionCart->sum(function ($item) {
 
                     // dd($item);
-                    if ($item['price'] == 0 || $item['price'] ==   null) {
+                    if ($item['price'] == 0 || $item['price'] == null) {
 
                         return ($item['product']['base_mrp'] ?? 0) * ($item['quantity'] ?? 0);
                     } else {
@@ -767,8 +944,8 @@ class Checkout extends Component
                 }), 2);
 
                 $total_saving = round($sessionCart->sum(function ($item) {
-                    $mrp      = $item['mrp'] ?? ($item['price'] ?? 0);
-                    $price    = $item['price'] ?? 0;
+                    $mrp = $item['mrp'] ?? ($item['price'] ?? 0);
+                    $price = $item['price'] ?? 0;
                     $quantity = $item['quantity'] ?? 0;
                     return ($mrp - $price) * $quantity;
                 }), 2);
@@ -778,11 +955,11 @@ class Checkout extends Component
             if ($cart_total < $coupon->cart_value) {
                 session()->forget("coupon_code");
                 $this->coupon_code = '';
-                $this->discount    = 0;
-                $this->subTotal    = $cart_total;
+                $this->discount = 0;
+                $this->subTotal = $cart_total;
 
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Minimum cart value should be ₹' . $coupon->cart_value,
                 ]);
@@ -800,7 +977,7 @@ class Checkout extends Component
 
                 if ($coupon_uses > 1 && $coupon->typecoupon == 1) {
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => "Maximum use limit reached for this coupon.",
                     ]);
@@ -808,7 +985,7 @@ class Checkout extends Component
 
                 if ($coupon_uses >= $coupon->uses_restriction) {
                     return $this->dispatch('toast', [
-                        'type'    => 'error',
+                        'type' => 'error',
                         'success' => true,
                         'message' => "Maximum use limit reached for this coupon.",
                     ]);
@@ -829,17 +1006,18 @@ class Checkout extends Component
             if ($cart_total < $discount) {
                 session()->forget("coupon_code");
                 $this->coupon_code = '';
-                $this->discount    = 0;
-                $this->subTotal    = $cart_total;
+                $this->discount = 0;
+                $this->subTotal = $cart_total;
 
                 return $this->dispatch('toast', [
-                    'type'    => 'error',
+                    'type' => 'error',
                     'success' => true,
                     'message' => 'Cart value should not be less than coupon discount.',
                 ]);
             }
-            $discount     = min($discount, $cart_total); // Can't exceed cart value
-            $final_price  = (($cart_total - $discount) + $this->getShippingAmount($cart_total - $discount));;
+            $discount = min($discount, $cart_total); // Can't exceed cart value
+            $final_price = (($cart_total - $discount) + $this->getShippingAmount($cart_total - $discount));
+            ;
             $total_saving = $total_saving + $discount;
             $this->shippingAmount = $this->getShippingAmount($cart_total - $discount);
 
@@ -849,35 +1027,35 @@ class Checkout extends Component
             // 6. Store in session
             session([
                 'applied_coupon' => [
-                    'discount'     => $discount,
-                    'final_price'  => $final_price,
-                    'coupon_code'  => $coupon->coupon_code,
-                    'coupon_id'    => $coupon->coupon_id,
+                    'discount' => $discount,
+                    'final_price' => $final_price,
+                    'coupon_code' => $coupon->coupon_code,
+                    'coupon_id' => $coupon->coupon_id,
                     'total_saving' => $total_saving,
                 ]
             ]);
 
             // 7. Update component state
-            $this->discount     = $discount;
-            $this->final_price  = $final_price;
-            $this->coupon_code  = $coupon->coupon_code;
-            $this->coupon_id    = $coupon->coupon_id;
+            $this->discount = $discount;
+            $this->final_price = $final_price;
+            $this->coupon_code = $coupon->coupon_code;
+            $this->coupon_id = $coupon->coupon_id;
             $this->total_saving = $total_saving;
-            $this->subTotal     = $final_price;
+            $this->subTotal = $final_price;
 
             session()->put('coupon_code', $this->coupon_code);
             $this->dispatch('cart-updated');
 
             if ($isApplied == 1) {
                 $this->dispatch('toast', [
-                    'type'    => 'success',
+                    'type' => 'success',
                     'success' => true,
                     'message' => "Coupon Applied Successfully.",
                 ]);
             }
         } catch (\Exception $e) {
             $this->dispatch('toast', [
-                'type'    => 'error',
+                'type' => 'error',
                 'success' => true,
                 'message' => $e->getMessage(),
             ]);
@@ -921,9 +1099,8 @@ class Checkout extends Component
             DB::beginTransaction();
 
             try {
-                // Find the existing address
-                $address = Address::where('uuid', $this->address_id)
-                    ->where('user_id', Auth::id())
+                $address = $this->accessibleAddressesQuery()
+                    ->where('uuid', $this->address_id)
                     ->first();
 
                 if (!$address) {
@@ -960,9 +1137,24 @@ class Checkout extends Component
                 // Update the address
                 $address->update($updateData);
 
+                if (!Auth::check()) {
+                    $this->rememberGuestAddress($address->fresh());
+                }
+
                 $this->addressForm = false;
 
                 DB::commit();
+
+                if (!Auth::check()) {
+                    $this->dispatch('guest-checkout-synced', [
+                        'mode' => 'guest',
+                        'guest_user_id' => $this->getCheckoutUserId(),
+                        'email' => $this->addressData['receiver_email'],
+                        'phone' => $this->addressData['receiver_phone'],
+                        'address_uuid' => $address->uuid,
+                        'address' => $this->addressData,
+                    ]);
+                }
 
                 $this->dispatch('toast', [
                     'type' => 'success',
@@ -992,26 +1184,14 @@ class Checkout extends Component
 
     public function addAddress()
     {
-        // dd(session()->all());
-        // if ($this->addressForm) {
         try {
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
             $errors = $e->errors();
 
-            // dd($errors);
             foreach ($errors as $field => $fieldErrors) {
                 foreach ($fieldErrors as $error) {
-
-
-                    session()->flash('error_' . $field, $fieldErrors[0]); // Get first error for each field
-                    // $this->dispatch('toast', [
-                    //     'type' => 'error',
-                    //     'success' => false,
-                    //     'field' => $field,
-                    //     'message' => $error,
-                    //     'delay' => array_search($field, array_keys($errors)) * 500
-                    // ]);
+                    session()->flash('error_' . $field, $fieldErrors[0]);
                 }
             }
             return false;
@@ -1019,42 +1199,21 @@ class Checkout extends Component
 
         DB::beginTransaction();
 
-        if (!auth()->user()) {
-
-            return   $this->dispatch('toast', [
-                'type' => 'error',
-                'success' => true,
-                'message' => "Please Login",
-            ]);
-            $storedUser = User::where('email', $this->addressData['receiver_email'])->orWhere("user_phone", $this->addressData['receiver_phone'])->first();
-            // dd($storedUser);
-            // if ($storedUser) {
-
-            //     $this->guestUser = $storedUser;
-            // } else {
-
-            $this->guestUser = User::create([
-                'name' => $this->addressData['firstName'] . " " . $this->addressData['lastName'],
-                'email' => $this->addressData['receiver_email'],
-                'user_phone' => $this->addressData['receiver_phone'],
-                'reg_date' => Carbon::now(),
-                "status" => 1,
-                "is_guest" => 1
-            ]);
-            // }
-            session()->put('guestUser',  $this->guestUser);
-        }
-
-
-
         try {
+            $checkoutUserId = Auth::id();
+
+            if (!$checkoutUserId) {
+                $guestUser = $this->resolveGuestCheckoutUser();
+                $checkoutUserId = $guestUser->id;
+            }
+
             $city = City::firstOrCreate([
                 'city_name' => $this->addressData['city'],
             ]);
 
             $addressData = [
                 'type' => $this->addressData['type'],
-                'user_id' => Auth::id() ??  $this->guestUser->id,
+                'user_id' => $checkoutUserId,
                 'receiver_name' => $this->addressData['firstName'] . " " . $this->addressData['lastName'],
                 'receiver_phone' => $this->addressData['receiver_phone'],
                 'alternate_phone' => $this->addressData['alternate_phone'],
@@ -1072,22 +1231,64 @@ class Checkout extends Component
                 'updated_at' => Carbon::now(),
             ];
 
-            $address = Address::create(array_merge($addressData, [
-                'added_at' => Carbon::now(),
-            ]));
+            $addressQuery = Address::query()
+                ->where('user_id', $checkoutUserId)
+                ->where('receiver_email', $this->addressData['receiver_email'])
+                ->where('receiver_phone', $this->addressData['receiver_phone'])
+                ->where('house_no', $this->addressData['house_no'])
+                ->where('society', $this->addressData['society'])
+                ->where('city', $this->addressData['city'])
+                ->where('state', $this->addressData['state'])
+                ->where('pincode', $this->addressData['pincode'])
+                ->where('is_deleted', 0);
+
+            if (!Auth::check()) {
+                $guestAddressUuids = $this->guestAddressUuids();
+
+                if (!empty($guestAddressUuids)) {
+                    $addressQuery->whereIn('uuid', $guestAddressUuids);
+                } else {
+                    $addressQuery->whereRaw('0 = 1');
+                }
+            }
+
+            $address = $addressQuery->first();
+
+            if ($address) {
+                $address->update($addressData);
+            } else {
+                $address = Address::create(array_merge($addressData, [
+                    'added_at' => Carbon::now(),
+                ]));
+            }
+
+            if (!Auth::check()) {
+                $this->rememberGuestAddress($address);
+            }
 
             $this->address_id = $address->uuid;
             $this->addressForm = false;
 
-
-
             DB::commit();
+
+            if (!Auth::check()) {
+                $this->dispatch('guest-checkout-synced', [
+                    'mode' => 'guest',
+                    'guest_user_id' => $checkoutUserId,
+                    'email' => $this->addressData['receiver_email'],
+                    'phone' => $this->addressData['receiver_phone'],
+                    'address_uuid' => $address->uuid,
+                    'address' => $this->addressData,
+                ]);
+            }
 
             $this->dispatch('toast', [
                 'type' => 'success',
                 'success' => true,
                 'message' => "Address Created Successfully",
             ]);
+
+            return true;
         } catch (\Exception $e) {
             DB::rollBack();
             $this->dispatch('toast', [
@@ -1097,14 +1298,6 @@ class Checkout extends Component
             ]);
             return false;
         }
-        // } else {
-        //     $this->dispatch('toast', [
-        //         'type' => 'error',
-        //         'success' => false,
-        //         'message' => "Please select or add an address",
-        //     ]);
-        //     return false;
-        // }
     }
 
     public function storeOrder()
@@ -1113,17 +1306,24 @@ class Checkout extends Component
         $loggedInUser = auth()->user();
         if (!$loggedInUser) {
             if ($this->address_id == null || $this->address_id == "") {
-                // dd($this->address_id);
-
-                $this->addAddress();
+                if ($this->addAddress() === false) {
+                    return false;
+                }
             }
-            // dd($this->guestUser, session('guestUser'),$this->addAddress());
-            // dd();
+
             $sessionCart = session()->get('cart', []);
-            $userId = $this->guestUser?->id ?? session('guestUser')->id;
-            // session()->forget('cart');
-            // dd(session()->get('cart', []) , $sessionWishlist);
-            // dd( $sessionCart);
+            $userId = $this->getCheckoutUserId();
+
+            if (!$userId) {
+                $this->dispatch('toast', [
+                    'type' => 'error',
+                    'success' => false,
+                    'message' => "Unable to prepare guest checkout",
+                ]);
+
+                return false;
+            }
+
             foreach ($sessionCart as $key => $item) {
                 $dbCartItem = Cart::where('product_id', $item['product_id'])
                     ->where('variation_id', $item['variation_id'])
@@ -1143,13 +1343,22 @@ class Checkout extends Component
         }
         // dd("dasdasd");
         try {
+            $checkoutUserId = $this->getCheckoutUserId();
 
+            if (!$checkoutUserId) {
+                $this->dispatch('toast', [
+                    'type' => 'error',
+                    'success' => false,
+                    'message' => "Unable to identify checkout user",
+                ]);
 
+                return false;
+            }
 
             $couponCodeSession = Session()->get('coupon_code');
             $getCoupon = Coupon::where('coupon_code', $couponCodeSession)->first();
 
-            $getAddress = Address::where('user_id', $loggedInUser->id ?? session('guestUser')?->id)->where('is_deleted', 0)->count();
+            $getAddress = $this->addresses->count();
 
 
             if ($this->payment_option == "") {
@@ -1169,7 +1378,7 @@ class Checkout extends Component
             DB::beginTransaction();
 
             $cart_items = Cart::with(['product', 'variation'])
-                ->where('user_id', Auth::id() ?? session('guestUser')?->id)
+                ->where('user_id', $checkoutUserId)
                 ->get();
 
             if ($cart_items->isEmpty()) {
@@ -1192,9 +1401,8 @@ class Checkout extends Component
                 return false;
             }
 
-            $address = Address::where('uuid', $this->address_id)->first();
+            $address = $this->selectedAddress;
 
-            // dd($this->address_id);
             if (!$address) {
                 DB::rollBack();
                 $this->dispatch('toast', [
@@ -1264,16 +1472,17 @@ class Checkout extends Component
             $price_without_delivery = $total_price - ($this->discount ?? 0);
 
             // if ($total_price < (int)$this->getShippingCharge->minimum_cart_value) {
-            $total_price  += $this->getShippingAmount($total_price);
+            $total_price += $this->getShippingAmount($total_price);
             $delivery_charge = $this->getShippingAmount($total_price);
             // }
             $cart_id = strtoupper(substr(md5(microtime()), 0, 6));
 
 
-            $total_price =  round($total_price - (round($this->discount) ?? 0));
+            $total_price = round($total_price - (round($this->discount) ?? 0));
 
             $order = Orders::create([
-                'user_id' => Auth::id() ?? session('guestUser')?->id,
+                'user_id' => $checkoutUserId,
+                'is_guest_checkout' => !$loggedInUser,
                 'store_id' => 1,
                 'address_id' => $address->address_id,
                 'cart_id' => $cart_id,
@@ -1325,17 +1534,17 @@ class Checkout extends Component
                     : $item->product->base_mrp;
 
                 StoreOrders::create([
-                    'product_name'   => $item->product->product_name,
-                    'varient_image'  => $item->product->product_image,
-                    'quantity'       => $item->quantity,
-                    'qty'            => $item->quantity,
-                    'varient_id'     => $item->variation_id,
-                    'price'          => $unitPrice * $item->quantity,
-                    'total_mrp'      => $unitMrp * $item->quantity,
-                    'order_cart_id'  => $cart_id,
-                    'order_date'     => Carbon::now(),
-                    'store_id'       => 1,
-                    'description'    => $item->product->description,
+                    'product_name' => $item->product->product_name,
+                    'varient_image' => $item->product->product_image,
+                    'quantity' => $item->quantity,
+                    'qty' => $item->quantity,
+                    'varient_id' => $item->variation_id,
+                    'price' => $unitPrice * $item->quantity,
+                    'total_mrp' => $unitMrp * $item->quantity,
+                    'order_cart_id' => $cart_id,
+                    'order_date' => Carbon::now(),
+                    'store_id' => 1,
+                    'description' => $item->product->description,
                 ]);
 
                 // Variation::where('id', $item->variation_id)->decrement('stock', $item->quantity);
@@ -1364,7 +1573,7 @@ class Checkout extends Component
                     ]);
                 }
 
-                $cart_data = Cart::where('user_id', Auth::id() ?? session('guestUser')?->id)->get();
+                $cart_data = Cart::where('user_id', $checkoutUserId)->get();
                 foreach ($cart_data as $item) {
                     // $storeOrder = StoreOrders::where('order_cart_id', $item->cart_id)->first();
                     // // dd($payload, "CUSTOMER_CANCELLED");
@@ -1373,12 +1582,12 @@ class Checkout extends Component
 
                     Variation::where('id', $item->variation_id)->decrement('stock', $item->quantity);
                 }
-                Cart::where('user_id', Auth::id() ?? session('guestUser')?->id)->delete();
+                Cart::where('user_id', $checkoutUserId)->delete();
 
 
                 Log::info('Payment Success Processed:', [
                     'order_id' => $order->order_id,
-                    'amount' =>   $total_price
+                    'amount' => $total_price
                 ]);
                 $encryptedId = Crypt::encrypt($order->order_id);
 
@@ -1391,6 +1600,10 @@ class Checkout extends Component
                 $this->cart_total_checkOut = 0;
                 $this->subTotal = 0;
 
+                if (!$loggedInUser) {
+                    $this->rememberGuestOrderAccess($order);
+                }
+
                 return redirect()->route('customer.orders.order_success', ['orderId' => $encryptedId]);
             }
 
@@ -1398,8 +1611,8 @@ class Checkout extends Component
             // dd('asdasdasdasd',env('RAZORPAY_KEY'), env('RAZORPAY_SECRET'));
             // Razorpay Handling
             $razorpayOrder = (new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret')))->order->create([
-                'receipt'  =>  $cart_id,
-                'amount'   => (int)round($total_price * 100), // amount in paise
+                'receipt' => $cart_id,
+                'amount' => (int) round($total_price * 100), // amount in paise
                 'currency' => 'INR',
             ]);
 
@@ -1584,7 +1797,9 @@ class Checkout extends Component
     // FIXED: Properly initialize address data when showing existing address
     public function showAddress($addressId)
     {
-        $getAddress = Address::where('uuid', $addressId)->first();
+        $getAddress = $this->accessibleAddressesQuery()
+            ->where('uuid', $addressId)
+            ->first();
 
         if (!$getAddress) {
             $this->dispatch('toast', [
@@ -1604,18 +1819,18 @@ class Checkout extends Component
         // FIXED: Properly reset and set address data
         $this->resetAddressData();
         $this->addressData = [
-            'type' => (string)($getAddress->type ?? ''),
-            'firstName' => (string)($name[0] ?? ''),
-            'lastName' => (string)($name[1] ?? ''),
-            'receiver_phone' => (string)($getAddress->receiver_phone ?? ''),
-            'alternate_phone' => (string)($getAddress->alternate_phone ?? ''),
-            'city' => (string)($getAddress->city ?? ''),
-            'house_no' => (string)($getAddress->house_no ?? ''),
-            'society' => (string)($getAddress->society ?? ''),
-            'landmark' => (string)($getAddress->landmark ?? ''),
-            'state' => (string)($getAddress->state ?? ''),
-            'pincode' => (string)($getAddress->pincode ?? ''),
-            'receiver_email' => (string)($getAddress->receiver_email ?? ''),
+            'type' => (string) ($getAddress->type ?? ''),
+            'firstName' => (string) ($name[0] ?? ''),
+            'lastName' => (string) ($name[1] ?? ''),
+            'receiver_phone' => (string) ($getAddress->receiver_phone ?? ''),
+            'alternate_phone' => (string) ($getAddress->alternate_phone ?? ''),
+            'city' => (string) ($getAddress->city ?? ''),
+            'house_no' => (string) ($getAddress->house_no ?? ''),
+            'society' => (string) ($getAddress->society ?? ''),
+            'landmark' => (string) ($getAddress->landmark ?? ''),
+            'state' => (string) ($getAddress->state ?? ''),
+            'pincode' => (string) ($getAddress->pincode ?? ''),
+            'receiver_email' => (string) ($getAddress->receiver_email ?? ''),
         ];
 
         $this->addressForm = true;
@@ -1695,7 +1910,7 @@ class Checkout extends Component
                 $admin_message = "🔔 Order Alert: #{$orderNumber} placed by {$name} for ₹{$amount}. Login to process - ZAKH";
 
 
-                $whatsappResponse =   Http::withToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6Inpha2hfYm90IiwiZW1haWwiOiJ6YWtoQG1haWxpbmF0b3IuY29tIiwidGltZXN0YW1wIjoiMjAyNS0xMC0zMVQwNjozNTozMS4zNTJaIiwiY2hhbm5lbCI6IndoYXRzYXBwIiwiaWF0IjoxNzYxODkyNTMxfQ.gmwdMS60eECJ9Mdx3VUq9KvMMnBZXQET2U6PVpfDHeI')
+                $whatsappResponse = Http::withToken('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6Inpha2hfYm90IiwiZW1haWwiOiJ6YWtoQG1haWxpbmF0b3IuY29tIiwidGltZXN0YW1wIjoiMjAyNS0xMC0zMVQwNjozNTozMS4zNTJaIiwiY2hhbm5lbCI6IndoYXRzYXBwIiwiaWF0IjoxNzYxODkyNTMxfQ.gmwdMS60eECJ9Mdx3VUq9KvMMnBZXQET2U6PVpfDHeI')
                     ->post('https://api.helloyubo.com/v3/whatsapp/notification', [
                         // "clientId" => "zakh_bot",
                         // "channel" => "whatsapp",
@@ -1719,7 +1934,7 @@ class Checkout extends Component
                         "channel" => "whatsapp",
                         "send_to" => "91$mobile",
                         "templateName" => "order_placed",
-                        "parameters" =>  ["#$orderNumber", $amount],
+                        "parameters" => ["#$orderNumber", $amount],
                         "msg_type" => "TEXT",
                         "header" => "",
                         "footer" => "-ZAKHEC",
@@ -1878,7 +2093,7 @@ class Checkout extends Component
 
             if (
                 strtolower($order->payment_method) == 'cod' ||
-                (strtolower($order->payment_method) != 'cod' && (strtolower($order->payment_status)  == 'paid'))
+                (strtolower($order->payment_method) != 'cod' && (strtolower($order->payment_status) == 'paid'))
             ) {
 
                 // Send the order success email
