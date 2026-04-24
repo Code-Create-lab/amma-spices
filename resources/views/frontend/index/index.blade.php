@@ -95,10 +95,12 @@
                     @foreach ($banners as $banner)
                         <div class="intro-slide">
                             <picture>
-                                @if($banner->mobile_banner)
-                                    <source media="(max-width: 767px)" srcset="{{ asset('storage/' . $banner->mobile_banner) }}">
+                                @if ($banner->mobile_banner)
+                                    <source media="(max-width: 767px)"
+                                        srcset="{{ asset('storage/' . $banner->mobile_banner) }}">
                                 @endif
-                                <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r" alt="Amma's Spices">
+                                <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r"
+                                    alt="Amma's Spices">
                             </picture>
                         </div>
                     @endforeach
@@ -208,6 +210,24 @@
 
 
             {{-- ══════════════════════════════════════════
+             UPCOMMING PRODUCTS
+        ══════════════════════════════════════════ --}}
+            @if ($products->where('on_sale', 1))
+                <div class="featured-list-slider as-section--alt">
+                    <div class="container">
+                        <div class="as-head">
+                            <h2>Upcoming Products</h2>
+                            <div class="as-divider"><span class="as-divider-dot"></span></div>
+                        </div>
+                        <div class="row">
+                            <x-product-list :products="$products->where('on_sale', 1)" />
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+
+            {{-- ══════════════════════════════════════════
              OUR STORY
         ══════════════════════════════════════════ --}}
             <div class="as-story">
@@ -276,6 +296,38 @@
                                 <h3 class="icon-title">Authentic South Indian recipes &amp; flavours</h3>
                             </div>
                         </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="high natural oil content">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">High natural oil content</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}" alt="proud product of india">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Proud product of India</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Authentic">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Made with natural ingredients</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Authentic">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Preservative free</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -301,8 +353,9 @@
                         <div class="as-google-score">{{ $reviewAverageFormatted }}</div>
                         <div class="as-google-meta">
                             <div class="as-google-logo">
-                                <span class="gb">G</span><span class="gr">o</span><span class="gy">o</span><span
-                                    class="gb">g</span><span class="gg">l</span><span class="gr">e</span>
+                                <span class="gb">G</span><span class="gr">o</span><span
+                                    class="gy">o</span><span class="gb">g</span><span
+                                    class="gg">l</span><span class="gr">e</span>
                             </div>
                             <div class="as-google-stars">★★★★★</div>
                             <div class="as-google-count">Based on {{ $reviewCount }}

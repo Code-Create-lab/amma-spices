@@ -22214,7 +22214,7 @@ section.story-section.Belief p {
 }
 
 .icon-box-content .icon-title {
-  font-weight: 400 !important;
+  font-weight: 600 !important;
 }
 
 .price-row {
@@ -24082,7 +24082,7 @@ body {
 }
 
 .icon-title {
-  font-size: 13.5px !important;
+  font-size: 16.5px !important;
   font-weight: 600 !important;
   color: var(--text) !important;
   line-height: 1.5 !important;

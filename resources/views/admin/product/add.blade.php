@@ -40,6 +40,12 @@
                             enctype="multipart/form-data" id="product-store-form">
                             @csrf
                             <div class="row">
+                                  <div class="form-group on-sale">
+                                        <label class="bmd-label-floating">On Sale</label>
+                                        <input type="checkbox" name="on_sale" class="form-control"
+                                            value="{{ old('ean') }}" required>
+                                    </div> </div>
+                            <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="bmd-label-floating">{{ __('keywords.Category') }} *</label>
@@ -156,13 +162,9 @@
                                             value="{{ old('ean') }}" required>
                                     </div>
                                 </div> --}}
-                                {{-- <div class="col-md-3">
-                                    <div class="form-group on-sale">
-                                        <label class="bmd-label-floating">On Sale</label>
-                                        <input type="checkbox" name="on_sale" class="form-control"
-                                            value="{{ old('ean') }}" required>
-                                    </div>
-                                </div> --}}
+                                <div class="col-md-3">
+                                  
+                                </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="bmd-label-floating">{{ __('keywords.MRP') }} *</label>

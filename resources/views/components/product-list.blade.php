@@ -502,6 +502,22 @@ $products = Product::with(['category','images','variations','cart'])
         box-shadow: 0 0 0 0.2rem rgba(231, 200, 64, 0.14) !important;
     }
 
+    span.product-card__new {
+        position: absolute;
+        top: 13px;
+        left: 115px;
+        background: #29a71a;
+        color: #0d0d0d;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        z-index: 2;
+        font-family: sans-serif;
+    }
+
     @media (max-width: 767.98px) {
         .product-card__thumb {
             height: auto;
@@ -542,14 +558,14 @@ $products = Product::with(['category','images','variations','cart'])
 
             // Build image list — access ->images directly so Laravel lazy-loads
             // if the controller didn't eager-load. Use ->loadMissing() in the
-            // controller (see comment below) to avoid N+1 in production.
-            $sliderImages = collect([$product->product_image]);
-            foreach ($product->images as $img) {
-                if (!empty($img->image)) {
-                    $sliderImages->push($img->image);
-                }
-            }
-            $sliderId = 'pslider-' . $product->product_id;
+// controller (see comment below) to avoid N+1 in production.
+$sliderImages = collect([$product->product_image]);
+foreach ($product->images as $img) {
+    if (!empty($img->image)) {
+        $sliderImages->push($img->image);
+    }
+}
+$sliderId = 'pslider-' . $product->product_id;
             $hasMultiple = $sliderImages->count() > 1;
 
             $categoryTitle = $product->category->title ?? null;
@@ -579,21 +595,25 @@ $products = Product::with(['category','images','variations','cart'])
                         @if ($categoryTitle)
                             <span class="product-card__cat">{{ $categoryTitle }}</span>
                         @endif
-
+                        @if ($product->on_sale)
+                            <span class="product-card__new">NEW</span>
+                        @endif
                         {{-- ── Prev / Next arrows (only rendered when multiple images) ── --}}
                         @if ($hasMultiple)
                             <button type="button" class="product-card__arrow product-card__arrow--prev"
                                 data-slider="{{ $sliderId }}" data-dir="-1" aria-label="Previous image">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"
-                                    stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <polyline points="15 18 9 12 15 6"></polyline>
                                 </svg>
                             </button>
 
                             <button type="button" class="product-card__arrow product-card__arrow--next"
                                 data-slider="{{ $sliderId }}" data-dir="1" aria-label="Next image">
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"
-                                    stroke-linecap="round" stroke-linejoin="round">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2.8" stroke-linecap="round"
+                                    stroke-linejoin="round">
                                     <polyline points="9 18 15 12 9 6"></polyline>
                                 </svg>
                             </button>
@@ -603,7 +623,8 @@ $products = Product::with(['category','images','variations','cart'])
                         <div class="product-card__track">
                             @foreach ($sliderImages as $imgPath)
                                 <div class="product-card__slide">
-                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->product_name }}" loading="lazy">
+                                    <img src="{{ asset('storage/' . $imgPath) }}" alt="{{ $product->product_name }}"
+                                        loading="lazy">
                                 </div>
                             @endforeach
                         </div>
@@ -612,7 +633,8 @@ $products = Product::with(['category','images','variations','cart'])
                         @if ($hasMultiple)
                             <div class="product-card__dots">
                                 @foreach ($sliderImages as $i => $imgPath)
-                                    <span class="product-card__dot {{ $i === 0 ? 'active' : '' }}" data-index="{{ $i }}"></span>
+                                    <span class="product-card__dot {{ $i === 0 ? 'active' : '' }}"
+                                        data-index="{{ $i }}"></span>
                                 @endforeach
                             </div>
                         @endif
@@ -668,7 +690,8 @@ $products = Product::with(['category','images','variations','cart'])
 
                         <a class="product-card__cart-btn add-to-cart-home add-to-cart-component"
                             data-product-id="{{ $product->product_id }}">
-                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                stroke-width="2.5">
                                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                                 <line x1="3" y1="6" x2="21" y2="6" />
                                 <path d="M16 10a4 4 0 01-8 0" />
@@ -676,8 +699,9 @@ $products = Product::with(['category','images','variations','cart'])
                             Add to Cart
                         </a>
 
-                        <input type="number" class="product-card__qty form-control qty product_quantity" value="{{ $cartQty }}"
-                            min="1" max="10" step="1" data-decimals="0" required>
+                        <input type="number" class="product-card__qty form-control qty product_quantity"
+                            value="{{ $cartQty }}" min="1" max="10" step="1" data-decimals="0"
+                            required>
                     @else
                         <a class="product-card__cart-btn disabled" style="width:100%;">
                             Out of Stock
@@ -692,7 +716,7 @@ $products = Product::with(['category','images','variations','cart'])
 
 {{-- ── Image Slider Script ── --}}
 <script>
-    (function () {
+    (function() {
         var INTERVAL = 2500;
 
         var registry = {};
@@ -702,7 +726,7 @@ $products = Product::with(['category','images','variations','cart'])
             if (!s) return;
             s.current = (index + s.count) % s.count;
             s.track.style.transform = 'translateX(-' + (s.current * 100) + '%)';
-            s.dots.forEach(function (d, i) {
+            s.dots.forEach(function(d, i) {
                 d.classList.toggle('active', i === s.current);
             });
         }
@@ -725,8 +749,8 @@ $products = Product::with(['category','images','variations','cart'])
             };
 
             // Dot clicks
-            dots.forEach(function (dot) {
-                dot.addEventListener('click', function (e) {
+            dots.forEach(function(dot) {
+                dot.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     goTo(id, parseInt(dot.getAttribute('data-index'), 10));
@@ -735,8 +759,8 @@ $products = Product::with(['category','images','variations','cart'])
 
             // ── Arrow button clicks ──
             // Buttons live inside the thumb, query from the thumb element itself
-            el.querySelectorAll('.product-card__arrow').forEach(function (btn) {
-                btn.addEventListener('click', function (e) {
+            el.querySelectorAll('.product-card__arrow').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation(); // prevent navigating to product page
                     var dir = parseInt(btn.getAttribute('data-dir'), 10); // -1 or +1
@@ -747,22 +771,22 @@ $products = Product::with(['category','images','variations','cart'])
             // Pause auto-slide on card hover
             var card = el.closest('.product-card');
             if (card) {
-                card.addEventListener('mouseenter', function () {
+                card.addEventListener('mouseenter', function() {
                     registry[id].paused = true;
                 });
-                card.addEventListener('mouseleave', function () {
+                card.addEventListener('mouseleave', function() {
                     registry[id].paused = false;
                 });
             }
 
             // Auto-advance
-            setInterval(function () {
+            setInterval(function() {
                 if (!registry[id].paused) goTo(id, registry[id].current + 1);
             }, INTERVAL);
         }
 
         function initAll() {
-            document.querySelectorAll('[data-slider-id]').forEach(function (el) {
+            document.querySelectorAll('[data-slider-id]').forEach(function(el) {
                 if (!el.getAttribute('data-slider-ready')) {
                     el.setAttribute('data-slider-ready', '1');
                     init(el);

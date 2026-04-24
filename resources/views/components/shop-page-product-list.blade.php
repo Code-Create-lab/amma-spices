@@ -1,11 +1,11 @@
 {{-- =============================================
-     PRODUCT LIST — Blog-card style
-     Dark theme: #181818 card | #e7c840 gold accent
-     ─────────────────────────────────────────────
-     CONTROLLER — eager-load images to avoid N+1:
-       $products = Product::with(['category','images','variations','cart'])
-                          ->get();
-     ============================================= --}}
+PRODUCT LIST — Blog-card style
+Dark theme: #181818 card | #e7c840 gold accent
+─────────────────────────────────────────────
+CONTROLLER — eager-load images to avoid N+1:
+$products = Product::with(['category','images','variations','cart'])
+->get();
+============================================= --}}
 
 <style>
     /* ─────────────────────────────────────────────
@@ -75,7 +75,7 @@
     /* ── Thumbnail ── */
     .product-card__thumb {
         position: relative;
-        height: 195px;
+        height: 295px;
         overflow: hidden;
         flex-shrink: 0;
         background: #111;
@@ -97,11 +97,17 @@
 
     .product-card__slide img {
         width: 100%;
-        height: 100%;
+        max-width: 100%;
+        height: 100% !important;
         object-fit: cover;
         display: block;
         filter: brightness(0.88);
         transition: transform 0.5s ease, filter 0.3s ease;
+        pointer-events: none;
+        -webkit-user-drag: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
     }
 
     .product-card:hover .product-card__slide img {
@@ -109,7 +115,7 @@
         filter: brightness(1);
     }
 
-    /* Bottom gradient fade */
+    /* Bottom gradient fade — same as blog card */
     .product-card__thumb::after {
         content: '';
         position: absolute;
@@ -122,7 +128,7 @@
         z-index: 1;
     }
 
-    /* Category pill — top left, gold */
+    /* Category pill — top left, gold, same as blog-card__cat */
     .product-card__cat {
         position: absolute;
         top: 13px;
@@ -158,6 +164,7 @@
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.22s ease, background 0.2s, border-color 0.2s, transform 0.2s;
+        /* override the card-level translateY so we can tweak independently */
         will-change: opacity;
         text-decoration: none !important;
         color: #ccc;
@@ -171,6 +178,7 @@
         right: 9px;
     }
 
+    /* Show arrows only when the card is hovered */
     .product-card:hover .product-card__arrow {
         opacity: 1;
         pointer-events: auto;
@@ -180,6 +188,7 @@
         background: rgba(231, 200, 64, 0.88);
         border-color: #e7c840;
         color: #0d0d0d;
+        /* keep the translateY(-50%) but add a tiny scale pop */
         transform: translateY(-50%) scale(1.1);
     }
 
@@ -218,7 +227,7 @@
 
     /* ── Card Body ── */
     .product-card__body {
-        padding: 18px 18px 14px;
+        padding: 15px 15px 8px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -365,8 +374,15 @@
         box-shadow: none !important;
     }
 
-    .product-details-quantity {
-        max-width: 80px;
+    .input-group {
+        position: relative;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        -ms-flex-align: stretch;
+        align-items: stretch;
+        width: 30%;
     }
 </style>
 <style>
@@ -485,12 +501,43 @@
         border-color: rgba(231, 200, 64, 0.8) !important;
         box-shadow: 0 0 0 0.2rem rgba(231, 200, 64, 0.14) !important;
     }
+
+    span.product-card__new {
+        position: absolute;
+        top: 13px;
+        left: 115px;
+        background: #29a71a;
+        color: #0d0d0d;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        z-index: 2;
+        font-family: sans-serif;
+    }
+
+    @media (max-width: 767.98px) {
+        .product-card__thumb {
+            height: auto;
+            aspect-ratio: 5 / 6;
+        }
+
+        .product-card__slide img {
+            object-position: center;
+        }
+
+        .product-card:hover .product-card__slide img {
+            transform: none;
+            filter: brightness(0.97);
+        }
+    }
 </style>
 
 @foreach ($products as $product)
     @if ($product->category != null)
         @php
-            /* ── Wishlist state ── */
             $isInWishlist = false;
             $sessionWishlistData = session('wishlist') ?? [];
             if (auth()->user()) {
@@ -505,25 +552,25 @@
         @endphp
 
         @php
-            /* ── Pricing ── */
             $mrp = $product->variations[0]->mrp ?? $product->base_mrp;
             $price = $product->variations[0]->price ?? $product->base_price;
             $percentOff = $mrp > 0 && $price > 0 ? round((($mrp - $price) / $mrp) * 100) : 0;
 
-            /* ── Image slider ── */
-            $sliderImages = collect([$product->product_image]);
-            foreach ($product->images as $img) {
-                if (!empty($img->image)) {
-                    $sliderImages->push($img->image);
-                }
-            }
-            $sliderId = 'pslider-' . $product->product_id;
+            // Build image list — access ->images directly so Laravel lazy-loads
+            // if the controller didn't eager-load. Use ->loadMissing() in the
+// controller (see comment below) to avoid N+1 in production.
+$sliderImages = collect([$product->product_image]);
+foreach ($product->images as $img) {
+    if (!empty($img->image)) {
+        $sliderImages->push($img->image);
+    }
+}
+$sliderId = 'pslider-' . $product->product_id;
             $hasMultiple = $sliderImages->count() > 1;
 
             $categoryTitle = $product->category->title ?? null;
         @endphp
 
-        {{-- col-md-4 kept from original (Doc 1) --}}
         <div class="col-md-4">
             <div class="product-card">
 
@@ -539,7 +586,7 @@
                 </a>
 
                 {{-- ── Thumbnail + Slider ── --}}
-                <a href="{{ route('single.product.view', $product->slug) }}" style="text-decoration:none;">
+                <a style="text-decoration:none;">
 
                     <div class="product-card__thumb" id="{{ $sliderId }}" data-slider-id="{{ $sliderId }}"
                         data-count="{{ $sliderImages->count() }}">
@@ -548,8 +595,10 @@
                         @if ($categoryTitle)
                             <span class="product-card__cat">{{ $categoryTitle }}</span>
                         @endif
-
-                        {{-- Prev / Next arrows (only when multiple images) --}}
+                        @if ($product->on_sale)
+                            <span class="product-card__new">NEW</span>
+                        @endif
+                        {{-- ── Prev / Next arrows (only rendered when multiple images) ── --}}
                         @if ($hasMultiple)
                             <button type="button" class="product-card__arrow product-card__arrow--prev"
                                 data-slider="{{ $sliderId }}" data-dir="-1" aria-label="Previous image">
@@ -596,6 +645,7 @@
                     <div class="product-card__body">
 
                         {{-- Meta row --}}
+
                         <div class="product-card__meta">
                             <span class="product-card__meta-cat">
                                 {{ $categoryTitle ?? 'Product' }}
@@ -606,8 +656,9 @@
                         </div>
 
                         {{-- Title --}}
-                        <h3 class="product-card__title">{{ $product->product_name }}</h3>
-
+                        <a href="{{ route('single.product.view', $product->slug) }}">
+                            <h3 class="product-card__title">{{ $product->product_name }}</h3>
+                        </a>
                         {{-- Price --}}
                         <div class="product-card__price">
                             <span class="product-card__price-new">
@@ -625,22 +676,20 @@
                 </a>{{-- /product link --}}
 
                 {{-- ── Footer: Cart + Qty ── --}}
-                {{-- data-product-id on the wrapper div, matching Doc 1 JS listeners --}}
-                @if ($product->variation->stock > 0)
-                    @php
-                        $cartQty = 1;
-                        if (auth()->check()) {
-                            $cartQty = $product->cart->quantity ?? 1;
-                        } else {
-                            $cartKey = $product->product_id . '-' . $product->variation->id;
-                            $cartQty = session("cart.$cartKey.quantity", 1);
-                        }
-                    @endphp
+                <div class="product-card__footer">
+                    @if ($product->variation->stock > 0)
+                        @php
+                            $cartQty = 1;
+                            if (auth()->check()) {
+                                $cartQty = $product->cart->quantity ?? 1;
+                            } else {
+                                $cartKey = $product->product_id . '-' . $product->variation->id;
+                                $cartQty = session("cart.$cartKey.quantity", 1);
+                            }
+                        @endphp
 
-                    <div class="product-card__footer" >
-
-                        {{-- Classes from Doc 1: add-to-cart-home + add-to-cart --}}
-                        <a class="product-card__cart-btn add-to-cart-home add-to-cart-component" data-product-id="{{ $product->product_id }}">
+                        <a class="product-card__cart-btn add-to-cart-home add-to-cart-component"
+                            data-product-id="{{ $product->product_id }}">
                             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                 stroke-width="2.5">
                                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
@@ -650,21 +699,15 @@
                             Add to Cart
                         </a>
 
-                        {{-- wire:ignore + product-details-quantity wrapper from Doc 1 --}}
-                        <div class="product-details-quantity" wire:ignore>
-                            <input type="number" class="product-card__qty form-control qty product_quantity"
-                                value="{{ $cartQty }}" min="1" max="10" step="1"
-                                data-decimals="0" required>
-                        </div>
-
-                    </div>{{-- /.product-card__footer --}}
-                @else
-                    <div class="product-card__footer">
+                        <input type="number" class="product-card__qty form-control qty product_quantity"
+                            value="{{ $cartQty }}" min="1" max="10" step="1" data-decimals="0"
+                            required>
+                    @else
                         <a class="product-card__cart-btn disabled" style="width:100%;">
                             Out of Stock
                         </a>
-                    </div>
-                @endif
+                    @endif
+                </div>
 
             </div>{{-- /.product-card --}}
         </div>
@@ -691,7 +734,7 @@
         function init(el) {
             var id = el.getAttribute('data-slider-id');
             var count = parseInt(el.getAttribute('data-count'), 10);
-            if (!id || count < 2) return;
+            if (!id || count < 2) return; // single image — nothing to do
 
             var track = el.querySelector('.product-card__track');
             var dots = Array.from(el.querySelectorAll('.product-card__dot'));
@@ -705,6 +748,7 @@
                 paused: false
             };
 
+            // Dot clicks
             dots.forEach(function(dot) {
                 dot.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -713,15 +757,18 @@
                 });
             });
 
+            // ── Arrow button clicks ──
+            // Buttons live inside the thumb, query from the thumb element itself
             el.querySelectorAll('.product-card__arrow').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    var dir = parseInt(btn.getAttribute('data-dir'), 10);
+                    e.stopPropagation(); // prevent navigating to product page
+                    var dir = parseInt(btn.getAttribute('data-dir'), 10); // -1 or +1
                     goTo(id, registry[id].current + dir);
                 });
             });
 
+            // Pause auto-slide on card hover
             var card = el.closest('.product-card');
             if (card) {
                 card.addEventListener('mouseenter', function() {
@@ -732,6 +779,7 @@
                 });
             }
 
+            // Auto-advance
             setInterval(function() {
                 if (!registry[id].paused) goTo(id, registry[id].current + 1);
             }, INTERVAL);

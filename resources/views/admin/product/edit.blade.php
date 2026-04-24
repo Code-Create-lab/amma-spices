@@ -51,6 +51,14 @@
 
                             @csrf
                             <div class="row">
+ <div class="form-group col-md-3">
+                                            <label class="bmd-label-floating">On Sale</label>
+                                            <input type="checkbox" name="on_sale" class="form-control"
+                                                {{ $product->on_sale ? 'checked' : '' }} required>
+                                        </div>
+                                    </div>
+                            <div class="row">
+                                 
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label class="bmd-label-floating">{{ __('keywords.Category') }}*</label>
@@ -215,11 +223,7 @@
 
                                     </div>
                                     <div class="row">
-                                        {{-- <div class="form-group col-md-3">
-                                            <label class="bmd-label-floating">On Sale</label>
-                                            <input type="checkbox" name="on_sale" class="form-control"
-                                                {{ $product->on_sale ? 'checked' : '' }} required>
-                                        </div> --}}
+                                      
 
                                         {{-- <div class="col-md-3">
                                             <div class="form-group ">
