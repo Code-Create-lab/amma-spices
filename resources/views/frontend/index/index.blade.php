@@ -212,7 +212,7 @@
             {{-- ══════════════════════════════════════════
              UPCOMMING PRODUCTS
         ══════════════════════════════════════════ --}}
-            @if ($products->where('on_sale', 1))
+            @if ($products->where('on_sale', 1)->count() > 0)
                 <div class="featured-list-slider as-section--alt">
                     <div class="container">
                         <div class="as-head">
