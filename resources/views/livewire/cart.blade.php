@@ -161,6 +161,54 @@
                                 </tbody>
                             </table><!-- End .table table-wishlist -->
 
+                            @if ($coupon_feedback_message && $coupon_feedback_type)
+                                <div class="cart-coupon-feedback-wrap"
+                                    wire:key="cart-coupon-feedback-{{ $coupon_feedback_key }}">
+                                    <div class="cart-coupon-feedback cart-coupon-feedback--{{ $coupon_feedback_type }}"
+                                        role="status" aria-live="polite">
+                                        <div class="cart-coupon-feedback__icon" aria-hidden="true">
+                                            @if ($coupon_feedback_type === 'success')
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="1.9">
+                                                    <path d="M20 7L10.5 16.5L4 10" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            @else
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="1.9">
+                                                    <path d="M12 8v5" stroke-linecap="round" />
+                                                    <circle cx="12" cy="16.5" r=".8" fill="currentColor"
+                                                        stroke="none" />
+                                                    <path
+                                                        d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            @endif
+                                        </div>
+
+                                        <div class="cart-coupon-feedback__content">
+                                            @if ($coupon_feedback_type === 'success')
+                                                <strong class="cart-coupon-feedback__title">
+                                                    Congratulations! Coupon applied.
+                                                </strong>
+                                                <p class="cart-coupon-feedback__text">
+                                                    {{ $coupon_feedback_message }} You saved
+                                                    ₹{{ number_format($coupon_feedback_discount, 2) }}.
+                                                    New total ₹{{ number_format($coupon_feedback_total, 2) }}.
+                                                </p>
+                                            @else
+                                                <strong class="cart-coupon-feedback__title">
+                                                    Coupon could not be applied.
+                                                </strong>
+                                                <p class="cart-coupon-feedback__text">
+                                                    {{ $coupon_feedback_message }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
                             @php
                                 $shippingMessage = '';
                                 $nextTarget = null;
@@ -332,6 +380,123 @@
             font-size: 14px;
             line-height: 1.5;
             text-align: center;
+        }
+
+        .cart-coupon-feedback-wrap {
+            margin: 18px 0 20px;
+        }
+
+        .cart-coupon-feedback {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 16px 34px rgba(39, 30, 18, 0.08);
+            backdrop-filter: blur(12px);
+            max-height: 160px;
+            overflow: hidden;
+            animation: cartCouponNoticeIn 0.24s ease, cartCouponNoticeOut 0.5s ease 2.7s forwards;
+        }
+
+        .cart-coupon-feedback--success {
+            border-color: rgba(212, 175, 55, 0.28);
+            background: linear-gradient(135deg, rgba(244, 223, 139, 0.28), rgba(255, 255, 255, 0.96));
+        }
+
+        .cart-coupon-feedback--error {
+            border-color: rgba(199, 62, 62, 0.18);
+            background: linear-gradient(135deg, rgba(199, 62, 62, 0.08), rgba(255, 255, 255, 0.96));
+        }
+
+        .cart-coupon-feedback__icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .cart-coupon-feedback--success .cart-coupon-feedback__icon {
+            background: rgba(212, 175, 55, 0.16);
+            color: #9d7400;
+        }
+
+        .cart-coupon-feedback--error .cart-coupon-feedback__icon {
+            background: rgba(199, 62, 62, 0.12);
+            color: #ba3131;
+        }
+
+        .cart-coupon-feedback__icon svg {
+            width: 21px;
+            height: 21px;
+        }
+
+        .cart-coupon-feedback__content {
+            min-width: 0;
+        }
+
+        .cart-coupon-feedback__title {
+            display: block;
+            margin-bottom: 4px;
+            color: #1a1712;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .cart-coupon-feedback__text {
+            margin: 0;
+            color: #625241;
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+
+        @keyframes cartCouponNoticeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cartCouponNoticeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+                max-height: 160px;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px);
+                max-height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                margin: 0;
+                border-width: 0;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .cart-coupon-feedback {
+                padding: 14px;
+                border-radius: 16px;
+            }
+
+            .cart-coupon-feedback__icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
+            }
         }
     </style>
     <script>

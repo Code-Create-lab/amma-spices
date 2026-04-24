@@ -299,6 +299,9 @@ blockquote.text-white cite span {
 
 @media screen and (min-width: 768px) {
 
+  .no_address_title{
+    font-size: 3rem !important;
+  }
   h1,
   .h1 {
     font-size: 5rem;
@@ -10891,7 +10894,7 @@ textarea.form-control {
 }
 
 label {
-  color: #666666;
+  color: var(--text) !important;
   font-weight: 300;
   font-size: 1.4rem;
   margin: 0 0 1.1rem;

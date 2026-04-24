@@ -153,7 +153,7 @@
                                             </div><!-- End .col-lg-6 -->
                                         @endforeach
                                     @else
-                                        <h2 class="mt-2">No Addresses Found</h2>
+                                        <h2 class="mt-2 no_address_title">No Addresses Found</h2>
                                     @endif
                                 </div><!-- End .row -->
                             </div><!-- .End .tab-pane -->

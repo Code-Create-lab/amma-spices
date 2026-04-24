@@ -36,6 +36,11 @@ class Cart extends Component
     public $discount;
     public $final_price;
     public $coupon_id;
+    public $coupon_feedback_message = '';
+    public $coupon_feedback_type = '';
+    public $coupon_feedback_discount = 0;
+    public $coupon_feedback_total = 0;
+    public $coupon_feedback_key = 0;
     public $subTotal = 0;
     public $total_saving;
     public $updateAddressButton = false;
@@ -81,7 +86,7 @@ class Cart extends Component
         if (session()->get('coupon_code')) {
 
             $this->coupon_code = session()->get('coupon_code');
-            $this->apply_coupon(session()->get('coupon_code'));
+            $this->apply_coupon(session()->get('coupon_code'), true);
         }
         // dd(session()->get('coupon_code'));
         $this->calculateSubtotal();
@@ -324,7 +329,7 @@ class Cart extends Component
                 if (session()->get('coupon_code')) {
 
                     $this->coupon_code = session()->get('coupon_code');
-                    $this->apply_coupon();
+                    $this->apply_coupon(null, true);
 
                     // dd(($coupon_data));
                 }
@@ -677,30 +682,71 @@ class Cart extends Component
     //     $this->addressData = [];
     // }
 
+    protected function setCouponFeedback(string $type, string $message, float $discount = 0, float $total = 0): void
+    {
+        $this->coupon_feedback_type = $type;
+        $this->coupon_feedback_message = $message;
+        $this->coupon_feedback_discount = round($discount, 2);
+        $this->coupon_feedback_total = round($total, 2);
+        $this->coupon_feedback_key++;
+    }
 
-    public function apply_coupon($coupon_code_applied = null)
+    protected function clearCouponFeedback(): void
+    {
+        $this->coupon_feedback_type = '';
+        $this->coupon_feedback_message = '';
+        $this->coupon_feedback_discount = 0;
+        $this->coupon_feedback_total = 0;
+    }
+
+    protected function resetCouponState(): void
+    {
+        session()->forget('coupon_code');
+        session()->forget('applied_coupon');
+
+        $this->coupon_code = '';
+        $this->discount = 0;
+        $this->final_price = 0;
+        $this->coupon_id = 0;
+        $this->total_saving = 0;
+
+        $this->calculateSubtotal();
+    }
+
+    protected function announceCouponResult(string $type, string $message, bool $silent = false, float $discount = 0, float $total = 0)
+    {
+        if ($silent) {
+            $this->clearCouponFeedback();
+            return null;
+        }
+
+        $this->setCouponFeedback($type, $message, $discount, $total);
+
+        return $this->dispatch('toast', [
+            'type'    => $type,
+            'success' => $type === 'success',
+            'message' => $message,
+        ]);
+    }
+
+    public function apply_coupon($coupon_code_applied = null, bool $silent = false)
     {
         try {
             $coupon_code = $coupon_code_applied ?? $this->coupon_code;
             $coupon_code = trim($coupon_code);
 
             if (!$coupon_code) {
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => 'Please enter a coupon code.',
-                ]);
+                $this->resetCouponState();
+
+                return $this->announceCouponResult('error', 'Please enter a coupon code.', $silent);
             }
 
             $coupon = Coupon::where('coupon_code', $coupon_code)->first();
 
             if (!$coupon) {
-                $this->coupon_code = "";
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => 'Invalid coupon code.',
-                ]);
+                $this->resetCouponState();
+
+                return $this->announceCouponResult('error', 'Invalid coupon code.', $silent);
             }
 
             /**
@@ -710,22 +756,18 @@ class Cart extends Component
 
             // Check if coupon has not started yet
             if ($coupon->start_date && $now->lt($coupon->start_date)) {
-                $this->coupon_code = "";
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => 'This coupon is not valid yet. Valid from ' . \Carbon\Carbon::parse($coupon->start_date)->format('d M Y'),
-                ]);
+                $message = 'This coupon is not valid yet. Valid from ' . \Carbon\Carbon::parse($coupon->start_date)->format('d M Y');
+                $this->resetCouponState();
+
+                return $this->announceCouponResult('error', $message, $silent);
             }
 
             // Check if coupon has expired
             if ($coupon->end_date && $now->gt($coupon->end_date)) {
-                $this->coupon_code = "";
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => 'This coupon has expired on ' . \Carbon\Carbon::parse($coupon->end_date)->format('d M Y'),
-                ]);
+                $message = 'This coupon has expired on ' . \Carbon\Carbon::parse($coupon->end_date)->format('d M Y');
+                $this->resetCouponState();
+
+                return $this->announceCouponResult('error', $message, $silent);
             }
 
             /**
@@ -741,11 +783,9 @@ class Cart extends Component
                     ->get();
 
                 if ($cart_items->isEmpty()) {
-                    return $this->dispatch('toast', [
-                        'type'    => 'error',
-                        'success' => true,
-                        'message' => 'Your cart is empty.',
-                    ]);
+                    $this->resetCouponState();
+
+                    return $this->announceCouponResult('error', 'Your cart is empty.', $silent);
                 }
 
                 $cart_total = $cart_items->sum(function ($item) {
@@ -764,11 +804,9 @@ class Cart extends Component
                 $sessionCart = collect(session('cart', []));
 
                 if ($sessionCart->isEmpty()) {
-                    return $this->dispatch('toast', [
-                        'type'    => 'error',
-                        'success' => true,
-                        'message' => 'Your cart is empty.',
-                    ]);
+                    $this->resetCouponState();
+
+                    return $this->announceCouponResult('error', 'Your cart is empty.', $silent);
                 }
 
                 // Assumes: price, mrp, quantity keys exist in session cart
@@ -792,15 +830,9 @@ class Cart extends Component
              * 2. Check minimum cart value
              */
             if ($cart_total < $coupon->cart_value) {
-                session()->forget("coupon_code");
-                $this->coupon_code = '';
-                $this->discount    = 0;
+                $this->resetCouponState();
 
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => 'Minimum cart value should be ₹' . $coupon->cart_value,
-                ]);
+                return $this->announceCouponResult('error', 'Minimum cart value should be ₹' . $coupon->cart_value, $silent);
             }
 
             /**
@@ -816,25 +848,15 @@ class Cart extends Component
             }
 
             if ($coupon_uses > 1 && $coupon->typecoupon == 1) {
-                session()->forget("coupon_code");
-                $this->coupon_code = '';
-                $this->discount    = 0;
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => "Maximum use limit reached for this coupon.",
-                ]);
+                $this->resetCouponState();
+
+                return $this->announceCouponResult('error', 'Maximum use limit reached for this coupon.', $silent);
             }
 
             if ($coupon_uses >= $coupon->uses_restriction) {
-                session()->forget("coupon_code");
-                $this->coupon_code = '';
-                $this->discount    = 0;
-                return $this->dispatch('toast', [
-                    'type'    => 'error',
-                    'success' => true,
-                    'message' => "Maximum use limit reached for this coupon.",
-                ]);
+                $this->resetCouponState();
+
+                return $this->announceCouponResult('error', 'Maximum use limit reached for this coupon.', $silent);
             }
 
             /**
@@ -883,29 +905,24 @@ class Cart extends Component
             // Notify other components
             $this->dispatch('cart-updated');
 
-            if (!session('coupon_code') || $coupon_code_applied === null) {
-                $this->dispatch('toast', [
-                    'type'    => 'success',
-                    'success' => true,
-                    'message' => "Coupon Applied",
-                ]);
+            if ($silent) {
+                $this->clearCouponFeedback();
+                return null;
             }
+
+            return $this->announceCouponResult('success', 'Coupon Applied', false, $this->discount, $this->subTotal);
         } catch (\Exception $e) {
-            $this->dispatch('toast', [
-                'type'    => 'error',
-                'success' => true,
-                'message' => $e->getMessage(),
-            ]);
+            $this->resetCouponState();
+
+            return $this->announceCouponResult('error', $e->getMessage(), $silent);
         }
     }
 
     public function removeCoupon()
     {
 
-        session()->forget("coupon_code");
-        $this->coupon_code = '';
-        $this->subTotal =  $this->final_price + $this->discount;
-        $this->discount = 0;
+        $this->resetCouponState();
+        $this->clearCouponFeedback();
 
         // dd(   $this->subTotal , $this->final_pric , );
         $this->dispatch('toast', [

@@ -544,6 +544,10 @@
     </script>
     @stack('scripts')
     <script>
+        function shouldCelebrateToast(toastEl) {
+            return toastEl && !toastEl.classList.contains('toast-error');
+        }
+
         function addCelebrationEffect(toastEl) {
             const particles = ['🎉', '✨', '🎊', '⭐', '🌟', '🎈'];
             const count = 14;
@@ -593,13 +597,15 @@
                     if (node.nodeType !== 1) return;
 
                     // Case 1: the added node IS a toast div
-                    if (node.classList.contains('toast')) {
+                    if (node.classList.contains('toast') && shouldCelebrateToast(node)) {
                         setTimeout(() => addCelebrationEffect(node), 50);
                     }
 
                     // Case 2: the added node CONTAINS toasts (e.g. container added with toast inside)
                     node.querySelectorAll?.('.toast').forEach((t) => {
-                        setTimeout(() => addCelebrationEffect(t), 50);
+                        if (shouldCelebrateToast(t)) {
+                            setTimeout(() => addCelebrationEffect(t), 50);
+                        }
                     });
                 });
             });
