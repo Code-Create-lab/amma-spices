@@ -77,82 +77,101 @@
     </div>
 
     <style>
+        /* ── Dropzone Container ── */
         .dropzone-custom {
             border: 2px dashed #e7c840 !important;
             background: #fdfdfd !important;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            min-height: 200px;
+            min-height: 220px;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;          /* keeps everything inside the box */
         }
         .dropzone-custom:hover {
             background: #fff9e6 !important;
             border-color: #d1b435 !important;
+            box-shadow: 0 0 0 3px rgba(231, 200, 64, 0.15);
         }
+
+        /* ── Upload prompt icon ── */
         .dropzone-custom .dz-message i {
             color: #e7c840;
             display: block;
         }
+        .dropzone-custom .dz-message h5 {
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* ── Preview tile – fill the whole dropzone ── */
         .dropzone-custom .dz-preview {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            margin: 0;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            margin: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
             z-index: 10;
         }
         .dropzone-custom .dz-preview .dz-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 8px;
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 10px;
+            overflow: hidden;
         }
         .dropzone-custom .dz-preview .dz-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
+
+        /* ── Hide default Dropzone extras that break the layout ── */
+        .dropzone-custom .dz-preview .dz-details,
+        .dropzone-custom .dz-preview .dz-filename,
+        .dropzone-custom .dz-preview .dz-size,
+        .dropzone-custom .dz-preview .dz-error-message,
+        .dropzone-custom .dz-preview .dz-progress {
+            display: none !important;
+        }
+
+        /* ── Remove ✕ button – always inside the box ── */
         .dropzone-custom .dz-remove {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 8px; right: 8px;
             z-index: 30;
-            background: rgba(231, 200, 64, 0.9);
-            color: #1a1a1a !important;
-            width: 24px;
-            height: 24px;
+            background: rgba(26, 26, 26, 0.70);
+            color: #fff !important;
+            width: 28px; height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             text-decoration: none !important;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             transition: all 0.2s;
-            border: 1px solid #d1b435;
+            border: 2px solid rgba(255,255,255,0.3);
+            line-height: 1;
+            padding: 0;
         }
         .dropzone-custom .dz-remove:hover {
             background: #ff4d4d;
-            color: white !important;
-            border-color: #e60000;
-            transform: scale(1.1);
+            color: #fff !important;
+            border-color: #ff4d4d;
+            transform: scale(1.15);
         }
-        .dropzone-custom .dz-success-mark, .dropzone-custom .dz-error-mark {
-            pointer-events: none;
-            z-index: 25;
-            top: 50% !important;
-            left: 50% !important;
-            margin-left: -27px !important;
-            margin-top: -27px !important;
-        }
-        .dropzone-custom .dz-success-mark svg fill {
-            fill: #e7c840 !important;
+
+        /* ── Success / Error marks – centered ── */
+        .dropzone-custom .dz-success-mark,
+        .dropzone-custom .dz-error-mark {
+            display: none !important;
         }
     </style>
 
@@ -170,14 +189,14 @@
                     addRemoveLinks: true,
                     dictRemoveFile: '<i class="fa fa-times"></i>',
                     acceptedFiles: "image/*",
-                    thumbnailWidth: 300,
-                    thumbnailHeight: 200,
+                    thumbnailWidth: null,
+                    thumbnailHeight: null,
                     init: function() {
                         var dz = this;
                         @if ($banner->image)
                             var mockFile = { name: "Desktop Banner", size: 12345 };
                             dz.options.addedfile.call(dz, mockFile);
-                            dz.options.thumbnail.call(dz, mockFile, "{{ $url_aws . $banner->image }}");
+                            dz.options.thumbnail.call(dz, mockFile, "{{ asset('storage/' . $banner->image) }}");
                             dz.emit("complete", mockFile);
                         @endif
 
@@ -198,14 +217,14 @@
                     addRemoveLinks: true,
                     dictRemoveFile: '<i class="fa fa-times"></i>',
                     acceptedFiles: "image/*",
-                    thumbnailWidth: 200,
-                    thumbnailHeight: 300,
+                    thumbnailWidth: null,
+                    thumbnailHeight: null,
                     init: function() {
                         var dz = this;
                         @if ($banner->mobile_banner)
                             var mockFile = { name: "Mobile Banner", size: 12345 };
                             dz.options.addedfile.call(dz, mockFile);
-                            dz.options.thumbnail.call(dz, mockFile, "{{ $url_aws . $banner->mobile_banner }}");
+                            dz.options.thumbnail.call(dz, mockFile, "{{ asset('storage/' . $banner->mobile_banner) }}");
                             dz.emit("complete", mockFile);
                         @endif
 
