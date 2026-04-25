@@ -123,6 +123,41 @@
         </section>
 
 
+        <style>
+            .abt-wcu-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px 28px;
+                padding: 0;
+                margin: 20px 0 0;
+                list-style: none;
+            }
+            .abt-wcu-item {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+            .abt-wcu-item img {
+                width: 44px;
+                height: 44px;
+                object-fit: contain;
+                flex-shrink: 0;
+                filter: brightness(0) saturate(100%) invert(70%) sepia(55%) saturate(500%) hue-rotate(5deg);
+            }
+            .abt-wcu-item span {
+                font-size: 14px;
+                font-weight: 500;
+                color: #333;
+                line-height: 1.4;
+            }
+            @media (max-width: 767px) {
+                .abt-wcu-list {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
+                }
+            }
+        </style>
+
         <div class="bodhi-pro">
             <div class="container">
                 <div class="row">
@@ -130,35 +165,41 @@
                         <img src="assets/img/aboutUsMasala.jpg" style="width: 100%;">
                     </div>
                     <div class="col-md-6 about-txt">
-                        <h2 class="section-title">Why Choose Us Section</h2>
-                        <ul>
-                            <li>Pure, premium quality ingredients</li>
-                            <li>No artificial colours or preservatives</li>
-                            <li>Traditional recipes perfected over generations</li>
-                            <li>Freshly ground for maximum potency and taste</li>
+                        <h2 class="section-title">Why Choose Us</h2>
+                        <ul class="abt-wcu-list">
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
+                                <span>All products are lab-tested and certified</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
+                                <span>No preservatives or artificial additives</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
+                                <span>Sustainable, home kitchen crafted</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
+                                <span>Authentic South Indian recipes &amp; flavours</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="High natural oil content">
+                                <span>High natural oil content</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}" alt="Proud product of India">
+                                <span>Proud product of India</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Natural ingredients">
+                                <span>Made with natural ingredients</span>
+                            </li>
+                            <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Preservative free">
+                                <span>Preservative free</span>
+                            </li>
                         </ul>
-                        {{-- <div class="bod-p-r-nm">
-                            <p class="bod-p-r-nm-te"> By choosing Amma's Spices, you are also choosing:</p>
-                            <div class="styled-numbered">
-
-                                <div class="ch-li">
-                                    <img src="assets/img/Reduced_chemical_exposure.png">
-                                    <p>Reduced chemical exposure</p>
-                                </div>
-                                <!-- <div class="ch-li">
-                                                    <img src="assets/img/Less_water_and_waste.png">
-                                                    <p>Less water and waste pollution</p>
-                                                    </div> -->
-                                <div class="ch-li">
-                                    <img src="assets/img/lifestyle.png">
-                                    <p>A more sustainable lifestyle</p>
-                                </div>
-                                <div class="ch-li lastch-li">
-                                    <img src="assets/img/Healthier_skin.png">
-                                    <p>Healthier skin means fewer salon and dermatology visits.</p>
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                 </div>
             </div>

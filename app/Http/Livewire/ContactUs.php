@@ -33,7 +33,7 @@ class ContactUs extends Component
 
         // Send email
         // ammasspices1@gmail.com
-        Mail::to('sr.snehal369@gmail.com')
+        Mail::to('info@ammasspices.com')
             ->bcc('shreyadiwivedi@gmail.com')
             ->send(new MailContactUs($validated));
 
