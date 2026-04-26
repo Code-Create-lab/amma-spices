@@ -10,30 +10,31 @@
 
     <style>
         /* .as-hero-wrap {
-            position: relative;
-            overflow: hidden;
-            background:
-                radial-gradient(circle at 18% 18%, rgba(231, 200, 64, 0.18), transparent 32%),
-                linear-gradient(135deg, #120f08 0%, #050505 100%);
-        } */
+                position: relative;
+                overflow: hidden;
+                background:
+                    radial-gradient(circle at 18% 18%, rgba(231, 200, 64, 0.18), transparent 32%),
+                    linear-gradient(135deg, #120f08 0%, #050505 100%);
+            } */
 
         /* .as-hero-wrap .owl-carousel,
-        .as-hero-wrap .owl-stage-outer,
-        .as-hero-wrap .owl-stage,
-        .as-hero-wrap .owl-item,
-        .as-hero-wrap .intro-slide,
-        .as-hero-wrap picture {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+            .as-hero-wrap .owl-stage-outer,
+            .as-hero-wrap .owl-stage,
+            .as-hero-wrap .owl-item,
+            .as-hero-wrap .intro-slide,
+            .as-hero-wrap picture {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
 
-        .as-hero-wrap .inner-carousel {
-            height: clamp(260px, 40vw, 620px);
-        }*/
+            .as-hero-wrap .inner-carousel {
+                height: clamp(260px, 40vw, 620px);
+            }*/
 
         .as-hero-wrap .inner-carousel {
             height: clamp(360px, 42vw, 620px);
+            aspect-ratio: 5 / 3;
         }
 
         .as-hero-wrap .owl-carousel,
@@ -153,32 +154,35 @@
             background: #e7c840;
         }
 
-       @media (max-width: 767px) {
-    .as-hero-wrap .inner-carousel {
-        height: unset !important;          /* remove the fixed height */
-        aspect-ratio: 3 / 4;              /* ← match this to your mobile banner ratio */
-        width: 100%;
-    }
+        @media (max-width: 767px) {
+            .as-hero-wrap .inner-carousel {
+                height: unset !important;
+                /* remove the fixed height */
+                aspect-ratio: 3 / 4;
+                /* ← match this to your mobile banner ratio */
+                width: 100%;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-nav {
-        left: 10px;
-        right: 10px;
-    }
+            .as-hero-wrap .owl-carousel .owl-nav {
+                left: 10px;
+                right: 10px;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-nav button {
-        width: 36px !important;
-        height: 36px !important;
-    }
+            .as-hero-wrap .owl-carousel .owl-nav button {
+                width: 36px !important;
+                height: 36px !important;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-nav button span {
-        font-size: 28px;
-    }
+            .as-hero-wrap .owl-carousel .owl-nav button span {
+                font-size: 28px;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-dots {
-        bottom: 12px;
-        padding: 7px 9px;
-    }
-}
+            .as-hero-wrap .owl-carousel .owl-dots {
+                bottom: 12px;
+                padding: 7px 9px;
+            }
+        }
+
         .hero-overlay-content {
             position: absolute;
             top: 50%;
@@ -250,149 +254,151 @@
 
         /* ── HERO ─────────────────────────────────────────────── */
 
-.as-hero-wrap .inner-carousel {
-    height: clamp(260px, 44vw, 620px); /* desktop: scales with viewport, capped at 620px */
-}
+        .as-hero-wrap .inner-carousel {
+            height: clamp(260px, 44vw, 620px);
+            /* desktop: scales with viewport, capped at 620px */
+        }
 
-/* All Owl internals must fill the fixed container exactly */
-.as-hero-wrap .owl-carousel,
-.as-hero-wrap .owl-stage-outer,
-.as-hero-wrap .owl-stage,
-.as-hero-wrap .owl-item,
-.as-hero-wrap .intro-slide,
-.as-hero-wrap .intro-slide picture {   /* ← picture was missing height:100% */
-    height: 100%;
-    display: block;
-    width: 100%;
-}
+        /* All Owl internals must fill the fixed container exactly */
+        .as-hero-wrap .owl-carousel,
+        .as-hero-wrap .owl-stage-outer,
+        .as-hero-wrap .owl-stage,
+        .as-hero-wrap .owl-item,
+        .as-hero-wrap .intro-slide,
+        .as-hero-wrap .intro-slide picture {
+            /* ← picture was missing height:100% */
+            height: 100%;
+            display: block;
+            width: 100%;
+        }
 
-.as-hero-wrap .intro-slide {
-    background: #080808;
-}
+        .as-hero-wrap .intro-slide {
+            background: #080808;
+        }
 
-/* The actual <img> — object-fit:cover locks it to the box, no bleed */
-.as-hero-wrap .baneer-img-r {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-}
+        /* The actual <img> — object-fit:cover locks it to the box, no bleed */
+        .as-hero-wrap .baneer-img-r {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
 
-/* Nav arrows */
-.as-hero-wrap .owl-carousel .owl-nav {
-    position: absolute;
-    top: 50%;
-    left: 24px;
-    right: 24px;
-    z-index: 12;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-    transform: translateY(-50%);
-}
+        /* Nav arrows */
+        .as-hero-wrap .owl-carousel .owl-nav {
+            position: absolute;
+            top: 50%;
+            left: 24px;
+            right: 24px;
+            z-index: 12;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            transform: translateY(-50%);
+        }
 
-.as-hero-wrap .owl-carousel .owl-nav button {
-    position: static !important;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 44px !important;
-    height: 44px !important;
-    margin: 0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.42) !important;
-    border-radius: 999px !important;
-    background: rgba(8, 8, 8, 0.46) !important;
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
-    color: #fff !important;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    pointer-events: auto;
-    transform: none !important;
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-}
+        .as-hero-wrap .owl-carousel .owl-nav button {
+            position: static !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 44px !important;
+            height: 44px !important;
+            margin: 0 !important;
+            border: 1px solid rgba(255, 255, 255, 0.42) !important;
+            border-radius: 999px !important;
+            background: rgba(8, 8, 8, 0.46) !important;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+            color: #fff !important;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+            transform: none !important;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-.as-hero-wrap .owl-carousel .owl-nav button span {
-    display: block;
-    margin-top: -3px;
-    font-size: 34px;
-    line-height: 1;
-}
+        .as-hero-wrap .owl-carousel .owl-nav button span {
+            display: block;
+            margin-top: -3px;
+            font-size: 34px;
+            line-height: 1;
+        }
 
-.as-hero-wrap .owl-carousel .owl-nav button:hover,
-.as-hero-wrap .owl-carousel .owl-nav button:focus {
-    border-color: #e7c840 !important;
-    background: #e7c840 !important;
-    box-shadow: 0 18px 38px rgba(231, 200, 64, 0.28);
-    color: #1a1a1a !important;
-    outline: none;
-}
+        .as-hero-wrap .owl-carousel .owl-nav button:hover,
+        .as-hero-wrap .owl-carousel .owl-nav button:focus {
+            border-color: #e7c840 !important;
+            background: #e7c840 !important;
+            box-shadow: 0 18px 38px rgba(231, 200, 64, 0.28);
+            color: #1a1a1a !important;
+            outline: none;
+        }
 
-/* Dots */
-.as-hero-wrap .owl-carousel .owl-dots {
-    position: absolute;
-    left: 50%;
-    bottom: 20px;
-    z-index: 12;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 0;
-    padding: 8px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 999px;
-    background: rgba(8, 8, 8, 0.42);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
-    backdrop-filter: blur(10px);
-    transform: translateX(-50%);
-}
+        /* Dots */
+        .as-hero-wrap .owl-carousel .owl-dots {
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0;
+            padding: 8px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            background: rgba(8, 8, 8, 0.42);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+            backdrop-filter: blur(10px);
+            transform: translateX(-50%);
+        }
 
-.as-hero-wrap .owl-carousel .owl-dots .owl-dot span {
-    width: 10px;
-    height: 10px;
-    margin: 0;
-    border: 1px solid rgba(255, 255, 255, 0.76);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.45);
-    transition: width 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
+        .as-hero-wrap .owl-carousel .owl-dots .owl-dot span {
+            width: 10px;
+            height: 10px;
+            margin: 0;
+            border: 1px solid rgba(255, 255, 255, 0.76);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.45);
+            transition: width 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
 
-.as-hero-wrap .owl-carousel .owl-dots .owl-dot.active span,
-.as-hero-wrap .owl-carousel .owl-dots .owl-dot:hover span,
-.as-hero-wrap .owl-carousel .owl-dots .owl-dot:focus span {
-    width: 26px;
-    border-color: #e7c840;
-    background: #e7c840;
-}
+        .as-hero-wrap .owl-carousel .owl-dots .owl-dot.active span,
+        .as-hero-wrap .owl-carousel .owl-dots .owl-dot:hover span,
+        .as-hero-wrap .owl-carousel .owl-dots .owl-dot:focus span {
+            width: 26px;
+            border-color: #e7c840;
+            background: #e7c840;
+        }
 
-/* ── MOBILE ───────────────────────────────────────────── */
-@media (max-width: 767px) {
-    .as-hero-wrap .inner-carousel {
-        /* 56vw keeps a natural banner ratio on portrait phones;
-           clamp stops it going too small (220px) or too tall (420px) */
-        height: clamp(522px, 56vw, 420px);
-    }
+        /* ── MOBILE ───────────────────────────────────────────── */
+        @media (max-width: 767px) {
+            .as-hero-wrap .inner-carousel {
+                /* 56vw keeps a natural banner ratio on portrait phones;
+               clamp stops it going too small (220px) or too tall (420px) */
+                height: clamp(522px, 56vw, 420px);
+            }
 
-    .as-hero-wrap .owl-carousel .owl-nav {
-        left: 10px;
-        right: 10px;
-    }
+            .as-hero-wrap .owl-carousel .owl-nav {
+                left: 10px;
+                right: 10px;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-nav button {
-        width: 36px !important;
-        height: 36px !important;
-    }
+            .as-hero-wrap .owl-carousel .owl-nav button {
+                width: 36px !important;
+                height: 36px !important;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-nav button span {
-        font-size: 28px;
-    }
+            .as-hero-wrap .owl-carousel .owl-nav button span {
+                font-size: 28px;
+            }
 
-    .as-hero-wrap .owl-carousel .owl-dots {
-        bottom: 12px;
-        padding: 7px 9px;
-    }
-}
+            .as-hero-wrap .owl-carousel .owl-dots {
+                bottom: 12px;
+                padding: 7px 9px;
+            }
+        }
     </style>
 
     <main class="main">
@@ -626,7 +632,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}" alt="proud product of india">
+                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}"
+                                    alt="proud product of india">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Proud product of India</h3>
