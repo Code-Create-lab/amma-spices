@@ -65,6 +65,16 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="bmd-label-floating d-block mb-2">Banner Visibility</label>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="is_visible" name="is_visible" value="1" {{ $banner->is_visible ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="is_visible">Visible on website</label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <br>
                             <button type="button" id="submit-all" class="btn btn-primary pull-center">{{ __('keywords.Submit') }}</button>
                             <a href="{{ route('banners') }}" class="btn">{{ __('keywords.Close') }}</a>

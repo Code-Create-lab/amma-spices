@@ -58,6 +58,7 @@ class BannerController extends Controller
     {
         $data = [
             'image' => $this->uploadBannerImage($request->file('image')),
+            'is_visible' => $request->has('is_visible') ? 1 : 0,
         ];
 
         if ($request->hasFile('mobile_banner')) {
@@ -95,7 +96,10 @@ class BannerController extends Controller
     {
         $banner = Banner::where('uuid', $uuid)->firstOrFail();
         // dd($request->file('mobile_banner'));
-        $data = [];
+        $data = [
+            'is_visible' => $request->has('is_visible') ? 1 : 0,
+        ];
+
         if ($request->hasFile('image')) {
             $this->deleteBannerImage($banner->image);
             $data['image'] = $this->uploadBannerImage($request->file('image'));
@@ -106,9 +110,7 @@ class BannerController extends Controller
             $data['mobile_banner'] = $this->uploadBannerImage($request->file('mobile_banner'));
         }
 
-        if (!empty($data)) {
-            $banner->update($data);
-        }
+        $banner->update($data);
 
         return redirect()->route('banners')->with('success', 'Banner Updated Successfully');
     }

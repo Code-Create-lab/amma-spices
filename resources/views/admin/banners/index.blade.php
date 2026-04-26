@@ -56,6 +56,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>{{ __('keywords.Banner Image') }}</th>
+                                    <th>Visibility</th>
                                     <th>{{ __('keywords.Actions') }}</th>
                                 </tr>
                             </thead>
@@ -66,6 +67,13 @@
                                         <tr>
                                             <td class="text-center">{{ $i }}</td>
                                             <td><img src="{{ asset('storage/'.$banner->image) }}" style="width:50px; height:50px; border-radius:50%;" /></td>
+                                            <td>
+                                                @if ($banner->is_visible)
+                                                    <span class="badge badge-success">Active</span>
+                                                @else
+                                                    <span class="badge badge-secondary">Hidden</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <a href="{{ route('banners.edit', $banner->uuid) }}" rel="tooltip">
                                                     <i class="fa fa-edit" style="color:orange;"></i>

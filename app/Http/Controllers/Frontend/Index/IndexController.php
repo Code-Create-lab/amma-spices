@@ -69,7 +69,7 @@ class IndexController extends Controller
             $wishlist = Wishlist::where('user_id', $user->id)->get(); // Get user's wishlist
         }
         $videos = Video::get();
-        $banners = Banner::get();
+        $banners = Banner::where('is_visible', 1)->get();
         $coupon = Coupon::where('show_on_web', 1)->first();
 
 

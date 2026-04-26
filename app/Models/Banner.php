@@ -12,7 +12,12 @@ class Banner extends Model
     protected $fillable = [
         'uuid',
         'image',
-        'mobile_banner'
+        'mobile_banner',
+        'is_visible',
+    ];
+
+    protected $casts = [
+        'is_visible' => 'boolean',
     ];
     protected static function boot()
     {
