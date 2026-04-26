@@ -413,7 +413,7 @@
                         "nav": true,
                         "navText": ["<span aria-label=\"Previous\">&#8249;</span>", "<span aria-label=\"Next\">&#8250;</span>"],
                         "autoplay": true,
-                        "autoplayTimeout": 3000,
+                        "autoplayTimeout": 5000,
                         "autoplayHoverPause": true,
                         "dots": true,
                         "loop": true
