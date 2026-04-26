@@ -154,8 +154,8 @@
         }
 
         @media (max-width: 767px) {
-            .as-hero-wrap .inner-carousel {
-                height: clamp(280px, 118vw, 520px);
+            .as-hero-wrap .inner-carousel {.as-hero-wrap .inner-carousel
+                height: clamp(280px, 150vw, 580px);
             }
 
             .as-hero-wrap .owl-carousel .owl-nav {
