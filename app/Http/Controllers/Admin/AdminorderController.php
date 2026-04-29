@@ -2913,14 +2913,14 @@ class AdminorderController extends Controller
     {
         // SMS
         // Send SMS notification
-        $message = "Your Order #{$order->cart_id} for Rs.{$order->total_price} has been canceled as it could not be confirmed. In case you paid online, your amount will be refunded within 5-7 business days. You can place a new order anytime. - BBSOAP"; // Changed from 'message' to 'text'
-        $response = $this->smsService->sendSms('91' . $order->address->receiver_phone ?? $order->user->user_phone, $message, "1707176846913021679");
+        // $message = "Your Order #{$order->cart_id} for Rs.{$order->total_price} has been canceled as it could not be confirmed. In case you paid online, your amount will be refunded within 5-7 business days. You can place a new order anytime. - BBSOAP"; // Changed from 'message' to 'text'
+        // $response = $this->smsService->sendSms('91' . $order->address->receiver_phone ?? $order->user->user_phone, $message, "1707176846913021679");
 
 
-        Log::error('Order sendCancellationNotifications', [
-            'order' => $order,
-            'error' =>  $response
-        ]);
+        // Log::error('Order sendCancellationNotifications', [
+        //     'order' => $order,
+        //     'error' =>  $response
+        // ]);
         // Send cancellation email
         Mail::to([
             auth()->user()->email,
