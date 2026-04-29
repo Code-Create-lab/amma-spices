@@ -104,7 +104,7 @@ class AdminorderController extends Controller
         $logoMime   = null;
 
         // Example: logo stored in public/images/logo.png
-        $logoPath = public_path('images/logo.png');   // <- update this
+        $logoPath = public_path('assets/img/logo.png');   // <- update this
 
         if (file_exists($logoPath)) {
             $logoMime   = mime_content_type($logoPath);
