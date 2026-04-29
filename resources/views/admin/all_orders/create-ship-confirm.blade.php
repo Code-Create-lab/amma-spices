@@ -944,7 +944,7 @@
                     // Show success message
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
-                            title: 'Shipment Created',
+                            title: 'Order Confirmed',
                             html: formatShiprocketMessage(response.message),
                             icon: 'success',
                             width: 600,
@@ -974,7 +974,7 @@
             },
             error: function(xhr) {
 
-                let rawMessage = 'Shipment creation failed.';
+                let rawMessage = 'Order confirmation failed.';
 
                 if (xhr.responseJSON?.message) {
                     rawMessage = extractShiprocketError(xhr.responseJSON.message);

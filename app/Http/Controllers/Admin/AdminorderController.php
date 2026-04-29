@@ -727,7 +727,6 @@ class AdminorderController extends Controller
 
                         if (strtolower($row->shipement?->status) === 'delivered') {
 
-
                             $html .= '<button
                                 class="btn btn-success btn-sm mr-1 mb-1 btn-complete-order"
                                 data-order-id="' . $row->order_id . '">
@@ -748,6 +747,12 @@ class AdminorderController extends Controller
                                     Track
                                   </a>';
                         }
+
+                         $html .= '<button
+                                class="btn btn-success btn-sm mr-1 mb-1 btn-complete-order"
+                                data-order-id="' . $row->order_id . '">
+                                Complete Order
+                              </button>';
                     }
 
                     // OUT FOR DELIVERY → COMPLETE + TRACK
@@ -995,7 +1000,7 @@ class AdminorderController extends Controller
     }
 
     /**
-     * AJAX: Confirm order and create shipment without redirect
+     * AJAX: Confirm order without redirect
      */
     public function ajaxConfirmOrder(Request $request, $id)
     {

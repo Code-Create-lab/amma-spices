@@ -32,7 +32,7 @@
                             </h2>
                             <p style="margin:0; font-size:14px; color:#374151; line-height:1.6;">
                                 Hi {{ $order->address->receiver_name ?? 'Customer' }},<br>
-                                Great news! Your order has been confirmed and is being prepared for shipment.
+                                Great news! Your order has been confirmed and is being processed.
                             </p>
                         </td>
                     </tr>
