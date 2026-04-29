@@ -205,7 +205,7 @@
                             <th>Order {{ __('keywords.Status') }}</th>
                             <th>Delivery Date</th>
                             <th>Payment Status</th>
-                            <th>Shipment Status</th>
+                            {{-- <th>Shipment Status</th> --}}
                             <th>{{ __('keywords.Payment Method') }}</th>
                             <th>{{ __('keywords.Actions') }}</th>
                         </tr>
@@ -447,9 +447,9 @@
                     {
                         data: 'payment_status'
                     },
-                    {
-                        data: 'shipment_status'
-                    },
+                    // {
+                    //     data: 'shipment_status'
+                    // },
                     {
                         data: 'payment_method_badge',
                         orderable: false

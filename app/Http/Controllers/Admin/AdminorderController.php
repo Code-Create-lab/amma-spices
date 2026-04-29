@@ -652,6 +652,7 @@ class AdminorderController extends Controller
                     return $row->delivery_date ?? '-';
                 })
 
+                /*
                 ->addColumn('shipment_status', function ($row) {
 
                     $status = strtoupper($row->shipment?->status ?? 'PENDING');
@@ -684,6 +685,7 @@ class AdminorderController extends Controller
 
                     return "<span class='badge badge-{$class}'>{$status}</span>";
                 })
+                */
 
 
                 ->addColumn('payment_method_badge', function ($row) {
@@ -826,7 +828,7 @@ class AdminorderController extends Controller
                     return $html;
                 })
 
-                ->rawColumns(['cart_id_display', 'user_info', 'status_badge', 'payment_method_badge', 'shipment_status', 'action'])
+                ->rawColumns(['cart_id_display', 'user_info', 'status_badge', 'payment_method_badge', 'action'])
                 ->make(true);
         }
 
