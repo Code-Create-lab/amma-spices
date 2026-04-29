@@ -91,7 +91,7 @@
                                         Amma's Spices<br />
                                          Shop No. UFF29 Signature Global, <br />
                                         Sector 95A Gurugram, Haryana 122505<br />
-                                        <strong>GSTIN:</strong> 29GJIPP3529L1ZG
+                                        {{-- <strong>GSTIN:</strong> 29GJIPP3529L1ZG --}}
                                     </td>
                                     <td width="30%" style="text-align: right;" valign="top">
                                         <strong>Order No.</strong><br />
