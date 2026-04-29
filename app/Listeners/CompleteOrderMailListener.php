@@ -13,11 +13,18 @@ class CompleteOrderMailListener
 {
     public function handle(CompleteOrderMailEvent $event)
     {
-        $order = $event->order;
-        $user = $event->order->user->email;
-        Mail::to([
-            Auth::user()->email,
-            $order->address->receiver_email
-        ])->send(new CompleteOrder($order));
+        $order = $event->order->loadMissing(['user', 'address', 'orderItems.variation']);
+
+        $recipients = array_values(array_unique(array_filter([
+            Auth::guard('admin')->user()?->email,
+            $order->address?->receiver_email,
+            $order->user?->email,
+        ])));
+
+        if (empty($recipients)) {
+            return;
+        }
+
+        Mail::to($recipients)->send(new CompleteOrder($order));
     }
 }

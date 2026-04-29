@@ -56,7 +56,13 @@ class CompleteOrder extends Mailable
      */
     public function attachments()
     {
-        $filePath = storage_path('app/public/orders/order-generate-' . $this->order->cart_id . '.pdf');
+        $path = $this->order->pdf_path ?? 'orders/order-generate-' . $this->order->cart_id . '.pdf';
+        $filePath = storage_path('app/public/' . ltrim($path, '/'));
+
+        if (!file_exists($filePath)) {
+            return [];
+        }
+
         return [
             Attachment::fromPath($filePath)
                 ->as('Order Invoice.pdf')

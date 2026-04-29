@@ -876,6 +876,11 @@ class AdminorderController extends Controller
 
             // Send completion notifications (optional - can be async)
             try {
+                $pdfPath = $this->generateCompletedOrderInvoicePdf($order);
+                if ($pdfPath) {
+                    $order->pdf_path = $pdfPath;
+                }
+
                 event(new CompleteOrderMailEvent($order));
             } catch (\Exception $e) {
                 Log::error('Failed to send completion notification', ['error' => $e->getMessage()]);
@@ -891,6 +896,67 @@ class AdminorderController extends Controller
                 'success' => false,
                 'message' => 'Failed to complete order: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    private function generateCompletedOrderInvoicePdf(Orders $order): ?string
+    {
+        try {
+            $order->loadMissing(['orderItems.variation.variation_attributes.attribute.attribute', 'address', 'user']);
+
+            $logoPath = public_path('assets/img/logo.png');
+            $logoBase64 = file_exists($logoPath)
+                ? base64_encode(file_get_contents($logoPath))
+                : '';
+
+            foreach ($order->orderItems as $item) {
+                if (!$item->varient_image) {
+                    continue;
+                }
+
+                $imagePath = storage_path('app/public/' . $item->varient_image);
+                if (!file_exists($imagePath)) {
+                    continue;
+                }
+
+                $item->varient_image_base64 = base64_encode(file_get_contents($imagePath));
+                $imageInfo = getimagesize($imagePath);
+                $item->image_mime_type = $imageInfo['mime'] ?? 'image/jpeg';
+            }
+
+            $pdf = Pdf::loadView('frontend.order.invoice', [
+                'order' => $order,
+                'logoBase64' => $logoBase64,
+            ]);
+
+            $pdf->setPaper('a4', 'portrait')
+                ->setOption('margin-top', 10)
+                ->setOption('margin-right', 10)
+                ->setOption('margin-bottom', 10)
+                ->setOption('margin-left', 10)
+                ->setOption('enable-local-file-access', true)
+                ->setOption('images', true)
+                ->setOption('enable-javascript', false)
+                ->setOption('javascript-delay', 1000)
+                ->setOption('no-stop-slow-scripts', true)
+                ->setOption('lowquality', false)
+                ->setOption('print-media-type', true);
+
+            $path = 'orders/order-generate-' . $order->cart_id . '.pdf';
+            if (!Storage::disk('public')->exists('orders')) {
+                Storage::disk('public')->makeDirectory('orders');
+            }
+
+            Storage::disk('public')->put($path, $pdf->output());
+
+            return $path;
+        } catch (\Throwable $e) {
+            Log::error('Completed order invoice PDF generation failed', [
+                'order_id' => $order->order_id ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
         }
     }
 

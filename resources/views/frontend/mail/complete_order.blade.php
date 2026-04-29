@@ -79,12 +79,17 @@
                                     @php $subtotal = 0; @endphp
                                     @foreach ($order->orderItems ?? [] as $item)
                                         @php
-                                            $price =
-                                                ($item->variation->price == 0
-                                                    ? $item->variation->mrp
-                                                    : $item->variation->price) ?? 0;
-                                            $qty = $item->quantity ?? 1;
-                                            $total = $price * $qty;
+                                            $qty = $item->quantity ?? ($item->qty ?? 1);
+                                            $variationPrice = $item->variation?->price;
+                                            $variationMrp = $item->variation?->mrp;
+
+                                            if ($variationPrice !== null || $variationMrp !== null) {
+                                                $price = ($variationPrice ?? 0) == 0 ? ($variationMrp ?? 0) : $variationPrice;
+                                                $total = $price * $qty;
+                                            } else {
+                                                $total = ($item->price ?? 0) ?: ($item->total_mrp ?? 0);
+                                            }
+
                                             $subtotal += $total;
                                         @endphp
                                         <tr style="border-bottom: 1px solid #e5e7eb;">
