@@ -2635,8 +2635,8 @@ class AdminorderController extends Controller
             ]);
 
 
-            $message = "Dear Customer, Your order {$order->cart_id} has been confirmed for Rs.{$order->total_price}. We are now processing your order. You can track your shipment here: $shippingUrlInhouse. Thank you for shopping with us! - BBSOAP";
-            $this->smsService->sendSms('91' . $order->address->receiver_phone ?? $order->user->user_phone, $message, "1707176846904792259");
+            // $message = "Dear Customer, Your order {$order->cart_id} has been confirmed for Rs.{$order->total_price}. We are now processing your order. You can track your shipment here: $shippingUrlInhouse. Thank you for shopping with us! - BBSOAP";
+            // $this->smsService->sendSms('91' . $order->address->receiver_phone ?? $order->user->user_phone, $message, "1707176846904792259");
             Mail::to([auth()->user()->email, $order->address->receiver_email])->send(new ConfirmOrderWithShipment($order,  $shippingUrlInhouse));
 
             Log::info('Order status updated to Confirmed', [
@@ -2879,8 +2879,8 @@ class AdminorderController extends Controller
         ]);
 
         // Send modified notification to customer
-        $message = "Your order #{$order->cart_id} for Rs.{$order->total_price} has been canceled as it could not be confirmed. In case you paid online, your amount will be refunded within 5-7 business days. You can place a new order anytime. - ZAKHEC";
-        $this->smsService->sendSms('91' . $order->address->receiver_phone ?? $order->user->user_phone, $message, "1707176845453676607");
+        // $message = "Your order #{$order->cart_id} for Rs.{$order->total_price} has been canceled as it could not be confirmed. In case you paid online, your amount will be refunded within 5-7 business days. You can place a new order anytime. - ZAKHEC";
+        // $this->smsService->sendSms('91' . $order->address->receiver_phone ?? $order->user->user_phone, $message, "1707176845453676607");
 
         // Send email notification
         Mail::to([auth()->user()->email, $order->address->receiver_email])
