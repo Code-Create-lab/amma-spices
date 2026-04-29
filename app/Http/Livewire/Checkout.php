@@ -229,6 +229,26 @@ class Checkout extends Component
         return $payload;
     }
 
+    protected function generateCartId(): string
+    {
+        $prefix = 'AMMA' . Carbon::now()->format('Ym');
+
+        $lastNumber = Orders::query()
+            ->where('cart_id', 'like', $prefix . '%')
+            ->lockForUpdate()
+            ->pluck('cart_id')
+            ->map(function ($cartId) use ($prefix) {
+                preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', (string) $cartId, $matches);
+
+                return (int) ($matches[1] ?? 0);
+            })
+            ->max();
+
+        $nextNumber = ((int) $lastNumber) + 1;
+
+        return $prefix . str_pad((string) $nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
     protected function resolveGuestCheckoutUser(): User
     {
         $email = strtolower(trim((string) ($this->addressData['receiver_email'] ?? '')));
@@ -1475,7 +1495,7 @@ class Checkout extends Component
             $total_price += $this->getShippingAmount($total_price);
             $delivery_charge = $this->getShippingAmount($total_price);
             // }
-            $cart_id = strtoupper(substr(md5(microtime()), 0, 6));
+            $cart_id = $this->generateCartId();
 
 
             $total_price = round($total_price - (round($this->discount) ?? 0));

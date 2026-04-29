@@ -727,7 +727,8 @@ class OrderController extends Controller
 
             $this->rememberGuestOrderAccess($order);
 
-            return redirect()->route('customer.orders.index');
+            return view('frontend.order.success', compact('order'));
+            // return redirect()->route('customer.orders.index');
         } catch (\Exception $e) {
             abort(404); // or show error page
         }
