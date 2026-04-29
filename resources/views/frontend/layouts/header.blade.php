@@ -186,7 +186,7 @@
                     </button>
 
                     <a href="{{ route('index') }}" class="logo">
-                        <img src="{{ asset('assets/img/logo-bodhi.png') }}" alt="Logo" width="50"
+                        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo" width="50"
                             height="25">
                     </a>
 

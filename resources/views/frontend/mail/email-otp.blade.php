@@ -158,9 +158,8 @@
                 <div class="email-container">
                     <!-- Header -->
                     <div class="header">
-                        <a href="{{ route('index') }}" class="logo"><img
-                                src="{{ asset('assets/images/logo.png') }}" alt=" Logo" 
-                                height="100"></a>
+                        <a href="{{ route('index') }}" class="logo"><img src="{{ asset('assets/images/logo.png') }}"
+                                alt=" Logo" height="100"></a>
                     </div>
 
                     <!-- Main Content -->
@@ -207,7 +206,7 @@
                     {{-- <div class="footer">
 
                         <a href="{{ route('index') }}" class="logo"><img
-                                src="{{ asset('assets/img/logo-bodhi.png') }}" alt=" Logo" width="105"
+                                src="{{ asset('assets/img/logo.png') }}" alt=" Logo" width="105"
                                 height="25"></a>
 
 

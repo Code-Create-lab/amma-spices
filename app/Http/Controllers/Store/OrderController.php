@@ -128,16 +128,16 @@ class OrderController extends Controller
             }
             $ordupdate = DB::table('orders')
                 ->where('cart_id', $cart->order_cart_id)
-                ->update(['store_id' => 0,
-                    'cancel_by_store' => $cancel]);
+                ->update([
+                    'store_id' => 0,
+                    'cancel_by_store' => $cancel
+                ]);
 
 
             $cart_update = DB::table('store_orders')
                 ->where('order_cart_id', $cart->order_cart_id)
                 ->update(['store_approval' => 1]);
             return redirect()->back()->withSuccess(trans('keywords.Order cancelled successfully'));
-
-
         } else {
             $cancel_product = DB::table('store_orders')
                 ->where('store_order_id', $id)
@@ -148,8 +148,10 @@ class OrderController extends Controller
                     ->update(['wallet' => $newbal]);
                 $ordr = DB::table('orders')
                     ->where('cart_id', $cart->order_cart_id)
-                    ->update(['total_price' => $tot_price2,
-                        'rem_price' => $rem_price2]);
+                    ->update([
+                        'total_price' => $tot_price2,
+                        'rem_price' => $rem_price2
+                    ]);
             }
             return redirect()->back()->withSuccess(trans('keywords.Product removed successfully'));
         }
@@ -186,7 +188,6 @@ class OrderController extends Controller
                     ->first();
 
                 $v_price1 += $v1->price * $v1->qty;
-
             }
             $user_id1 = $ordr->user_id;
             $userwa1 = DB::table('users')
@@ -228,9 +229,11 @@ class OrderController extends Controller
         $cancel = 2;
         $ordupdate = DB::table('orders')
             ->where('cart_id', $cart_id)
-            ->update(['store_id' => 0,
+            ->update([
+                'store_id' => 0,
                 'cancel_by_store' => $cancel,
-                'order_status' => 'Pending']);
+                'order_status' => 'Pending'
+            ]);
 
 
         $cart_update = DB::table('store_orders')
@@ -240,7 +243,7 @@ class OrderController extends Controller
         return redirect()->back()->withSuccess(trans('keywords.Order Rejected successfully'));
     }
 
-        public function viewInvoice($cart_id)
+    public function viewInvoice($cart_id)
     {
         try {
             // Fetch the order with related data
@@ -249,7 +252,7 @@ class OrderController extends Controller
                 ->firstOrFail();
 
             // Convert logo to base64
-            $logoPath = public_path('assets/img/logo-bodhi.png');
+            $logoPath = public_path('assets/img/logo.png');
             $logoBase64 = '';
             if (file_exists($logoPath)) {
                 $logoBase64 = base64_encode(file_get_contents($logoPath));
@@ -281,7 +284,6 @@ class OrderController extends Controller
 
             // Return PDF inline in browser
             return $pdf->stream('Invoice-' . $order->cart_id . '.pdf');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to generate invoice: ' . $e->getMessage());
         }

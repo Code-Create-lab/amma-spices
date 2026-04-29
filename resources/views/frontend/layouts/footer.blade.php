@@ -6,7 +6,7 @@
                 <div class="fot-col-div">
                     <div class="widget widget-about">
                         <a href="{{ route('index') }}">
-                            <img src="{{ asset('assets/img/logo-bodhi.png') }}" alt=" Logo" class="fot-logo">
+                            <img src="{{ asset('assets/img/logo.png') }}" alt=" Logo" class="fot-logo">
                         </a>
                     </div><!-- End .widget about-widget -->
                 </div><!-- End .col-sm-12 col-lg-3 -->
@@ -31,7 +31,8 @@
                             <li><a href="{{ route('frontend.terms_and_conditions') }}">Terms & conditions</a></li>
                             {{-- <li><a href="#">Return & Exchange Policy</a></li> --}}
                             {{-- <li><a href="{{ route('frontend.shipping_and_delivery') }}">Shipping & delivery</a></li> --}}
-                            <li><a href="{{ route('frontend.cancellation_and_refund') }}">Cancellation & Refund Policy</a></li>
+                            <li><a href="{{ route('frontend.cancellation_and_refund') }}">Cancellation & Refund
+                                    Policy</a></li>
                             <li><a href="{{ route('frontend.privacy_policy') }}">Privacy policy</a></li>
                         </ul><!-- End .widget-list -->
                     </div><!-- End .widget -->

@@ -12,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-     <meta name="keywords"
+    <meta name="keywords"
         content="Indian spices online, homemade masala Delhi NCR India, authentic Indian spices, buy spices online Delhi NCR, pure spices India, traditional masalas, Amma style cooking, homemade taste spices, fresh ground spices, Delhi NCR spices.">
     <meta name="description"
         content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
@@ -55,7 +55,7 @@
             <!-- BEGIN login-content -->
             <div class="login-content">
                 <div align="center">
-                    <img align="center" img style="height: 110px;" src="{{ asset('assets/img/logo-bodhi.png') }}"
+                    <img align="center" img style="height: 110px;" src="{{ asset('assets/img/logo.png') }}"
                         alt="Amma's Spices Logo" />
                 </div>
                 <hr>

@@ -2675,7 +2675,7 @@ class AdminorderController extends Controller
 
 
             // Convert logo to base64
-            $logoPath = public_path('assets/images/logo.png');
+            $logoPath = public_path('assets/img/logo.png');
             $logoBase64 = '';
             if (file_exists($logoPath)) {
                 $logoBase64 = base64_encode(file_get_contents($logoPath));
@@ -3203,158 +3203,158 @@ class AdminorderController extends Controller
             throw new \Exception('Payment record not found for this order');
         }
 
-        $shiprocket = new ShiprocketService();
-        $shouldProcessRefundNow = false;
-        $cancellationStatus = 'pending';
-        $shiprocketStatus = null;
+        // $shiprocket = new ShiprocketService();
+        // $shouldProcessRefundNow = false;
+        // $cancellationStatus = 'pending';
+        // $shiprocketStatus = null;
 
         if ($order->shipment) {
-            $shiprocketStatus = strtoupper(trim($order->shipment->status ?? ''));
+            // $shiprocketStatus = strtoupper(trim($order->shipment->status ?? ''));
 
-            Log::info('Shipment found for order', [
-                'order_id' => $order->order_id,
-                'shipment_id' => $order->shipment->id ?? null,
-                'shiprocket_status' => $shiprocketStatus,
-                'awb' => $order->shipment->awb ?? null,
-            ]);
+            // Log::info('Shipment found for order', [
+            //     'order_id' => $order->order_id,
+            //     'shipment_id' => $order->shipment->id ?? null,
+            //     'shiprocket_status' => $shiprocketStatus,
+            //     'awb' => $order->shipment->awb ?? null,
+            // ]);
 
-            /**
-             * Case 1: Order created but not shipped - Cancel and refund immediately
-             */
-            if ($shiprocketStatus === 'NEW' && empty($order->shipment->awb)) {
-                Log::info('Order is NEW and not shipped, attempting cancellation', [
-                    'order_id' => $order->order_id,
-                ]);
+            // /**
+            //  * Case 1: Order created but not shipped - Cancel and refund immediately
+            //  */
+            // if ($shiprocketStatus === 'NEW' && empty($order->shipment->awb)) {
+            //     Log::info('Order is NEW and not shipped, attempting cancellation', [
+            //         'order_id' => $order->order_id,
+            //     ]);
 
-                try {
-                    $shiprocket->cancelOrder($order->shipment->shipment_order_id);
-                    $shouldProcessRefundNow = true;
-                    $cancellationStatus = 'cancelled_not_shipped';
+            //     try {
+            //         $shiprocket->cancelOrder($order->shipment->shipment_order_id);
+            //         $shouldProcessRefundNow = true;
+            //         $cancellationStatus = 'cancelled_not_shipped';
 
-                    Log::info('Order cancelled in Shiprocket (NEW status)', [
-                        'order_id' => $order->order_id,
-                        'shiprocket_order_id' => $order->shipment->shipment_order_id,
-                    ]);
-                } catch (\Exception $e) {
-                    Log::error('Failed to cancel order in Shiprocket (NEW status)', [
-                        'order_id' => $order->order_id,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            }
+            //         Log::info('Order cancelled in Shiprocket (NEW status)', [
+            //             'order_id' => $order->order_id,
+            //             'shiprocket_order_id' => $order->shipment->shipment_order_id,
+            //         ]);
+            //     } catch (\Exception $e) {
+            //         Log::error('Failed to cancel order in Shiprocket (NEW status)', [
+            //             'order_id' => $order->order_id,
+            //             'error' => $e->getMessage(),
+            //         ]);
+            //     }
+            // }
 
-            /**
-             * Case 2: AWB assigned but not picked up - Cancel and refund immediately
-             */
-            elseif (in_array($shiprocketStatus, [
-                'READY TO SHIP',
-                'OUT FOR PICKUP',
-                'PICKUP GENERATED',
-                'PICKUP SCHEDULED',
-                'MANIFESTED',
-                'LABEL GENERATED'
-            ])) {
-                Log::info('Shipment is before pickup, cancelling shipment and order', [
-                    'order_id' => $order->order_id,
-                    'shiprocket_status' => $shiprocketStatus,
-                    'awb' => $order->shipment->awb ?? null,
-                ]);
+            // /**
+            //  * Case 2: AWB assigned but not picked up - Cancel and refund immediately
+            //  */
+            // elseif (in_array($shiprocketStatus, [
+            //     'READY TO SHIP',
+            //     'OUT FOR PICKUP',
+            //     'PICKUP GENERATED',
+            //     'PICKUP SCHEDULED',
+            //     'MANIFESTED',
+            //     'LABEL GENERATED'
+            // ])) {
+            //     Log::info('Shipment is before pickup, cancelling shipment and order', [
+            //         'order_id' => $order->order_id,
+            //         'shiprocket_status' => $shiprocketStatus,
+            //         'awb' => $order->shipment->awb ?? null,
+            //     ]);
 
-                if ($order->shipment->awb) {
-                    try {
-                        // Step 1: Cancel shipment (AWB)
-                        $shiprocket->cancelShipment($order->shipment->awb);
+            //     if ($order->shipment->awb) {
+            //         try {
+            //             // Step 1: Cancel shipment (AWB)
+            //             $shiprocket->cancelShipment($order->shipment->awb);
 
-                        Log::info('Shipment cancelled in Shiprocket via AWB', [
-                            'order_id' => $order->order_id,
-                            'awb_code' => $order->shipment->awb,
-                        ]);
+            //             Log::info('Shipment cancelled in Shiprocket via AWB', [
+            //                 'order_id' => $order->order_id,
+            //                 'awb_code' => $order->shipment->awb,
+            //             ]);
 
-                        // Step 2: Cancel order (since it moves to NEW)
-                        try {
-                            $shiprocket->cancelOrder($order->shipment->shipment_order_id);
+            //             // Step 2: Cancel order (since it moves to NEW)
+            //             try {
+            //                 $shiprocket->cancelOrder($order->shipment->shipment_order_id);
 
-                            $shouldProcessRefundNow = true;
-                            $cancellationStatus = 'cancelled_before_pickup';
+            //                 $shouldProcessRefundNow = true;
+            //                 $cancellationStatus = 'cancelled_before_pickup';
 
-                            Log::info('Order cancelled in Shiprocket after shipment cancellation', [
-                                'order_id' => $order->order_id,
-                                'shiprocket_order_id' => $order->shipment->shipment_order_id,
-                            ]);
-                        } catch (\Exception $e) {
-                            Log::error('Shipment cancelled but failed to cancel order in Shiprocket', [
-                                'order_id' => $order->order_id,
-                                'shiprocket_order_id' => $order->shipment->shipment_order_id,
-                                'error' => $e->getMessage(),
-                            ]);
-                        }
-                    } catch (\Exception $e) {
-                        Log::error('Failed to cancel shipment in Shiprocket', [
-                            'order_id' => $order->order_id,
-                            'awb_code' => $order->shipment->awb,
-                            'error' => $e->getMessage(),
-                        ]);
-                    }
-                } else {
-                    Log::warning('Cannot cancel shipment — AWB code missing', [
-                        'order_id' => $order->order_id,
-                        'shiprocket_status' => $shiprocketStatus,
-                    ]);
-                }
-            }
+            //                 Log::info('Order cancelled in Shiprocket after shipment cancellation', [
+            //                     'order_id' => $order->order_id,
+            //                     'shiprocket_order_id' => $order->shipment->shipment_order_id,
+            //                 ]);
+            //             } catch (\Exception $e) {
+            //                 Log::error('Shipment cancelled but failed to cancel order in Shiprocket', [
+            //                     'order_id' => $order->order_id,
+            //                     'shiprocket_order_id' => $order->shipment->shipment_order_id,
+            //                     'error' => $e->getMessage(),
+            //                 ]);
+            //             }
+            //         } catch (\Exception $e) {
+            //             Log::error('Failed to cancel shipment in Shiprocket', [
+            //                 'order_id' => $order->order_id,
+            //                 'awb_code' => $order->shipment->awb,
+            //                 'error' => $e->getMessage(),
+            //             ]);
+            //         }
+            //     } else {
+            //         Log::warning('Cannot cancel shipment — AWB code missing', [
+            //             'order_id' => $order->order_id,
+            //             'shiprocket_status' => $shiprocketStatus,
+            //         ]);
+            //     }
+            // }
 
 
-            /**
-             * Case 3: Already shipped or delivered - Wait for return (RTO)
-             */
-            elseif (in_array($shiprocketStatus, [
-                'PICKED UP',
-                'IN TRANSIT',
-                'SHIPPED',
-                'OUT FOR DELIVERY',
-                'DELIVERED'
-            ])) {
-                $shouldProcessRefundNow = false;
-                $cancellationStatus = 'awaiting_return';
+            // /**
+            //  * Case 3: Already shipped or delivered - Wait for return (RTO)
+            //  */
+            // elseif (in_array($shiprocketStatus, [
+            //     'PICKED UP',
+            //     'IN TRANSIT',
+            //     'SHIPPED',
+            //     'OUT FOR DELIVERY',
+            //     'DELIVERED'
+            // ])) {
+            //     $shouldProcessRefundNow = false;
+            //     $cancellationStatus = 'awaiting_return';
 
-                Log::info('Shipment already in transit or delivered, refund deferred', [
-                    'order_id' => $order->order_id,
-                    'shiprocket_status' => $shiprocketStatus,
-                    'awb_code' => $order->shipment->awb ?? null,
-                ]);
+            //     Log::info('Shipment already in transit or delivered, refund deferred', [
+            //         'order_id' => $order->order_id,
+            //         'shiprocket_status' => $shiprocketStatus,
+            //         'awb_code' => $order->shipment->awb ?? null,
+            //     ]);
 
-                // Initiate RTO (Return to Origin) process
-                if ($order->shipment->awb) {
-                    try {
-                        $shiprocket->initiateRTO($order->shipment->awb);
+            //     // Initiate RTO (Return to Origin) process
+            //     if ($order->shipment->awb) {
+            //         try {
+            //             $shiprocket->initiateRTO($order->shipment->awb);
 
-                        $order->shipment->update([
-                            'rto_initiated_at' => now(),
-                            'status' => 'RTO_INITIATED',
-                        ]);
+            //             $order->shipment->update([
+            //                 'rto_initiated_at' => now(),
+            //                 'status' => 'RTO_INITIATED',
+            //             ]);
 
-                        Log::info('RTO initiated successfully', [
-                            'order_id' => $order->order_id,
-                            'awb_code' => $order->shipment->awb,
-                        ]);
-                    } catch (\Exception $e) {
-                        Log::error('Failed to initiate RTO', [
-                            'order_id' => $order->order_id,
-                            'awb_code' => $order->shipment->awb,
-                            'error' => $e->getMessage(),
-                        ]);
-                    }
-                } else {
-                    Log::warning('Cannot initiate RTO — AWB code missing', [
-                        'order_id' => $order->order_id,
-                    ]);
-                }
-            } else {
-                Log::warning('Unhandled Shiprocket status encountered', [
-                    'order_id' => $order->order_id,
-                    'shiprocket_status' => $shiprocketStatus,
-                ]);
-            }
+            //             Log::info('RTO initiated successfully', [
+            //                 'order_id' => $order->order_id,
+            //                 'awb_code' => $order->shipment->awb,
+            //             ]);
+            //         } catch (\Exception $e) {
+            //             Log::error('Failed to initiate RTO', [
+            //                 'order_id' => $order->order_id,
+            //                 'awb_code' => $order->shipment->awb,
+            //                 'error' => $e->getMessage(),
+            //             ]);
+            //         }
+            //     } else {
+            //         Log::warning('Cannot initiate RTO — AWB code missing', [
+            //             'order_id' => $order->order_id,
+            //         ]);
+            //     }
+            // } else {
+            //     Log::warning('Unhandled Shiprocket status encountered', [
+            //         'order_id' => $order->order_id,
+            //         'shiprocket_status' => $shiprocketStatus,
+            //     ]);
+            // }
         } else {
             /**
              * Case 4: No shipment exists - Process refund immediately
