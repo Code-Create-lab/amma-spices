@@ -23,7 +23,7 @@
 
         <div class="container common-class-page">
             <div class="row">
-                <h1>{{ $cancel_and_refund[0]->title }}</h1>
+                {{-- <h1>{{ $cancel_and_refund[0]->title }}</h1> --}}
                 {!! $cancel_and_refund[0]->description !!}
             </div>
         </div>
