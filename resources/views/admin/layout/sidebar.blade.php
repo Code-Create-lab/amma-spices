@@ -229,12 +229,12 @@
                 </a>
             </div>
 
-            <div class="menu-item {{ request()->routeIs('admin.auto-publish.*') ? 'active' : '' }}">
+            {{-- <div class="menu-item {{ request()->routeIs('admin.auto-publish.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.auto-publish.index') }}" class="menu-link">
                     <span class="menu-icon"><i class="fa fa-cubes"></i></span>
                     <span class="menu-text">Auto Publisher</span>
                 </a>
-            </div>
+            </div> --}}
             {{-- <div class="menu-item  {{ request()->is('admin/shiprocket/*') ? 'active' : '' }}">
                 <a href="{{ route('shiprocket.orders') }}" class="menu-link">
                     <span class="menu-icon"><i class="fas fa-shipping-fast"></i></span>
