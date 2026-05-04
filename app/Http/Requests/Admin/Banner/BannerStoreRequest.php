@@ -24,8 +24,25 @@ class BannerStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'mobile_banner' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:width=1920,height=800'],
+            'mobile_banner' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:width=900,height=1200'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'image.required' => 'Desktop banner image is required.',
+            'image.image' => 'Desktop banner must be a valid image file.',
+            'image.mimes' => 'Desktop banner must be a JPG, JPEG, PNG, or WEBP file.',
+            'image.max' => 'Desktop banner must not be greater than 2 MB.',
+            'image.uploaded' => 'Desktop banner could not be uploaded. Please choose a JPG, JPEG, PNG, or WEBP file under 2 MB.',
+            'image.dimensions' => 'Desktop banner image must be exactly 1920 x 800 pixels.',
+            'mobile_banner.image' => 'Mobile banner must be a valid image file.',
+            'mobile_banner.mimes' => 'Mobile banner must be a JPG, JPEG, PNG, or WEBP file.',
+            'mobile_banner.max' => 'Mobile banner must not be greater than 2 MB.',
+            'mobile_banner.uploaded' => 'Mobile banner could not be uploaded. Please choose a JPG, JPEG, PNG, or WEBP file under 2 MB.',
+            'mobile_banner.dimensions' => 'Mobile banner image must be exactly 900 x 1200 pixels.',
         ];
     }
 }

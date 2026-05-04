@@ -29,6 +29,13 @@
                         </div>
                     @endif
                 @endif
+
+                <div id="banner-error-alert" class="alert alert-danger d-none" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <ul id="banner-error-list" class="mb-0 pl-3"></ul>
+                </div>
             </div>
 
             <div class="col-md-12">
@@ -55,12 +62,12 @@
                                     <input type="file" id="desktop-input" style="display:none;" />
                                 </div>
                                 <div class="col-md-6 mb-4">
-                                    <label class="bmd-label-floating">Mobile Banner <b>(Optional)</b></label>
+                                    <label class="bmd-label-floating">Mobile Banner <b>(Optional | 900 x 1200)</b></label>
                                     <div id="mobile-dropzone" class="dropzone-custom">
                                         <div class="dz-message">
                                             <i class="fa fa-mobile fa-3x mb-3"></i>
                                             <h5>Choose Mobile Banner</h5>
-                                            <p class="text-muted small">Optimized for small screens</p>
+                                            <p class="text-muted small">Max file size: 2MB (JPG, PNG, WEBP)</p>
                                         </div>
                                     </div>
                                     <input type="file" id="mobile-input" style="display:none;" />
@@ -94,16 +101,25 @@
             border: 2px dashed #e7c840 !important;
             background: #fdfdfd !important;
             border-radius: 10px;
-            padding: 30px;
+            padding: 0;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
-            min-height: 220px;
+            min-height: 180px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;          /* keeps everything inside the box */
+        }
+        #desktop-dropzone {
+            aspect-ratio: 1920 / 800;
+        }
+        #mobile-dropzone {
+            aspect-ratio: 900 / 1200;
+            max-width: 450px;
+            min-height: 320px;
+            margin: 0 auto;
         }
         .dropzone-custom:hover {
             background: #fff9e6 !important;
@@ -119,6 +135,10 @@
         .dropzone-custom .dz-message h5 {
             margin-top: 8px;
             font-weight: 600;
+        }
+        .dropzone-custom .dz-message {
+            width: 100%;
+            padding: 30px;
         }
 
         /* ── Preview tile – fill the whole dropzone ── */
@@ -140,7 +160,7 @@
         .dropzone-custom .dz-preview .dz-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             display: block;
         }
 
@@ -194,17 +214,51 @@
             Dropzone.autoDiscover = false;
 
             $(document).ready(function() {
+                function clearBannerErrors() {
+                    $("#banner-error-list").empty();
+                    $("#banner-error-alert").addClass("d-none").hide();
+                }
+
+                function showBannerErrors(xhr) {
+                    var response = xhr.responseJSON || {};
+                    var errors = response.errors || {};
+                    var messages = [];
+
+                    $.each(errors, function(key, value) {
+                        messages.push(value[0]);
+                    });
+
+                    if (messages.length === 0 && response.message) {
+                        messages.push(response.message);
+                    }
+
+                    if (messages.length === 0) {
+                        messages.push("Something went wrong!");
+                    }
+
+                    $("#banner-error-list").empty();
+                    $.each(messages, function(index, message) {
+                        $("#banner-error-list").append($("<li>").text(message));
+                    });
+                    $("#banner-error-alert").removeClass("d-none").show();
+                    $("html, body").animate({
+                        scrollTop: $("#banner-error-alert").offset().top - 90
+                    }, 200);
+                }
+
                 var desktopDz = new Dropzone("#desktop-dropzone", {
                     url: "#",
                     autoProcessQueue: false,
                     maxFiles: 1,
                     addRemoveLinks: true,
                     dictRemoveFile: '<i class="fa fa-times"></i>',
-                    acceptedFiles: "image/*",
-                    thumbnailWidth: null,
-                    thumbnailHeight: null,
+                    acceptedFiles: "image/jpeg,image/png,image/webp",
+                    thumbnailWidth: 1920,
+                    thumbnailHeight: 800,
+                    thumbnailMethod: "crop",
                     init: function() {
                         this.on("addedfile", function() {
+                            clearBannerErrors();
                             $("#desktop-dropzone .dz-message").hide();
                             if (this.files[1] != null) this.removeFile(this.files[0]);
                         });
@@ -220,11 +274,13 @@
                     maxFiles: 1,
                     addRemoveLinks: true,
                     dictRemoveFile: '<i class="fa fa-times"></i>',
-                    acceptedFiles: "image/*",
-                    thumbnailWidth: null,
-                    thumbnailHeight: null,
+                    acceptedFiles: "image/jpeg,image/png,image/webp",
+                    thumbnailWidth: 900,
+                    thumbnailHeight: 1200,
+                    thumbnailMethod: "crop",
                     init: function() {
                         this.on("addedfile", function() {
+                            clearBannerErrors();
                             $("#mobile-dropzone .dz-message").hide();
                             if (this.files[1] != null) this.removeFile(this.files[0]);
                         });
@@ -236,6 +292,7 @@
 
                 $("#submit-all").on("click", function(e) {
                     e.preventDefault();
+                    clearBannerErrors();
                     
                     var formData = new FormData($("#banner-store-form")[0]);
                     
@@ -250,20 +307,16 @@
                     $.ajax({
                         url: $("#banner-store-form").attr("action"),
                         method: "POST",
+                        headers: {
+                            "Accept": "application/json"
+                        },
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function(response) {
                             window.location.href = "{{ route('banners') }}";
                         },
-                        error: function(xhr) {
-                            var errors = xhr.responseJSON.errors;
-                            var errorMsg = "";
-                            $.each(errors, function(key, value) {
-                                errorMsg += value[0] + "\n";
-                            });
-                            alert(errorMsg || "Something went wrong!");
-                        }
+                        error: showBannerErrors
                     });
                 });
             });
