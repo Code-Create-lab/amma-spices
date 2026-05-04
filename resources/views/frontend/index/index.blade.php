@@ -34,7 +34,7 @@
 
         .as-hero-wrap .inner-carousel {
             height: clamp(360px, 42vw, 620px);
-            aspect-ratio: 5 / 3;
+            aspect-ratio: 5 / 2.2;
         }
 
         .as-hero-wrap .owl-carousel,
