@@ -504,8 +504,8 @@ $products = Product::with(['category','images','variations','cart'])
 
     span.product-card__new {
         position: absolute;
-        top: 13px;
-        left: 115px;
+        top: 45px;
+        left: 16px;
         background: #29a71a;
         color: #0d0d0d;
         font-size: 10px;
