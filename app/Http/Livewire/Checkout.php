@@ -231,7 +231,7 @@ class Checkout extends Component
 
     protected function generateCartId(): string
     {
-        $prefix = 'AMMA' . Carbon::now()->format('Ym');
+        $prefix = 'AS/' . Carbon::now()->format('m')."/".Carbon::now()->format('d')."/".Carbon::now()->format('y');
 
         $lastNumber = Orders::query()
             ->where('cart_id', 'like', $prefix . '%')

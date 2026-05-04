@@ -60,24 +60,24 @@
         <section class="about-section Belief">
             <div class="container">
                 <!-- <div class="row">
-                                        <div class="col-md-6">
-                                            <div  class="about-section-in">
-                                            <h2 class="section-title">Our Belief</h2>
-                                            <p>We believe the human body is sacred, formed from Panch Tatva — Earth, Water, Fire, Air, and Space. Everything we create is rooted in respect for these elements and for what Mother Earth provides naturally.</p>
-                                            <p>Amma's Spices stands for:</p>
-                                            <ul class="styled-list">
-                                                <li>Honest ingredients</li>
-                                                <li>Traditional craftsmanship</li>
-                                                <li>Skin health over artificial glamour</li>
-                                                <li>Sustainability over excess</li>
-                                                <li>Conscious choices over convenience</li>
-                                            </ul>
-                                        </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <img src="assets/img/Our-Belief.jpg">
-                                        </div>
-                                    </div> -->
+                                                        <div class="col-md-6">
+                                                            <div  class="about-section-in">
+                                                            <h2 class="section-title">Our Belief</h2>
+                                                            <p>We believe the human body is sacred, formed from Panch Tatva — Earth, Water, Fire, Air, and Space. Everything we create is rooted in respect for these elements and for what Mother Earth provides naturally.</p>
+                                                            <p>Amma's Spices stands for:</p>
+                                                            <ul class="styled-list">
+                                                                <li>Honest ingredients</li>
+                                                                <li>Traditional craftsmanship</li>
+                                                                <li>Skin health over artificial glamour</li>
+                                                                <li>Sustainability over excess</li>
+                                                                <li>Conscious choices over convenience</li>
+                                                            </ul>
+                                                        </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <img src="assets/img/Our-Belief.jpg">
+                                                        </div>
+                                                    </div> -->
                 <div class="row botton-sec">
 
                     <div class="col-md-6">
@@ -132,11 +132,13 @@
                 margin: 20px 0 0;
                 list-style: none;
             }
+
             .abt-wcu-item {
                 display: flex;
                 align-items: center;
                 gap: 14px;
             }
+
             .abt-wcu-item img {
                 width: 44px;
                 height: 44px;
@@ -144,12 +146,14 @@
                 flex-shrink: 0;
                 filter: brightness(0) saturate(100%) invert(70%) sepia(55%) saturate(500%) hue-rotate(5deg);
             }
+
             .abt-wcu-item span {
                 font-size: 14px;
                 font-weight: 500;
                 color: #333;
                 line-height: 1.4;
             }
+
             @media (max-width: 767px) {
                 .abt-wcu-list {
                     grid-template-columns: 1fr;
@@ -168,37 +172,47 @@
                         <h2 class="section-title">Why Choose Us</h2>
                         <ul class="abt-wcu-list">
                             <li class="abt-wcu-item">
-                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
-                                <span>All products are lab-tested and certified</span>
+                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Preservative free">
+                                <span>Preservative free</span>
                             </li>
                             <li class="abt-wcu-item">
                                 <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
-                                <span>No preservatives or artificial additives</span>
+                                <span>No artificial additives</span>
                             </li>
                             <li class="abt-wcu-item">
-                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
-                                <span>Sustainable, home kitchen crafted</span>
+                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
+                                <span>All products are lab-tested and certified</span>
                             </li>
                             <li class="abt-wcu-item">
                                 <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
                                 <span>Authentic South Indian recipes &amp; flavours</span>
                             </li>
                             <li class="abt-wcu-item">
+                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}"
+                                    alt="Natural ingredients">
+                                <span>Made with natural ingredients</span>
+                            </li>
+
+
+
+                            <li class="abt-wcu-item">
                                 <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="High natural oil content">
                                 <span>High natural oil content</span>
                             </li>
                             <li class="abt-wcu-item">
-                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}" alt="Proud product of India">
+                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}"
+                                    alt="Proud product of India">
                                 <span>Proud product of India</span>
                             </li>
                             <li class="abt-wcu-item">
-                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Natural ingredients">
-                                <span>Made with natural ingredients</span>
+                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
+                                <span>Sustainable, home kitchen crafted</span>
                             </li>
-                            <li class="abt-wcu-item">
-                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Preservative free">
-                                <span>Preservative free</span>
-                            </li>
+
+
+
+
+
                         </ul>
                     </div>
                 </div>

@@ -10,27 +10,27 @@
 
     <style>
         /* .as-hero-wrap {
-                position: relative;
-                overflow: hidden;
-                background:
-                    radial-gradient(circle at 18% 18%, rgba(231, 200, 64, 0.18), transparent 32%),
-                    linear-gradient(135deg, #120f08 0%, #050505 100%);
-            } */
+                    position: relative;
+                    overflow: hidden;
+                    background:
+                        radial-gradient(circle at 18% 18%, rgba(231, 200, 64, 0.18), transparent 32%),
+                        linear-gradient(135deg, #120f08 0%, #050505 100%);
+                } */
 
         /* .as-hero-wrap .owl-carousel,
-            .as-hero-wrap .owl-stage-outer,
-            .as-hero-wrap .owl-stage,
-            .as-hero-wrap .owl-item,
-            .as-hero-wrap .intro-slide,
-            .as-hero-wrap picture {
-                display: block;
-                width: 100%;
-                height: 100%;
-            }
+                .as-hero-wrap .owl-stage-outer,
+                .as-hero-wrap .owl-stage,
+                .as-hero-wrap .owl-item,
+                .as-hero-wrap .intro-slide,
+                .as-hero-wrap picture {
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                }
 
-            .as-hero-wrap .inner-carousel {
-                height: clamp(260px, 40vw, 620px);
-            }*/
+                .as-hero-wrap .inner-carousel {
+                    height: clamp(260px, 40vw, 620px);
+                }*/
 
         .as-hero-wrap .inner-carousel {
             height: clamp(360px, 42vw, 620px);
@@ -376,7 +376,7 @@
         @media (max-width: 767px) {
             .as-hero-wrap .inner-carousel {
                 /* 56vw keeps a natural banner ratio on portrait phones;
-               clamp stops it going too small (220px) or too tall (420px) */
+                   clamp stops it going too small (220px) or too tall (420px) */
                 height: clamp(522px, 56vw, 420px);
             }
 
@@ -592,6 +592,22 @@
                     <div class="as-why-grid">
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
+                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Authentic">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Preservative free</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">No Artificial additives</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
                                 <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
                             </figure>
                             <div class="icon-box-content">
@@ -600,26 +616,18 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">No preservatives or artificial additives</h3>
-                            </div>
-                        </div>
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
-                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">Sustainable, home kitchen crafted</h3>
-                            </div>
-                        </div>
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
                                 <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Authentic South Indian recipes &amp; flavours</h3>
+                            </div>
+                        </div>
+                        <div class="icon-box text-center pt-0">
+                            <figure class="m-0">
+                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Authentic">
+                            </figure>
+                            <div class="icon-box-content">
+                                <h3 class="icon-title">Made with natural ingredients</h3>
                             </div>
                         </div>
                         <div class="icon-box text-center pt-0">
@@ -641,20 +649,17 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
                             </figure>
                             <div class="icon-box-content">
-                                <h3 class="icon-title">Made with natural ingredients</h3>
+                                <h3 class="icon-title">Sustainable, home kitchen crafted</h3>
                             </div>
                         </div>
-                        <div class="icon-box text-center pt-0">
-                            <figure class="m-0">
-                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Authentic">
-                            </figure>
-                            <div class="icon-box-content">
-                                <h3 class="icon-title">Preservative free</h3>
-                            </div>
-                        </div>
+
+
+
+
+
                     </div>
                 </div>
             </div>
