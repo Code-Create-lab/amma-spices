@@ -10,27 +10,27 @@
 
     <style>
         /* .as-hero-wrap {
-                        position: relative;
-                        overflow: hidden;
-                        background:
-                            radial-gradient(circle at 18% 18%, rgba(231, 200, 64, 0.18), transparent 32%),
-                            linear-gradient(135deg, #120f08 0%, #050505 100%);
-                    } */
+                            position: relative;
+                            overflow: hidden;
+                            background:
+                                radial-gradient(circle at 18% 18%, rgba(231, 200, 64, 0.18), transparent 32%),
+                                linear-gradient(135deg, #120f08 0%, #050505 100%);
+                        } */
 
         /* .as-hero-wrap .owl-carousel,
-                    .as-hero-wrap .owl-stage-outer,
-                    .as-hero-wrap .owl-stage,
-                    .as-hero-wrap .owl-item,
-                    .as-hero-wrap .intro-slide,
-                    .as-hero-wrap picture {
-                        display: block;
-                        width: 100%;
-                        height: 100%;
-                    }
+                        .as-hero-wrap .owl-stage-outer,
+                        .as-hero-wrap .owl-stage,
+                        .as-hero-wrap .owl-item,
+                        .as-hero-wrap .intro-slide,
+                        .as-hero-wrap picture {
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                        }
 
-                    .as-hero-wrap .inner-carousel {
-                        height: clamp(260px, 40vw, 620px);
-                    }*/
+                        .as-hero-wrap .inner-carousel {
+                            height: clamp(260px, 40vw, 620px);
+                        }*/
 
         .as-hero-wrap .inner-carousel {
             height: clamp(360px, 42vw, 620px);
@@ -376,7 +376,7 @@
         @media (max-width: 767px) {
             .as-hero-wrap .inner-carousel {
                 /* 56vw keeps a natural banner ratio on portrait phones;
-                       clamp stops it going too small (220px) or too tall (420px) */
+                           clamp stops it going too small (220px) or too tall (420px) */
                 height: clamp(522px, 56vw, 420px);
             }
 
@@ -400,7 +400,11 @@
             }
         }
     </style>
-
+    @php
+        $reviewCount = $googleReviewStats['count'] ?? 0;
+        $reviewAverage = $googleReviewStats['average'] ?? 0;
+        $reviewAverageFormatted = $reviewCount > 0 ? number_format($reviewAverage, 1) : '0.0';
+    @endphp
     <main class="main">
         <div class="page-content">
 
@@ -462,7 +466,7 @@
                         <div class="as-trust-dot"></div> Authentic South Indian recipes
                     </div>
                     <div class="as-trust-item">
-                        <div class="as-trust-dot"></div> 4.9★ Google Rating · 120+ reviews
+                        <div class="as-trust-dot"></div> {{$reviewCount}}★ Google Rating · {{$reviewCount}} reviews
                     </div>
                 </div>
             </div>
@@ -676,11 +680,7 @@
                     </div>
 
                     {{-- Google Rating Pill --}}
-                    @php
-                        $reviewCount = $googleReviewStats['count'] ?? 0;
-                        $reviewAverage = $googleReviewStats['average'] ?? 0;
-                        $reviewAverageFormatted = $reviewCount > 0 ? number_format($reviewAverage, 1) : '0.0';
-                    @endphp
+
                     <div class="as-google-pill">
                         <div class="as-google-score">{{ $reviewAverageFormatted }}</div>
                         <div class="as-google-meta">
