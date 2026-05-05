@@ -171,7 +171,7 @@
     flex-shrink: 0;
 }
 
-.bsp-author__name { font-size: 13.5px; font-weight: 700; color: #eee; font-family: sans-serif; }
+.bsp-author__name { font-size: 13.5px; font-weight: 700; color: #000000; font-family: sans-serif; }
 .bsp-author__role { font-size: 11.5px; color: #555; font-family: sans-serif; margin-top: 2px; }
 
 .bsp-share { display: flex; align-items: center; gap: 8px; }
