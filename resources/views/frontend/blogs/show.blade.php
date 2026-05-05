@@ -13,6 +13,15 @@
     color: #ffffff !important;
     text-shadow: none !important;
 }
+
+.header-28 .menu>li>a, .header-menu a, .top-menu a, .header-28 .wishlist-link i, .header-28 .cart-dropdown .dropdown-toggle, .cart-dropdown .dropdown-toggle i, span.cart-txt, .header-search .search-toggle {
+    color: #ffffff !important;
+}
+
+.header-28 .header-right .icon i, .header-28 .wishlist-link, .header-28 .cart-dropdown .dropdown-toggle, .header-28 .cart-txt, .header-28 .mobile-menu-toggler, .header-28 .mobile-menu-toggler i {
+    color: #ffffff !important;
+    text-shadow: none !important;
+}
 .bsp-page {
     background: #ffffff;
     color: #d0d0d0;
