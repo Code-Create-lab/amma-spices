@@ -1254,6 +1254,7 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::get('/blogs',               [AdminBlogController::class, 'index'])->name('admin.blog.index');
             Route::get('/blogs/create',        [AdminBlogController::class, 'create'])->name('admin.blog.create');
             Route::post('/blogs',              [AdminBlogController::class, 'store'])->name('admin.blog.store');
+            Route::post('/blogs/body-image',   [AdminBlogController::class, 'uploadBodyImage'])->name('admin.blog.body-image');
             Route::get('/blogs/{id}/edit',     [AdminBlogController::class, 'edit'])->name('admin.blog.edit');
             Route::put('/blogs/{id}',          [AdminBlogController::class, 'update'])->name('admin.blog.update');
             Route::get('/blogs/{id}/delete',   [AdminBlogController::class, 'destroy'])->name('admin.blog.destroy');

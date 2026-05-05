@@ -498,9 +498,11 @@
                                                 <button type="button" class="bcf-tb-btn" data-wrap="<ol>\n  <li>|</li>\n</ol>" title="Numbered">OL</button>
                                                 <button type="button" class="bcf-tb-btn" data-insert-tip title="Tip box">💡</button>
                                                 <button type="button" class="bcf-tb-btn" data-insert-quote title="Quote">"</button>
+                                                <button type="button" class="bcf-tb-btn" data-upload-figure title="Upload image">Upload</button>
                                                 <button type="button" class="bcf-tb-btn" data-insert-figure title="Image">🖼</button>
                                             </div>
                                         </div>
+                                        <input type="file" id="bodyImageInput" accept="image/jpeg,image/png,image/webp" style="display:none">
                                         <textarea
                                             id="blog_content"
                                             name="blog_content"
@@ -907,6 +909,95 @@ Dropzone.autoDiscover = false;
         var el = document.querySelector(sel);
         if (el) el.addEventListener('click', function () { insertAt(editor, snippets[sel], ''); });
     });
+
+    var bodyImageInput = document.getElementById('bodyImageInput');
+    var bodyImageUploadBtn = document.querySelector('[data-upload-figure]');
+    var bodyImageUploadUrl = @json(route('admin.blog.body-image'));
+    var csrfTokenInput = document.querySelector('#bcfForm input[name="_token"]');
+    var csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+
+    if (bodyImageInput && bodyImageUploadBtn) {
+        bodyImageUploadBtn.addEventListener('click', function () {
+            bodyImageInput.value = '';
+            bodyImageInput.click();
+        });
+
+        bodyImageInput.addEventListener('change', function () {
+            uploadBodyImage(this.files && this.files[0]);
+        });
+    }
+
+    function uploadBodyImage(file) {
+        if (!file) return;
+
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+            alert('Upload JPG, PNG, or WEBP image.');
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Image max size is 2MB.');
+            return;
+        }
+
+        var originalText = bodyImageUploadBtn.textContent;
+        var data = new FormData();
+        data.append('image', file);
+
+        bodyImageUploadBtn.disabled = true;
+        bodyImageUploadBtn.textContent = '...';
+
+        fetch(bodyImageUploadUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: data
+        })
+            .then(function (response) {
+                return response.json().catch(function () { return {}; }).then(function (payload) {
+                    if (!response.ok) throw payload;
+                    return payload;
+                });
+            })
+            .then(function (payload) {
+                if (!payload.url) throw { message: 'Image upload failed.' };
+                insertAt(editor, buildFigureSnippet(payload.url), '');
+            })
+            .catch(function (error) {
+                var message = error && error.message ? error.message : 'Image upload failed.';
+                if (error && error.errors && error.errors.image && error.errors.image[0]) {
+                    message = error.errors.image[0];
+                }
+                alert(message);
+            })
+            .then(function () {
+                bodyImageUploadBtn.disabled = false;
+                bodyImageUploadBtn.textContent = originalText;
+                bodyImageInput.value = '';
+            });
+    }
+
+    function buildFigureSnippet(url) {
+        var fileName = String(url).split('/').pop().split('?')[0] || 'Blog image';
+        try { fileName = decodeURIComponent(fileName); } catch (e) {}
+        fileName = fileName.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').trim() || 'Blog image';
+
+        return '<figure class="bsp-figure">\n' +
+            '  <img src="' + escapeAttr(url) + '" alt="' + escapeAttr(fileName) + '">\n' +
+            '  <figcaption>Caption here</figcaption>\n' +
+            '</figure>';
+    }
+
+    function escapeAttr(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
 
     function insertAt(el, before, after) {
         var start = el.selectionStart;

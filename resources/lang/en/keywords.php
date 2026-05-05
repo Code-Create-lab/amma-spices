@@ -807,7 +807,7 @@ return [
     'CSV File' => 'CSV File',
     'Show Tax Report' => 'Show Tax Report',
     'It Should Be Less Then 1000 KB' => 'It Should Be Less Then 1000 KB',
-    'category image size' => 'It Should Be Less Then 300 KB | Dimension: 550 x 400 px',
+    'category image size' => 'It Should Be Less Then 300 KB | Dimension: 291 x 291 px',
     'product image size' => 'It Should Be Less Then 200 KB | Dimension: 550 x 400 px',
     'banner image size' => 'Max 2 MB | Dimension: 1920 x 800',
     'Each Should Be Less Then 1000 KB' => 'Each Should Be Less Then 1000 KB',

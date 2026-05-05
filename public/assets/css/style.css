@@ -25016,6 +25016,52 @@ a.social-icon i {
   box-shadow: 0 10px 22px rgba(231, 200, 64, 0.18);
 }
 
+.footer-signature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin-top: 2.4rem;
+  text-align: center;
+  color: var(--text2);
+}
+
+.footer-signature .footer-copyright {
+  margin-top: 0;
+  margin-bottom: 0;
+  background: transparent !important;
+  border-top: 0;
+  color: inherit !important;
+}
+
+.footer-credit {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text2);
+}
+
+.footer-credit a {
+  font-weight: 600;
+  color: var(--text) !important;
+  border-bottom: 1px solid rgba(75, 59, 46, 0.24);
+}
+
+.footer-credit a:hover,
+.footer-credit a:focus {
+  color: #c59b18 !important;
+  border-bottom-color: #c59b18;
+}
+
+@media (max-width: 767px) {
+  .footer-signature {
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0 1.5rem;
+  }
+}
+
 .as-section--alt,
 .as-trust,
 .as-testimonials,

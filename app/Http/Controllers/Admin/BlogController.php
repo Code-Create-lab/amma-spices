@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -183,7 +184,22 @@ class BlogController extends Controller
             ->with('success', 'Blog post deleted successfully.');
     }
  
-    // ── PRIVATE HELPERS ───────────────────────────────────
+    /**
+     * Upload an image used inside the article body.
+     */
+    public function uploadBodyImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $path = $request->file('image')->store('blogs/content', 'public');
+
+        return response()->json([
+            'path' => $path,
+            'url' => Storage::disk('public')->url($path),
+        ]);
+    }
 
     /**
      * Generate a unique slug, appending -2, -3 etc. if taken.

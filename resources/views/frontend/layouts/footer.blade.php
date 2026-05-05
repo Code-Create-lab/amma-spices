@@ -69,8 +69,13 @@
                     </div><!-- End .widget -->
                 </div><!-- End .col-sm-64 col-lg-3 -->
             </div><!-- End .row -->
-            <p class="footer-copyright">Copyright © 2026 Amma's Spices. All Rights Reserved. </p>
-            <!-- End .footer-copyright -->
+            <div class="footer-signature">
+                <p class="footer-copyright">Copyright &copy; 2026 Amma's Spices. All Rights Reserved.</p>
+                <p class="footer-credit">
+                    Designed &amp; Developed by
+                    <a href="https://www.instagram.com/10xcart" target="_blank" rel="noopener noreferrer">10xCart</a>
+                </p>
+            </div>
         </div><!-- End .container -->
     </div><!-- End .footer-middle -->
 
