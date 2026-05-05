@@ -725,7 +725,7 @@
 
                         @if (isset($googleReviews) && $googleReviews->count())
                             @foreach ($googleReviews as $review)
-                                <a
+                                <a target="_blank"
                                     href="https://www.google.com/search?q=Amma%27s+Spices&stick=H4sIAAAAAAAA_-NgU1I1qDC2NEgxNLc0NrdItjQzTTK1MqiwMDQ0Tkw1TjQ0szAzTTNMW8TK65ibm6herBBckJmcWgwAK_wgVzkAAAA&hl=en-GB&mat=CbssZhhO-bERElcBTVDHnl03odjGot-hCayt8d1YQ7HFGlWwIaC2dZWaJMkpMym3wctiffA35pTJp3hIJzHNu1fGuxsqu_wPnAU2OvKIxiaYGWKi5hqHvigMPCHh3nkigj4&authuser=8#mpd=~1275074283334675643/customers/reviews">
                                     <div class="g-review-card">
                                         <div class="g-review-header">
