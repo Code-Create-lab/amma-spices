@@ -188,7 +188,7 @@
     background: #161616;
     display: flex; align-items: center; justify-content: center;
     text-decoration: none;
-    color: #666;
+    color: #ffffff !important;
     transition: border-color 0.2s, color 0.2s, background 0.2s;
     cursor: pointer;
 }
