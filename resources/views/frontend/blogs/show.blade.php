@@ -9,6 +9,10 @@
    Theme: bg #0a0a0a | card #161616 | gold #e7c840
 ═══════════════════════════════════════════════════════ */
 
+.main-nav .menu > li > a {
+    color: #ffffff !important;
+    text-shadow: none !important;
+}
 .bsp-page {
     background: #ffffff;
     color: #d0d0d0;
