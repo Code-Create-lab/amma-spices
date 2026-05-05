@@ -15,7 +15,7 @@
     <meta property="og:title" content="Authentic Home-made fresh Spice blend’s">
     <meta property="og:description"
         content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
-    <meta property="og:image" content="{{ asset('assets/images/homebg.jpg') }}">
+    <meta property="og:image" content="{{ asset('assets/images/meta_og/og_banner.png') }}">
     <meta property="og:url" content="ammasspices.com">
     <meta property="og:type" content="website">
 
