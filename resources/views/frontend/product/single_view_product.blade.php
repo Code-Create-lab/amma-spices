@@ -533,13 +533,17 @@
                                                             $attrVal = strtolower(
                                                                 str_replace(' ', '', $attribute['value']),
                                                             );
+                                                            $attrLabel = trim((string) $attribute['value']);
+                                                            if (strtolower($attrType) === 'quantity' && preg_match('/^\d+(\.\d+)?$/', $attrLabel)) {
+                                                                $attrLabel .= 'g';
+                                                            }
                                                         @endphp
                                                         <li>
                                                             <button type="button"
                                                                 class="pill-btn pill-btn--weight attribute-btn {{ $index === 0 ? 'selected attribute_seletion' : '' }} {{ !$hasStock ? 'oos' : '' }}"
                                                                 data-attr="{{ $attrType }}" data-value="{{ $attrVal }}"
-                                                                data-label="{{ $attribute['value'] }}" data-id="{{ $attribute['id'] }}" {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
-                                                                {{ $attribute['value'] }}
+                                                                data-label="{{ $attrLabel }}" data-id="{{ $attribute['id'] }}" {{ !$hasStock ? 'disabled title=Out of Stock' : '' }}>
+                                                                {{ $attrLabel }}
                                                                 @if (!$hasStock)
                                                                     <span class="oos-tag">Out of stock</span>
                                                                 @endif
