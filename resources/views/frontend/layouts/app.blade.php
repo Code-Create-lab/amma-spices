@@ -1,3 +1,7 @@
+<!--
+  Website designed & developed by 10xCart
+  https://10xcart.com
+-->
 <!DOCTYPE html>
 <html lang="UTF-8">
 
@@ -18,6 +22,11 @@
     <meta property="og:image" content="{{ asset('assets/images/meta_og/og_banner.webp') }}">
     <meta property="og:url" content="ammasspices.com">
     <meta property="og:type" content="website">
+
+    <meta name="author" content="10xCart">
+    <meta name="designer" content="10xCart">
+    <meta name="developer" content="10xCart">
+    <meta name="copyright" content="© 2026 10xCart">
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icon/favicon.png') }}">
@@ -44,6 +53,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
 
     @if (Route::currentRouteName() !== 'index')
         <style>
@@ -150,6 +160,20 @@
         }  */
     </style>
 </head>
+
+    <script type="application/ld+json">
+            {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Amma’s Spices",
+            "url": "https://ammasspices.com/",
+            "creator": {
+                "@type": "Organization",
+                "name": "10xCart",
+                "url": "https://10xcart.in"
+            }
+            }
+        </script>
 
 <body>
 
