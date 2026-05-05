@@ -49,7 +49,7 @@
             font-weight: 500;
             letter-spacing: 4px;
             text-transform: uppercase;
-            color: var(--gold);
+            color: #000000;
             border: 1px solid rgba(231, 200, 64, 0.35);
             padding: 6px 18px;
             border-radius: 100px;

@@ -818,7 +818,7 @@ $('.collection-list').owlCarousel({
                      margin:10
             },
             992:{
-                    items:4
+                    items:3
             }
     }
 });

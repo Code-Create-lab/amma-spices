@@ -7,7 +7,7 @@
                     <span class="form-icon"><i class="bi bi-emoji-smile"></i></span>
                     <input wire:model="full_name"
                         class="ps-0 border-radius-0px border-color-extra-medium-gray bg-transparent form-control required"
-                        id="name" type="text" placeholder="What's your good name?" required />
+                        id="name" type="text" placeholder="Your Name" required />
                     @error('full_name')
                         <span class="error text-danger small">{{ $message }}</span>
                     @enderror

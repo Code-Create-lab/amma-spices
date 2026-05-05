@@ -485,9 +485,9 @@
                         "responsive": {
                             "0":   { "items": 2 },
                             "480": { "items": 3 },
-                            "768": { "items": 4 },
-                            "992": { "items": 5 },
-                            "1200":{ "items": 6 }
+                            "768": { "items": 3 },
+                            "992": { "items": 3 },
+                            "1200":{ "items": 3 }
                         }
                     }'>
                         @foreach ($categories as $category)
@@ -619,7 +619,7 @@
                                 <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
                             </figure>
                             <div class="icon-box-content">
-                                <h3 class="icon-title">Authentic South Indian recipes &amp; flavours</h3>
+                                <h3 class="icon-title">Authentic recipes &amp; flavours</h3>
                             </div>
                         </div>
                         <div class="icon-box text-center pt-0">
@@ -635,13 +635,13 @@
                                 <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="high natural oil content">
                             </figure>
                             <div class="icon-box-content">
-                                <h3 class="icon-title">High natural oil content</h3>
+                                <h3 class="icon-title">Natural oil content</h3>
                             </div>
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}"
-                                    alt="proud product of india">
+                                <img src="{{ asset('assets/img/proud_product_of_india.png') }}"
+                                    alt="proud product of india" style="width: 90px;height: 60px;">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Proud product of India</h3>

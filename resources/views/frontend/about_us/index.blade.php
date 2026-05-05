@@ -34,16 +34,11 @@
                     </div>
                     <div class="col-md-6">
                         <h2 class="section-title">Our Story</h2>
-                        <p class="intro-text">Our Story
-                            Growing up in South of India, we would always watch Amma lovingly blend her spices fresh before
+                        <p class="intro-text">Growing up in South of India, we would always watch Amma lovingly blend her spices fresh before
                             any meal preparation, thus filling our home with warmth and aroma.
                         </p>
                         <p class="intro-text">
-                            Our Story
-                            Growing up in South of India, we would always watch Amma lovingly blend her spices fresh before
-                            any meal preparation, thus filling our home with warmth and aroma.
-
-                            Now, from our little home-run family kitchen, we bring you these authentic South Indian spice
+                           Now, from our little home-run family kitchen, we bring you these authentic South Indian spice
                             blends for you – crafted just like she made them, pure, traditional, and filled with motherly
                             love. Every blend is crafted with love to bring you the nostalgic taste of home-cooked meals.
                         </p>
@@ -185,7 +180,7 @@
                             </li>
                             <li class="abt-wcu-item">
                                 <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
-                                <span>Authentic South Indian recipes &amp; flavours</span>
+                                <span>Authentic recipes &amp; flavours</span>
                             </li>
                             <li class="abt-wcu-item">
                                 <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}"
@@ -197,10 +192,10 @@
 
                             <li class="abt-wcu-item">
                                 <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="High natural oil content">
-                                <span>High natural oil content</span>
+                                <span>Natural oil content</span>
                             </li>
                             <li class="abt-wcu-item">
-                                <img src="{{ asset('assets/img/proud_product_of_india.svg') }}"
+                                <img src="{{ asset('assets/img/proud_product_of_india.png') }}"
                                     alt="Proud product of India">
                                 <span>Proud product of India</span>
                             </li>

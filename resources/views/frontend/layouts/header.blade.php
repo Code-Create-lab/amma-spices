@@ -33,7 +33,7 @@
     .main-nav .menu>li>a {
         color: #ffffff !important;
         font-weight: 700 !important;
-        font-size: 1.0rem;
+        font-size: 1.2rem;
         letter-spacing: 0.07em;
         text-transform: uppercase;
         text-shadow:
