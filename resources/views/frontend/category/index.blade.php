@@ -30,7 +30,8 @@
 
     <div class="cp-banner">
         <img class="cp-banner-img"
-            src="{{ $category->banner_image ? $url_aws . $category->banner_image : ($category->image ? $url_aws . $category->image : asset('assets/img/seprater.png')) }}"
+        {{-- ($category->image ? $url_aws . $category->image : --}}
+            src="{{ $category->banner_image ? $url_aws . $category->banner_image :  asset('assets/img/seprater.png')) }}"
             alt="{{ $category->title }}">
         <div class="cp-banner-gradient"></div>
         <div class="cp-banner-body">
