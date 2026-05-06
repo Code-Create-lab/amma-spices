@@ -161,7 +161,7 @@
     </style>
 </head>
 
-    <script type="application/ld+json">
+<script type="application/ld+json">
             {
             "@context": "https://schema.org",
             "@type": "WebSite",
@@ -299,6 +299,9 @@
                                 @endforeach
                             @endisset
                         </ul>
+                    </li>
+                    <li class="megamenu-list {{ Route::currentRouteName() == 'frontend.gallery' ? 'active' : '' }}">
+                        <a href="{{ route('frontend.gallery') }}">Gallery</a>
                     </li>
 
                     <li class="megamenu-list">
