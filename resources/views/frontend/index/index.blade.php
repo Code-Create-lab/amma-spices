@@ -463,7 +463,7 @@
                         <div class="as-trust-dot"></div> Home kitchen crafted
                     </div>
                     <div class="as-trust-item">
-                        <div class="as-trust-dot"></div> Authentic South Indian recipes
+                        <div class="as-trust-dot"></div> Authentic recipes & flavours
                     </div>
                     <div class="as-trust-item">
                         <div class="as-trust-dot"></div> {{$reviewAverageFormatted}}★ Google Rating · {{$reviewCount}} reviews
