@@ -72,7 +72,7 @@ class ShopPageFilter extends Component
             preg_match('/Mobile|Android|iPhone|iPod/i', request()->header('User-Agent')) &&
             !preg_match('/iPad/i', request()->header('User-Agent'))
         ) {
-            $this->isProductListVisible = false;
+            $this->isProductListVisible = true;
         }else{
             $this->isProductListVisible = true;
         }
