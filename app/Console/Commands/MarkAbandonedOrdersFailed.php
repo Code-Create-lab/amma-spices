@@ -34,19 +34,23 @@ class MarkAbandonedOrdersFailed extends Command
      */
     public function handle()
     {
-        $minutes = $this->option('minutes');
-        $limit = $this->option('limit');
+        $minutes = max(1, (int) $this->option('minutes'));
+        $limit = max(1, (int) $this->option('limit'));
         $dryRun = $this->option('dry-run');
         $now = Carbon::now('Asia/Kolkata');
+        $threshold = $now->copy()->subMinutes($minutes);
+        $orderCreatedAtSql = "STR_TO_DATE(CONCAT(order_date, ' ', COALESCE(order_time, '00:00:00')), '%Y-%m-%d %H:%i:%s')";
 
         Log::info('Marking abandoned orders as failed', [
             'limit' => $limit,
             'minutes' => $minutes,
+            'threshold' => $threshold->toDateTimeString(),
             'dry_run' => $dryRun,
-            'datetime' => Carbon::now()->toDateTimeString()
+            'datetime' => $now->toDateTimeString()
         ]);
         $this->info("Checking for abandoned orders without payment data...");
         $this->info("Time threshold: {$minutes} minutes");
+        $this->info("Orders created before: {$threshold->toDateTimeString()}");
         $this->info("Limit: {$limit} orders");
         if ($dryRun) {
             $this->warn("DRY RUN MODE - No actual changes will be made");
@@ -54,23 +58,21 @@ class MarkAbandonedOrdersFailed extends Command
         $this->newLine();
 
         // Find orders that:
-        // 1. Payment method is online (NOT COD)
-        // 2. Created more than X minutes ago
+        // 1. Payment method is non-COD
+        // 2. Created more than X minutes ago using order_date + order_time
         // 3. Don't have payment record in order_payments table
         // 4. Order status is not already failed/cancelled/completed
         // 5. Payment status is not already paid/success/failed
 
         $abandonedOrders = Orders::with(['user', 'orderItems', 'address'])
-            ->where('payment_method', '!=', 'COD') // Only online payment orders
-            ->where('order_date', '>=', Carbon::now()->subMinutes($minutes))
-            ->whereNotIn('order_status', ['failed', 'cancelled', 'completed'])
-            ->whereNotIn('payment_status', ['paid', 'success', 'failed'])
+            ->whereNotNull('payment_method')
+            ->whereRaw('LOWER(payment_method) != ?', ['cod']) // Only non-COD payment orders
+            ->whereRaw("LOWER(COALESCE(order_status, '')) NOT IN (?, ?, ?)", ['failed', 'cancelled', 'completed'])
+            ->whereRaw("LOWER(COALESCE(payment_status, '')) NOT IN (?, ?, ?)", ['paid', 'success', 'failed'])
             ->whereDoesntHave('payment') // Orders WITHOUT payment record in order_payments table
-            ->whereRaw(
-                "STR_TO_DATE(CONCAT(order_date, ' ', order_time), '%Y-%m-%d %H:%i:%s') <= ?",
-                [now()->subMinutes(25)->toDateTimeString()]
-            )
+            ->whereRaw("{$orderCreatedAtSql} <= ?", [$threshold->toDateTimeString()])
             ->orderBy('order_date', 'asc')
+            ->orderBy('order_time', 'asc')
             ->limit($limit)
             ->get();
 
