@@ -372,7 +372,7 @@
     </style>
     <div class="thank-you-container mt-5 mb-5">
         <div class="logo-section">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="Bodhi Bliss">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Amma's Spices">
         </div>
 
         <div class="success-icon-wrapper">
@@ -380,8 +380,8 @@
             <div class="pulse-ring"></div>
         </div>
 
-        <h1>Order Confirmed!</h1>
-        <p class="subtitle">Thank you for shopping with Bodhi Bliss. Your order has been successfully placed and is being
+        <h1>Order Placed!</h1>
+        <p class="subtitle">Thank you for shopping with Amma's Spices. Your order has been successfully placed and is being
             prepared for shipment.</p>
 
         <div class="order-details">
