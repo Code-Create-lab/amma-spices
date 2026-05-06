@@ -29,10 +29,10 @@
     {{-- FULL WIDTH BANNER --}}
 
     <div class="cp-banner">
-        <img class="cp-banner-img"
-        {{-- ($category->image ? $url_aws . $category->image : --}}
-            src="{{ $category->banner_image ? $url_aws . $category->banner_image :  asset('assets/img/seprater.png') }}"
-            alt="{{ $category->title }}">
+        @if ($category->banner_image)
+            <img class="cp-banner-img" src="{{ $category->banner_image ? $url_aws . $category->banner_image : '' }}"
+                alt="{{ $category->title }}">
+        @endif
         <div class="cp-banner-gradient"></div>
         <div class="cp-banner-body">
             <p class="cp-banner-super">Amma Spices</p>
