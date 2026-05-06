@@ -91,14 +91,14 @@ $products = Product::with(['category','images','variations','cart'])
 
     .product-card__slide {
         min-width: 100%;
-        flex-shrink: 0;
+        /* flex-shrink: 0; */
         height: 100%;
     }
 
     .product-card__slide img {
-        width: 100%;
+        width: auto;
         max-width: 100%;
-        height: 100% !important;
+        height: auto;
         object-fit: cover;
         display: block;
         filter: brightness(0.88);
