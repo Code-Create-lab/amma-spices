@@ -586,7 +586,7 @@ $sliderId = 'pslider-' . $product->product_id;
                 </a>
 
                 {{-- ── Thumbnail + Slider ── --}}
-                <a style="text-decoration:none;">
+                <a href="{{ route('single.product.view', $product->slug) }}" style="text-decoration:none;">
 
                     <div class="product-card__thumb" id="{{ $sliderId }}" data-slider-id="{{ $sliderId }}"
                         data-count="{{ $sliderImages->count() }}">
