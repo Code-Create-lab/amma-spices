@@ -35,7 +35,7 @@ class IndexController extends Controller
             })
             ->orderBy('tags', 'desc')  // or 'desc'
             ->orderBy('product_id', 'desc')
-            ->take(8)
+            // ->take(8)
             ->get();
         $best_seller_products = Product::orderBy('created_at', 'desc')
             ->where('is_deleted', 0)
