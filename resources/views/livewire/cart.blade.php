@@ -218,12 +218,15 @@
                                     $shippingMessage =
                                         'Spend ₹' .
                                         ($nextTarget - $totalPriceProduct) .
-                                        ' more and pay just to ₹50 for shipping';
-                                } elseif ($totalPriceProduct >= 500 && $totalPriceProduct < 700) {
-                                    $nextTarget = 700;
-                                    $shippingMessage =
-                                        'Spend ₹' . ($nextTarget - $totalPriceProduct) . ' more and enjoy FREE shipping';
-                                } elseif ($totalPriceProduct >= 700) {
+                                        ' or more to unlock FREE shipping';
+                                        // ' more and pay just to ₹50 for shipping';
+                                } 
+                                // elseif ($totalPriceProduct >= 500 && $totalPriceProduct < 700) {
+                                //     $nextTarget = 700;
+                                //     $shippingMessage =
+                                //         'Spend ₹' . ($nextTarget - $totalPriceProduct) . ' more and enjoy FREE shipping';
+                                // } 
+                                elseif ($totalPriceProduct >= 500) {
                                     $shippingMessage = 'Congrats! You’ve unlocked FREE shipping 🎉';
                                 }
                             @endphp
