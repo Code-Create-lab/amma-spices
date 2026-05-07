@@ -93,6 +93,7 @@ $products = Product::with(['category','images','variations','cart'])
         min-width: 100%;
         /* flex-shrink: 0; */
         height: 100%;
+        background: #f6f6f6;
     }
 
     .product-card__slide img {
@@ -108,6 +109,7 @@ $products = Product::with(['category','images','variations','cart'])
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
+        padding:50px
     }
 
     .product-card:hover .product-card__slide img {
