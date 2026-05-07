@@ -392,6 +392,7 @@ $products = Product::with(['category','images','variations','cart'])
         background: #ffffff !important;
         border: 1px solid rgba(75, 59, 46, 0.12) !important;
         box-shadow: 0 16px 36px rgba(75, 59, 46, 0.08);
+        max-width: 280px !important;
     }
 
     .product-card:hover {
