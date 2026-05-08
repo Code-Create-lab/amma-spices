@@ -212,21 +212,16 @@
                             @php
                                 $shippingMessage = '';
                                 $nextTarget = null;
+                                $freeShippingMinimum = (float) ($freeShippingMinimum ?? 0);
 
-                                if ($totalPriceProduct > 0 && $totalPriceProduct < 500) {
-                                    $nextTarget = 500;
+                                if ($freeShippingMinimum > 0 && $totalPriceProduct > 0 && $totalPriceProduct < $freeShippingMinimum) {
+                                    $nextTarget = $freeShippingMinimum;
                                     $shippingMessage =
                                         'Spend ₹' .
-                                        ($nextTarget - $totalPriceProduct) .
+                                        number_format($nextTarget - $totalPriceProduct, 0, '.', ',') .
                                         ' or more to unlock FREE shipping';
                                         // ' more and pay just to ₹50 for shipping';
-                                } 
-                                // elseif ($totalPriceProduct >= 500 && $totalPriceProduct < 700) {
-                                //     $nextTarget = 700;
-                                //     $shippingMessage =
-                                //         'Spend ₹' . ($nextTarget - $totalPriceProduct) . ' more and enjoy FREE shipping';
-                                // } 
-                                elseif ($totalPriceProduct >= 399) {
+                                } elseif ($freeShippingMinimum > 0 && $totalPriceProduct >= $freeShippingMinimum) {
                                     $shippingMessage = 'Congrats! You’ve unlocked FREE shipping 🎉';
                                 }
                             @endphp

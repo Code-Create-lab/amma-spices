@@ -55,6 +55,7 @@ class Cart extends Component
     public $addressView = false;
     public $getShippingCharge;
     public $shippingAmount = 0.0;
+    public $freeShippingMinimum = 0.0;
 
 
 
@@ -73,6 +74,7 @@ class Cart extends Component
             ->whereDate('end_date', '>=', $today)
             ->get();
         $this->getShippingCharge = Shipping::where('status', 1)->first();
+        $this->freeShippingMinimum = $this->getFreeShippingMinimum();
         $this->updateCart();
 
         //  $this->addresses = Address::where('user_id', Auth::id())->where('is_deleted', 0)->get();
@@ -973,6 +975,24 @@ class Cart extends Component
             ->where('minimum_cart_value', '<=', $subTotal)
             ->orderBy('minimum_cart_value', 'desc')
             ->value('shipping_charge') ?? 0;
+    }
+
+    private function getFreeShippingMinimum()
+    {
+        $freeShippingMinimum = Shipping::where('status', 1)
+            ->where('shipping_charge', 0)
+            ->where('minimum_cart_value', '>', 0)
+            ->orderBy('minimum_cart_value', 'asc')
+            ->value('minimum_cart_value');
+
+        if ($freeShippingMinimum !== null) {
+            return (float) $freeShippingMinimum;
+        }
+
+        return (float) (Shipping::where('status', 1)
+            ->where('minimum_cart_value', '>', 0)
+            ->orderBy('minimum_cart_value', 'asc')
+            ->value('minimum_cart_value') ?? 0);
     }
 
     public function removeProduct($variation_id, $product_id)
