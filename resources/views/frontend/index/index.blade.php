@@ -480,6 +480,44 @@
                         <h2>Collection List</h2>
                         <div class="as-divider"><span class="as-divider-dot"></span></div>
                     </div>
+                    <div class="row justify-content-center">
+                        @foreach ($categories->take(3) as $category)
+                            @php
+                                $countProduct = 0;
+                                $countProduct += $category
+                                    ->products()
+                                    ->whereHas('variations', fn($q) => $q->where('is_deleted', 0))
+                                    ->where('is_deleted', 0)
+                                    ->count();
+                                foreach ($category->sub_categories as $subCat) {
+                                    $countProduct += $subCat
+                                        ->products()
+                                        ->whereHas('variations', fn($q) => $q->where('is_deleted', 0))
+                                        ->where('is_deleted', 0)
+                                        ->count();
+                                }
+                            @endphp
+                            <div class="col-12 col-sm-6 col-lg-4 mb-3">
+                                <div class="items-box">
+                                    <a href="{{ route('getCatList', $category->slug) }}">
+                                        <div class="items">
+                                            <img src="{{ asset($category->image) }}" alt="{{ $category->title }}">
+                                        </div>
+                                    </a>
+                                    <h3>{{ $category->title }}</h3>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+              {{-- <div class="as-section as-collection-wrap">
+                <div class="container">
+                    <div class="as-head">
+                        <h2>Collection List</h2>
+                        <div class="as-divider"><span class="as-divider-dot"></span></div>
+                    </div>
                     <div class="owl-carousel collection-list owl-simple" data-toggle="owl"
                         data-owl-options='{
                         "nav": true,
@@ -521,7 +559,8 @@
                         @endforeach
                     </div>
                 </div>
-            </div>
+            </div> --}}
+
 
             {{-- ══════════════════════════════════════════
              FEATURED PRODUCTS

@@ -799,32 +799,32 @@ $(document).ready(function () {
         }, 900)
     }
 });
-$('.collection-list').owlCarousel({
-    loop:true,
-    margin:20,
-    nav:true,
-    autoHeight:true,
-    responsive:{
-        0:{
-                    items:2,
-                     margin:10
-            },
-            480:{
-                     items:2,
-                     margin:10
-            },
-            768:{
-                    items:2,
-                     margin:10
-            },
-            992:{
-                    items:3
-            },
-            1200:{
-                    items:3
-            }
-    }
-});
+// $('.collection-list').owlCarousel({
+//     loop:true,
+//     margin:20,
+//     nav:true,
+//     autoHeight:true,
+//     responsive:{
+//         0:{
+//                     items:2,
+//                      margin:10
+//             },
+//             480:{
+//                      items:2,
+//                      margin:10
+//             },
+//             768:{
+//                     items:2,
+//                      margin:10
+//             },
+//             992:{
+//                     items:3
+//             },
+//             1200:{
+//                     items:3
+//             }
+//     }
+// });
 $('.product-img-list').owlCarousel({
     loop:true,
     margin:20,
