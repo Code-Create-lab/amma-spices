@@ -226,7 +226,7 @@
                                 //     $shippingMessage =
                                 //         'Spend ₹' . ($nextTarget - $totalPriceProduct) . ' more and enjoy FREE shipping';
                                 // } 
-                                elseif ($totalPriceProduct >= 500) {
+                                elseif ($totalPriceProduct >= 399) {
                                     $shippingMessage = 'Congrats! You’ve unlocked FREE shipping 🎉';
                                 }
                             @endphp
