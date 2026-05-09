@@ -305,12 +305,26 @@
 
         .featured-strip {
             background: var(--gold);
-            padding: 22px 40px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .featured-strip-track {
+            display: flex;
+            width: max-content;
+            animation: featuredMarquee 26s linear infinite;
+        }
+
+        .featured-strip:hover .featured-strip-track {
+            animation-play-state: paused;
+        }
+
+        .featured-strip-group {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 40px;
-            overflow: hidden;
+            flex-shrink: 0;
+            padding: 22px 20px;
         }
 
         .featured-strip p {
@@ -319,6 +333,7 @@
             font-weight: 700;
             color: var(--black);
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .featured-strip-dot {
@@ -540,6 +555,16 @@
             }
         }
 
+        @keyframes featuredMarquee {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
         @media (max-width: 768px) {
             .gallery-hero {
                 padding: 60px 20px 40px;
@@ -571,9 +596,9 @@
                 right: -10px;
             }
 
-            .featured-strip {
+            .featured-strip-group {
                 gap: 20px;
-                padding: 18px 20px;
+                padding: 18px 10px;
             }
 
             .featured-strip p {
@@ -633,15 +658,22 @@
         @endif
 
         <div class="featured-strip">
-            <p>Authentic &bull; Homemade &bull; Fresh</p>
-            <div class="featured-strip-dot"></div>
-            <p>South Indian Tradition</p>
-            <div class="featured-strip-dot"></div>
-            <p>Crafted with Love</p>
-            <div class="featured-strip-dot"></div>
-            <p>Pure Ingredients</p>
-            <div class="featured-strip-dot"></div>
-            <p>Amma's Spices</p>
+            <div class="featured-strip-track">
+                @for ($i = 0; $i < 2; $i++)
+                    <div class="featured-strip-group" @if ($i === 1) aria-hidden="true" @endif>
+                        <p>Authentic &bull; Homemade &bull; Fresh</p>
+                        <div class="featured-strip-dot"></div>
+                        <p>South Indian Tradition</p>
+                        <div class="featured-strip-dot"></div>
+                        <p>Crafted with Love</p>
+                        <div class="featured-strip-dot"></div>
+                        <p>Pure Ingredients</p>
+                        <div class="featured-strip-dot"></div>
+                        <p>Amma's Spices</p>
+                        <div class="featured-strip-dot"></div>
+                    </div>
+                @endfor
+            </div>
         </div>
 
         <section class="gallery-cta">
