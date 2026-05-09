@@ -85,7 +85,15 @@
                             </div>
 
                             <br>
-                            <button type="button" id="submit-all" class="btn btn-primary pull-center">{{ __('keywords.Submit') }}</button>
+                            <button
+                                type="button"
+                                id="submit-all"
+                                class="btn btn-primary pull-center banner-submit-btn"
+                                data-default-text="{{ __('keywords.Submit') }}"
+                                data-loading-text="Saving...">
+                                <span class="banner-submit-spinner" aria-hidden="true"></span>
+                                <span class="banner-submit-label">{{ __('keywords.Submit') }}</span>
+                            </button>
                             <a href="{{ route('banners') }}" class="btn">{{ __('keywords.Close') }}</a>
                             <div class="clearfix"></div>
                         </form>
@@ -205,6 +213,39 @@
         .dropzone-custom .dz-error-mark {
             display: none !important;
         }
+
+        .banner-submit-btn {
+            align-items: center;
+            display: inline-flex;
+            gap: 8px;
+            justify-content: center;
+            min-width: 112px;
+        }
+
+        .banner-submit-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
+        .banner-submit-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-top-color: #fff;
+            border-radius: 50%;
+            display: none;
+            animation: bannerSubmitSpin 0.7s linear infinite;
+        }
+
+        .banner-submit-btn.is-loading .banner-submit-spinner {
+            display: inline-block;
+        }
+
+        @keyframes bannerSubmitSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 
     @push('scripts')
@@ -214,6 +255,16 @@
             Dropzone.autoDiscover = false;
 
             $(document).ready(function() {
+                var isSubmitting = false;
+                var submitButton = $("#submit-all");
+                var submitLabel = submitButton.find(".banner-submit-label");
+
+                function setSubmitLoading(isLoading) {
+                    isSubmitting = isLoading;
+                    submitButton.prop("disabled", isLoading).toggleClass("is-loading", isLoading);
+                    submitLabel.text(isLoading ? submitButton.data("loading-text") : submitButton.data("default-text"));
+                }
+
                 function clearBannerErrors() {
                     $("#banner-error-list").empty();
                     $("#banner-error-alert").addClass("d-none").hide();
@@ -292,7 +343,13 @@
 
                 $("#submit-all").on("click", function(e) {
                     e.preventDefault();
+
+                    if (isSubmitting) {
+                        return;
+                    }
+
                     clearBannerErrors();
+                    setSubmitLoading(true);
                     
                     var formData = new FormData($("#banner-store-form")[0]);
                     
@@ -316,7 +373,10 @@
                         success: function(response) {
                             window.location.href = "{{ route('banners') }}";
                         },
-                        error: showBannerErrors
+                        error: function(xhr) {
+                            showBannerErrors(xhr);
+                            setSubmitLoading(false);
+                        }
                     });
                 });
             });
