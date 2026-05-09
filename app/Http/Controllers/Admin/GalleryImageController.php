@@ -10,6 +10,9 @@ use Illuminate\Support\Str;
 
 class GalleryImageController extends Controller
 {
+    private const IMAGE_MAX_KILOBYTES = 2048;
+    private const IMAGE_MAX_MEGABYTES = 2;
+
     public function index()
     {
         $title = 'Gallery Images';
@@ -27,13 +30,10 @@ class GalleryImageController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'category_name' => 'required|string|max:100',
-            'image' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'sort_order' => 'nullable|integer|min:0|max:9999',
-            'is_active' => 'required|boolean',
-        ]);
+        $data = $request->validate(
+            $this->validationRules('required'),
+            $this->validationMessages()
+        );
 
         $data['category_slug'] = $this->makeCategorySlug($data['category_name']);
         $data['sort_order'] = $data['sort_order'] ?? 0;
@@ -58,13 +58,10 @@ class GalleryImageController extends Controller
     {
         $galleryImage = GalleryImage::findOrFail($id);
 
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'category_name' => 'required|string|max:100',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'sort_order' => 'nullable|integer|min:0|max:9999',
-            'is_active' => 'required|boolean',
-        ]);
+        $data = $request->validate(
+            $this->validationRules('nullable'),
+            $this->validationMessages()
+        );
 
         $data['category_slug'] = $this->makeCategorySlug($data['category_name']);
         $data['sort_order'] = $data['sort_order'] ?? 0;
@@ -105,5 +102,29 @@ class GalleryImageController extends Controller
         }
 
         Storage::disk('public')->delete($imagePath);
+    }
+
+    protected function validationRules(string $imageRequirement): array
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'category_name' => 'required|string|max:100',
+            'image' => $imageRequirement . '|image|mimes:jpg,jpeg,png,webp|max:' . self::IMAGE_MAX_KILOBYTES,
+            'sort_order' => 'nullable|integer|min:0|max:9999',
+            'is_active' => 'required|boolean',
+        ];
+    }
+
+    protected function validationMessages(): array
+    {
+        $maxSizeMessage = 'Gallery image must not be greater than ' . self::IMAGE_MAX_MEGABYTES . ' MB.';
+
+        return [
+            'image.required' => 'Gallery image is required.',
+            'image.image' => 'Gallery image must be a valid image file.',
+            'image.mimes' => 'Gallery image must be a JPG, JPEG, PNG, or WEBP file.',
+            'image.max' => $maxSizeMessage,
+            'image.uploaded' => $maxSizeMessage,
+        ];
     }
 }

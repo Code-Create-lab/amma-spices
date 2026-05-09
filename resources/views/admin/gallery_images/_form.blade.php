@@ -36,7 +36,7 @@
             <label>Gallery Image {{ $imageRequired ? '*' : '' }}</label>
             <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png,.webp" {{ $imageRequired ? 'required' : '' }}>
             <small class="form-text text-muted">
-                {{ $imageRequired ? 'Upload an image for the gallery card.' : 'Leave blank to keep the current image.' }}
+                {{ $imageRequired ? 'Upload a JPG, JPEG, PNG, or WEBP image under 2 MB.' : 'Leave blank to keep the current image. New image must be under 2 MB.' }}
             </small>
         </div>
     </div>
