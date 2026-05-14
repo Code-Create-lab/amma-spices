@@ -661,15 +661,17 @@
             <div class="featured-strip-track">
                 @for ($i = 0; $i < 2; $i++)
                     <div class="featured-strip-group" @if ($i === 1) aria-hidden="true" @endif>
-                        <p>Authentic &bull; Homemade &bull; Fresh</p>
+                        <p>Crafted Fresh </p>
                         <div class="featured-strip-dot"></div>
-                        <p>South Indian Tradition</p>
-                        <div class="featured-strip-dot"></div>
-                        <p>Crafted with Love</p>
+                        <p>Authentic Recipe</p>
                         <div class="featured-strip-dot"></div>
                         <p>Pure Ingredients</p>
                         <div class="featured-strip-dot"></div>
-                        <p>Amma's Spices</p>
+                        <p>NO Additives</p>
+                        <div class="featured-strip-dot"></div>
+                        <p>NO Preservatives</p>
+                        <div class="featured-strip-dot"></div>
+                        <p>Handcrafted Spice Blends</p>
                         <div class="featured-strip-dot"></div>
                     </div>
                 @endfor
