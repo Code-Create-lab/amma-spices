@@ -331,7 +331,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 18px;
             font-weight: 700;
-            color: var(--black);
+            color: var(--black) !important;
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -339,7 +339,7 @@
         .featured-strip-dot {
             width: 5px;
             height: 5px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgb(0, 0, 0) !important;
             border-radius: 50%;
             flex-shrink: 0;
         }
@@ -603,6 +603,11 @@
 
             .featured-strip p {
                 font-size: 14px;
+            }
+
+            .featured-strip-group p{
+
+                margin-bottom: -0.3rem;
             }
         }
     </style>
