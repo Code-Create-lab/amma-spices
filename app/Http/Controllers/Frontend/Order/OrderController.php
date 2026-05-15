@@ -1022,36 +1022,22 @@ class OrderController extends Controller
                     ]);
                 }
 
-                try {
-                    $this->customerHandleOnlinePaymentCancellation($order, $payment, $reason, $userId);
-                } catch (\Razorpay\Api\Errors\BadRequestError $e) {
-                    if (strpos($e->getMessage(), 'does not have enough balance') !== false) {
-                        $order->update([
-                            'order_status' => 'Cancelled',
-                            'payment_status' => 'Refund Pending',
-                        ]);
-                        CancelledOrder::updateOrCreate(
-                            ['order_id' => $order->order_id],
-                            [
-                                'user_id' => $userId,
-                                'comment' => $reason,
-                                'amount' => $order->total_price,
-                                'is_refunded' => 'pending_return',
-                                'cancellation_status' => 'refund_pending_balance',
-                                'read_at' => now(),
-                            ]
-                        );
-                        $this->sendCustomerCancellationNotifications($order);
+                $result = $this->customerHandleOnlinePaymentCancellation($order, $payment, $reason, $userId);
 
-                        return response()->json([
-                            'success' => true,
-                            'message' => 'Order cancelled. Refund pending due to insufficient gateway balance.'
-                        ]);
-                    }
-                    throw $e;
+                if (!$result['ok']) {
+                    // Refund did not succeed — order remains uncancelled. Tell user to retry.
+                    return response()->json([
+                        'success' => false,
+                        'message' => $result['message'] ?? 'Refund could not be processed. Please try again.',
+                    ], $result['status'] ?? 502);
                 }
 
                 $this->sendCustomerCancellationNotifications($order);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $result['message'] ?? 'Order cancelled successfully.',
+                ]);
             }
 
             return response()->json([
@@ -1116,9 +1102,43 @@ class OrderController extends Controller
         );
     }
 
-    private function customerHandleOnlinePaymentCancellation(Orders $order, OrderPayments $payment, string $reason, int $userId): void
+    /**
+     * Cancels an online-paid order ONLY if refund succeeds (or no refund applicable).
+     * Order state is NOT changed if a refund attempt was made but failed — caller must
+     * surface the error so the customer can retry. Returns ['ok'=>bool, 'message'=>string, 'status'=>int].
+     */
+    private function customerHandleOnlinePaymentCancellation(Orders $order, OrderPayments $payment, string $reason, int $userId): array
     {
-        $shouldProcessRefundNow = true;
+        $paymentStatus = strtolower((string) ($payment->payment_status ?? ''));
+        $razorpayPaymentId = (string) ($payment->payment_id ?? '');
+        $refundEligible = strpos($razorpayPaymentId, 'pay_') === 0
+            && in_array($paymentStatus, ['paid', 'success', 'captured']);
+
+        $refundOutcome = null;
+
+        if ($refundEligible) {
+            $refundOutcome = $this->customerProcessRefund($order, $payment, $userId);
+            if (!$refundOutcome['ok']) {
+                Log::warning('Customer cancel aborted: refund failed', [
+                    'order_id' => $order->order_id,
+                    'payment_id' => $razorpayPaymentId,
+                    'reason' => $refundOutcome['message'],
+                ]);
+                return [
+                    'ok' => false,
+                    'message' => $refundOutcome['message'] ?: 'Refund could not be processed. Please try again.',
+                    'status' => $refundOutcome['status'] ?? 502,
+                ];
+            }
+        } else {
+            Log::info('Customer cancel: refund skipped (no captured Razorpay payment)', [
+                'order_id' => $order->order_id,
+                'payment_id' => $razorpayPaymentId,
+                'payment_status' => $paymentStatus,
+            ]);
+        }
+
+        // Refund either succeeded or was not applicable — proceed with cancellation.
         $cancellationStatus = 'no_shipment';
 
         if ($order->shipment) {
@@ -1133,8 +1153,7 @@ class OrderController extends Controller
                     $shiprocket->cancelShipment($order->shipment->awb);
                     $cancellationStatus = 'cancelled_before_pickup';
                 } else {
-                    $cancellationStatus = 'awaiting_return';
-                    $shouldProcessRefundNow = false;
+                    $cancellationStatus = 'cancelled';
                 }
             } catch (\Exception $e) {
                 Log::error('Customer cancel: Shiprocket cancel failed (online)', [
@@ -1144,26 +1163,15 @@ class OrderController extends Controller
             }
         }
 
-        // Determine if payment is actually refundable via Razorpay
-        $paymentStatus = strtolower((string) ($payment->payment_status ?? ''));
-        $razorpayPaymentId = (string) ($payment->payment_id ?? '');
-        $refundEligible = $shouldProcessRefundNow
-            && strpos($razorpayPaymentId, 'pay_') === 0
-            && in_array($paymentStatus, ['paid', 'success', 'captured']);
-
         if ($refundEligible) {
-            $newPaymentStatus = 'Refund Initiated';
-            $isRefunded = 'processing';
-        } elseif ($shouldProcessRefundNow) {
-            // No captured payment to refund — order can be cancelled but no Razorpay call
+            $newPaymentStatus = 'Refunded';
+            $isRefunded = 'yes';
+        } else {
             $newPaymentStatus = 'Not Applicable';
             $isRefunded = 'no';
-            $cancellationStatus = $cancellationStatus === 'no_shipment'
-                ? 'no_paid_capture'
-                : $cancellationStatus;
-        } else {
-            $newPaymentStatus = 'Refund Pending Return';
-            $isRefunded = 'pending_return';
+            if ($cancellationStatus === 'no_shipment') {
+                $cancellationStatus = 'no_paid_capture';
+            }
         }
 
         $order->update([
@@ -1183,26 +1191,25 @@ class OrderController extends Controller
                 'amount' => $order->total_price,
                 'is_refunded' => $isRefunded,
                 'cancellation_status' => $cancellationStatus,
+                'refunded_at' => $refundEligible ? now() : null,
                 'read_at' => now(),
             ]
         );
 
-        if ($refundEligible) {
-            $this->customerProcessRefund($order, $payment, $userId);
-        } else {
-            Log::info('Customer cancel: refund skipped (no captured Razorpay payment)', [
-                'order_id' => $order->order_id,
-                'payment_id' => $razorpayPaymentId,
-                'payment_status' => $paymentStatus,
-            ]);
-        }
+        return [
+            'ok' => true,
+            'message' => $refundEligible
+                ? 'Order cancelled and refund processed successfully.'
+                : 'Order cancelled successfully.',
+            'status' => 200,
+        ];
     }
 
     /**
-     * Attempts Razorpay refund. Never re-throws — failures only mark refund state and log.
-     * Cancellation already committed before this call, so we must not break the response.
+     * Razorpay refund call. Never throws — returns structured result.
+     * Does NOT mutate order state; caller decides what to do based on outcome.
      */
-    private function customerProcessRefund(Orders $order, OrderPayments $payment, int $userId): void
+    private function customerProcessRefund(Orders $order, OrderPayments $payment, int $userId): array
     {
         $refundAmount = $order->total_price;
         $razorpayPaymentId = $payment->payment_id;
@@ -1218,6 +1225,18 @@ class OrderController extends Controller
                 'speed' => 'normal',
             ]);
 
+            if (empty($refundResponse->id)) {
+                Log::error('Customer cancel: Razorpay returned empty refund id', [
+                    'order_id' => $order->order_id,
+                    'payment_id' => $razorpayPaymentId,
+                ]);
+                return [
+                    'ok' => false,
+                    'message' => 'Refund could not be confirmed. Please try again.',
+                    'status' => 502,
+                ];
+            }
+
             OrderRefund::create([
                 'order_id' => $order->order_id,
                 'payment_id' => $razorpayPaymentId,
@@ -1229,44 +1248,39 @@ class OrderController extends Controller
                 'created_by' => $userId,
             ]);
 
-            $order->update(['payment_status' => 'Refunded']);
-
-            $order->cancel_detail?->update([
-                'is_refunded' => 'yes',
-                'refunded_at' => now(),
-                'read_at' => now(),
-            ]);
+            return [
+                'ok' => true,
+                'refund_id' => $refundResponse->id,
+                'status_code' => 200,
+            ];
         } catch (\Razorpay\Api\Errors\BadRequestError $e) {
             $msg = $e->getMessage();
-            if (strpos($msg, 'does not have enough balance') !== false) {
-                $order->update(['payment_status' => 'Refund Pending']);
-                $order->cancel_detail?->update([
-                    'is_refunded' => 'pending_return',
-                    'read_at' => now(),
-                ]);
-            } else {
-                $order->update(['payment_status' => 'Refund Failed']);
-                $order->cancel_detail?->update([
-                    'is_refunded' => 'failed',
-                    'read_at' => now(),
-                ]);
-            }
-            Log::error('Customer cancel: Razorpay refund failed', [
+            Log::error('Customer cancel: Razorpay refund BadRequestError', [
                 'order_id' => $order->order_id,
                 'payment_id' => $razorpayPaymentId,
                 'error' => $msg,
             ]);
+
+            $userMsg = (strpos($msg, 'does not have enough balance') !== false)
+                ? 'We are unable to process your refund right now. Please try again later.'
+                : 'Refund failed. Please try again. (' . $msg . ')';
+
+            return [
+                'ok' => false,
+                'message' => $userMsg,
+                'status' => 502,
+            ];
         } catch (\Exception $e) {
-            $order->update(['payment_status' => 'Refund Failed']);
-            $order->cancel_detail?->update([
-                'is_refunded' => 'failed',
-                'read_at' => now(),
-            ]);
             Log::error('Customer cancel: Refund failed (generic)', [
                 'order_id' => $order->order_id,
                 'payment_id' => $razorpayPaymentId,
                 'error' => $e->getMessage(),
             ]);
+            return [
+                'ok' => false,
+                'message' => 'Refund failed. Please try again.',
+                'status' => 500,
+            ];
         }
     }
 
