@@ -1625,6 +1625,7 @@ Route::get('/track', [CustomerOrderContoller::class, 'trackOrder'])
 
 Route::get('/checkout', [CustomerOrderContoller::class, 'checkout'])->name('checkout.index');
 Route::get('/orders', [CustomerOrderContoller::class, 'index'])->name('customer.orders.index');
+Route::post('/orders/cancel/{cart_id}', [CustomerOrderContoller::class, 'cancelOrder'])->name('customer.orders.cancel');
 
 Route::middleware(['frontend.auth'])->group(function () {
     Route::post('checkout', [CustomerOrderContoller::class, 'storeOrder'])->name('checkout');

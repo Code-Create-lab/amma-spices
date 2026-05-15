@@ -393,6 +393,34 @@
     }
     .btn.btn-outline-primary.reviewModal:hover { background: #4B3B2E; color: #FFF7ED; }
 
+    /* Cancel Order Button (in header) */
+    .btn-cancel-order {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        background: transparent;
+        color: #FFF7ED;
+        border: 1px solid rgba(255, 200, 200, 0.7);
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .btn-cancel-order:hover {
+        background: #c0392b;
+        border-color: #c0392b;
+        color: #fff;
+    }
+    .btn-cancel-order:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
     /* Empty State */
     .no-orders { background: #fff; border: 1px solid #e8d9c8; border-radius: 6px; padding: 60px 20px; }
     .no-orders h3 { color: #4B3B2E; font-size: 20px; margin-bottom: 8px; }
@@ -550,6 +578,14 @@
                                                    onclick="event.stopPropagation()">
                                                     <i class="la la-arrow-down"></i> Invoice
                                                 </a>
+                                            @endif
+
+                                            @if ((Auth::check() || $isGuestOrderView) && strcasecmp($order->order_status, 'Pending') === 0)
+                                                <button type="button"
+                                                        class="btn-cancel-order"
+                                                        onclick="event.stopPropagation(); openCancelOrderModal('{{ $order->cart_id }}');">
+                                                    <i class="la la-times"></i> Cancel
+                                                </button>
                                             @endif
                                         </div>
 
@@ -822,6 +858,66 @@
         </div>
     </div>
 
+    {{-- ── Cancel Order Modals ── --}}
+    @if (Auth::check() || $isGuestOrderView)
+        @foreach ($orders as $order)
+            @if (strcasecmp($order->order_status, 'Pending') === 0)
+                <div class="modal fade" id="cancelOrderModal-{{ $order->cart_id }}"
+                     tabindex="-1"
+                     aria-labelledby="cancelOrderModalLabel-{{ $order->cart_id }}"
+                     aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="border:none;border-radius:6px;overflow:hidden;">
+                            <div class="modal-header" style="background:#c0392b;border:none;">
+                                <h5 class="modal-title" style="color:#fff;font-size:15px;font-weight:700;">
+                                    Cancel Order #{{ $order->cart_id }}
+                                </h5>
+                                <button type="button" class="close" aria-label="Close"
+                                        onclick="$(this).closest('.modal').modal('hide');"
+                                        style="color:#fff;opacity:1;background:none;border:none;font-size:20px;cursor:pointer;">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="padding:20px;">
+                                <p style="font-size:13px;color:#4B3B2E;margin-bottom:14px;">
+                                    Are you sure you want to cancel this order?
+                                    @if (strcasecmp($order->payment_method, 'COD') !== 0)
+                                        Any successful online payment will be refunded to your original payment method (typically 5-7 business days).
+                                    @endif
+                                </p>
+                                <form class="cancel-order-form" data-cart-id="{{ $order->cart_id }}">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="cancel-reason-{{ $order->cart_id }}"
+                                               class="form-label" style="font-size:13px;font-weight:600;color:#4B3B2E;">
+                                            Reason <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea class="form-control"
+                                                  id="cancel-reason-{{ $order->cart_id }}"
+                                                  name="cancel_reason" rows="3"
+                                                  placeholder="Tell us why you are cancelling..."
+                                                  style="border-color:#e8d9c8;font-size:13px;"
+                                                  required minlength="3" maxlength="500"></textarea>
+                                    </div>
+                                    <div class="cancel-order-alert"
+                                         style="display:none;font-size:12px;margin-bottom:10px;padding:8px 12px;border-radius:3px;"></div>
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                onclick="$(this).closest('.modal').modal('hide');">Keep Order</button>
+                                        <button type="submit" class="cancel-order-submit"
+                                                style="background:#c0392b;color:#fff;border:none;padding:8px 22px;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;">
+                                            Confirm Cancellation
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endforeach
+    @endif
+
     {{-- ── Review Modals ── --}}
     @if (!$isGuestOrderView)
         @foreach ($orders as $order)
@@ -907,6 +1003,16 @@
 
         $('#loginModal').modal('show');
     }
+
+    function openCancelOrderModal(cartId) {
+        var $modal = $('#cancelOrderModal-' + cartId);
+        if ($modal.length === 0) return;
+        var $alert = $modal.find('.cancel-order-alert');
+        $alert.hide().text('');
+        var $submit = $modal.find('.cancel-order-submit');
+        $submit.prop('disabled', false).text('Confirm Cancellation');
+        $modal.modal('show');
+    }
     /* ── Accordion Toggle ── */
     function toggleOrder(cartId, event) {
         // Don't toggle when clicking links/buttons inside header
@@ -917,6 +1023,85 @@
 
         card.classList.toggle('open', !isOpen);
     }
+
+    /* ── Cancel Order ── */
+    document.addEventListener('DOMContentLoaded', function () {
+        const cancelUrlTemplate = "{{ url('orders/cancel') }}";
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')
+            ? document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            : "{{ csrf_token() }}";
+
+        document.querySelectorAll('.cancel-order-form').forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const cartId = form.dataset.cartId;
+                const reasonField = form.querySelector('textarea[name="cancel_reason"]');
+                const reason = (reasonField.value || '').trim();
+                const submitBtn = form.querySelector('.cancel-order-submit');
+                const alertBox = form.querySelector('.cancel-order-alert');
+
+                alertBox.style.display = 'none';
+                alertBox.textContent = '';
+
+                if (reason.length < 3) {
+                    alertBox.style.display = 'block';
+                    alertBox.style.background = '#ffeaea';
+                    alertBox.style.color = '#c0392b';
+                    alertBox.textContent = 'Please provide a reason (min 3 characters).';
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Cancelling...';
+
+                const fd = new FormData();
+                fd.append('_token', csrfToken);
+                fd.append('cancel_reason', reason);
+
+                fetch(cancelUrlTemplate + '/' + encodeURIComponent(cartId), {
+                    method: 'POST',
+                    body: fd,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(async function (res) {
+                    let data = {};
+                    try { data = await res.json(); } catch (err) {}
+                    return { ok: res.ok, status: res.status, data: data };
+                })
+                .then(function (result) {
+                    if (result.ok && result.data.success) {
+                        alertBox.style.display = 'block';
+                        alertBox.style.background = '#eafaf1';
+                        alertBox.style.color = '#1e8449';
+                        alertBox.textContent = result.data.message || 'Order cancelled.';
+                        setTimeout(function () { window.location.reload(); }, 1200);
+                    } else {
+                        alertBox.style.display = 'block';
+                        alertBox.style.background = '#ffeaea';
+                        alertBox.style.color = '#c0392b';
+                        alertBox.textContent = (result.data && result.data.message) ? result.data.message : 'Failed to cancel order.';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
+                })
+                .catch(function (err) {
+                    alertBox.style.display = 'block';
+                    alertBox.style.background = '#ffeaea';
+                    alertBox.style.color = '#c0392b';
+                    alertBox.textContent = 'Network error. Please try again.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                });
+            });
+        });
+    });
 
     /* ── Star Rating ── */
     document.addEventListener('DOMContentLoaded', function () {

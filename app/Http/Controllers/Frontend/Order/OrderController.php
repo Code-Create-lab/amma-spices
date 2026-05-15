@@ -9,12 +9,15 @@ use App\Http\Requests\Frontend\Address\AddressUpdateRequest;
 use App\Http\Requests\Frontend\Order\OrderStoreRequest;
 use App\Jobs\CheckRazorpayPaymentOrderStatusJob;
 use App\Jobs\CheckRazorpayPaymentStatusJob;
+use App\Mail\CancelOrder;
 use App\Mail\PaymentFailed;
 use App\Mail\PaymentSuccess;
 use App\Models\Address;
+use App\Models\CancelledOrder;
 use App\Models\Cart;
 use App\Models\City;
 use App\Models\OrderPayments;
+use App\Models\OrderRefund;
 use App\Models\Orders;
 use App\Models\Shipment;
 use App\Models\Society;
@@ -952,6 +955,344 @@ class OrderController extends Controller
         return Redirect::route('checkout.index')->with('success', 'Address Deleted Successfully');
     }
 
+
+    /**
+     * Customer cancels their own order (only before confirmation).
+     * Mirrors AdminorderController::ajaxCancelOrder flow but scoped to authenticated user.
+     */
+    public function cancelOrder(Request $request, $cart_id)
+    {
+        try {
+            $guestAccess = $this->getGuestOrderAccess();
+            $isGuest = !Auth::check() && !empty($guestAccess);
+            $userId = Auth::id() ?? ($guestAccess['user_id'] ?? null);
+
+            if (!$userId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must be logged in (or have a guest session) to cancel an order.'
+                ], 401);
+            }
+
+            $orderQuery = Orders::with(['address', 'user'])
+                ->where('cart_id', $cart_id)
+                ->where('user_id', $userId);
+
+            if ($isGuest) {
+                $orderQuery->where('is_guest_checkout', true);
+            }
+
+            $order = $orderQuery->firstOrFail();
+
+            if (strcasecmp($order->order_status, 'Pending') !== 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending (unconfirmed) orders can be cancelled.'
+                ], 422);
+            }
+
+            $reason = trim((string) $request->input('cancel_reason', '')) ?: 'Cancelled by customer';
+
+            if (strcasecmp($order->payment_method, 'COD') === 0) {
+                $this->customerHandleCODCancellation($order, $reason);
+            } else {
+                $payment = OrderPayments::where('order_id', $order->order_id)->first();
+
+                if (!$payment) {
+                    $order->update([
+                        'order_status' => 'Cancelled',
+                        'payment_status' => 'Not Applicable',
+                    ]);
+                    CancelledOrder::updateOrCreate(
+                        ['order_id' => $order->order_id],
+                        [
+                            'user_id' => $userId,
+                            'comment' => $reason,
+                            'amount' => $order->total_price,
+                            'is_refunded' => 'no',
+                            'cancellation_status' => 'no_payment',
+                            'read_at' => now(),
+                        ]
+                    );
+                    $this->sendCustomerCancellationNotifications($order);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Order cancelled (no payment record found).'
+                    ]);
+                }
+
+                try {
+                    $this->customerHandleOnlinePaymentCancellation($order, $payment, $reason, $userId);
+                } catch (\Razorpay\Api\Errors\BadRequestError $e) {
+                    if (strpos($e->getMessage(), 'does not have enough balance') !== false) {
+                        $order->update([
+                            'order_status' => 'Cancelled',
+                            'payment_status' => 'Refund Pending',
+                        ]);
+                        CancelledOrder::updateOrCreate(
+                            ['order_id' => $order->order_id],
+                            [
+                                'user_id' => $userId,
+                                'comment' => $reason,
+                                'amount' => $order->total_price,
+                                'is_refunded' => 'pending_return',
+                                'cancellation_status' => 'refund_pending_balance',
+                                'read_at' => now(),
+                            ]
+                        );
+                        $this->sendCustomerCancellationNotifications($order);
+
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Order cancelled. Refund pending due to insufficient gateway balance.'
+                        ]);
+                    }
+                    throw $e;
+                }
+
+                $this->sendCustomerCancellationNotifications($order);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order cancelled successfully.'
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found.'
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Customer Cancel Order Error', [
+                'error' => $e->getMessage(),
+                'cart_id' => $cart_id,
+                'user_id' => Auth::id() ?? (session('guest_order_access.user_id') ?? null),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to cancel order: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function customerHandleCODCancellation(Orders $order, string $reason): void
+    {
+        $shiprocket = new ShiprocketService();
+
+        if ($order->shipment) {
+            $shiprocketStatus = strtoupper($order->shipment->status ?? '');
+
+            try {
+                if ($shiprocketStatus === 'NEW' && empty($order->shipment->awb)) {
+                    $shiprocket->cancelOrder($order->shipment->shipment_order_id);
+                } elseif (in_array($shiprocketStatus, ['READY TO SHIP', 'PICKUP GENERATED', 'PICKUP SCHEDULED', 'MANIFESTED', 'LABEL GENERATED']) && $order->shipment->awb) {
+                    $shiprocket->cancelShipment($order->shipment->awb);
+                }
+            } catch (\Exception $e) {
+                Log::error('Customer cancel: Shiprocket cancel failed', [
+                    'order_id' => $order->order_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $order->update([
+            'order_status' => 'Cancelled',
+            'payment_status' => 'Not Applicable',
+        ]);
+
+        CancelledOrder::updateOrCreate(
+            ['order_id' => $order->order_id],
+            [
+                'user_id' => $order->user_id,
+                'comment' => $reason,
+                'amount' => $order->total_price,
+                'is_refunded' => 'no',
+                'cancellation_status' => 'cod_cancelled',
+                'read_at' => now(),
+            ]
+        );
+    }
+
+    private function customerHandleOnlinePaymentCancellation(Orders $order, OrderPayments $payment, string $reason, int $userId): void
+    {
+        $shouldProcessRefundNow = true;
+        $cancellationStatus = 'no_shipment';
+
+        if ($order->shipment) {
+            $shiprocketStatus = strtoupper(trim($order->shipment->status ?? ''));
+            $shiprocket = new ShiprocketService();
+
+            try {
+                if ($shiprocketStatus === 'NEW' && empty($order->shipment->awb)) {
+                    $shiprocket->cancelOrder($order->shipment->shipment_order_id);
+                    $cancellationStatus = 'cancelled_not_shipped';
+                } elseif (in_array($shiprocketStatus, ['READY TO SHIP', 'PICKUP GENERATED', 'PICKUP SCHEDULED', 'MANIFESTED', 'LABEL GENERATED']) && $order->shipment->awb) {
+                    $shiprocket->cancelShipment($order->shipment->awb);
+                    $cancellationStatus = 'cancelled_before_pickup';
+                } else {
+                    $cancellationStatus = 'awaiting_return';
+                    $shouldProcessRefundNow = false;
+                }
+            } catch (\Exception $e) {
+                Log::error('Customer cancel: Shiprocket cancel failed (online)', [
+                    'order_id' => $order->order_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Determine if payment is actually refundable via Razorpay
+        $paymentStatus = strtolower((string) ($payment->payment_status ?? ''));
+        $razorpayPaymentId = (string) ($payment->payment_id ?? '');
+        $refundEligible = $shouldProcessRefundNow
+            && strpos($razorpayPaymentId, 'pay_') === 0
+            && in_array($paymentStatus, ['paid', 'success', 'captured']);
+
+        if ($refundEligible) {
+            $newPaymentStatus = 'Refund Initiated';
+            $isRefunded = 'processing';
+        } elseif ($shouldProcessRefundNow) {
+            // No captured payment to refund — order can be cancelled but no Razorpay call
+            $newPaymentStatus = 'Not Applicable';
+            $isRefunded = 'no';
+            $cancellationStatus = $cancellationStatus === 'no_shipment'
+                ? 'no_paid_capture'
+                : $cancellationStatus;
+        } else {
+            $newPaymentStatus = 'Refund Pending Return';
+            $isRefunded = 'pending_return';
+        }
+
+        $order->update([
+            'order_status' => 'Cancelled',
+            'payment_status' => $newPaymentStatus,
+        ]);
+
+        if ($order->shipment) {
+            $order->shipment->update(['status' => $cancellationStatus]);
+        }
+
+        CancelledOrder::updateOrCreate(
+            ['order_id' => $order->order_id],
+            [
+                'user_id' => $userId,
+                'comment' => $reason,
+                'amount' => $order->total_price,
+                'is_refunded' => $isRefunded,
+                'cancellation_status' => $cancellationStatus,
+                'read_at' => now(),
+            ]
+        );
+
+        if ($refundEligible) {
+            $this->customerProcessRefund($order, $payment, $userId);
+        } else {
+            Log::info('Customer cancel: refund skipped (no captured Razorpay payment)', [
+                'order_id' => $order->order_id,
+                'payment_id' => $razorpayPaymentId,
+                'payment_status' => $paymentStatus,
+            ]);
+        }
+    }
+
+    /**
+     * Attempts Razorpay refund. Never re-throws — failures only mark refund state and log.
+     * Cancellation already committed before this call, so we must not break the response.
+     */
+    private function customerProcessRefund(Orders $order, OrderPayments $payment, int $userId): void
+    {
+        $refundAmount = $order->total_price;
+        $razorpayPaymentId = $payment->payment_id;
+
+        try {
+            $api = new Api(
+                config('services.razorpay.key'),
+                config('services.razorpay.secret')
+            );
+
+            $refundResponse = $api->payment->fetch($razorpayPaymentId)->refund([
+                'amount' => $refundAmount * 100,
+                'speed' => 'normal',
+            ]);
+
+            OrderRefund::create([
+                'order_id' => $order->order_id,
+                'payment_id' => $razorpayPaymentId,
+                'refund_id' => $refundResponse->id,
+                'status' => $refundResponse->status,
+                'amount' => $refundAmount,
+                'method' => 'razorpay',
+                'refunded_at' => now(),
+                'created_by' => $userId,
+            ]);
+
+            $order->update(['payment_status' => 'Refunded']);
+
+            $order->cancel_detail?->update([
+                'is_refunded' => 'yes',
+                'refunded_at' => now(),
+                'read_at' => now(),
+            ]);
+        } catch (\Razorpay\Api\Errors\BadRequestError $e) {
+            $msg = $e->getMessage();
+            if (strpos($msg, 'does not have enough balance') !== false) {
+                $order->update(['payment_status' => 'Refund Pending']);
+                $order->cancel_detail?->update([
+                    'is_refunded' => 'pending_return',
+                    'read_at' => now(),
+                ]);
+            } else {
+                $order->update(['payment_status' => 'Refund Failed']);
+                $order->cancel_detail?->update([
+                    'is_refunded' => 'failed',
+                    'read_at' => now(),
+                ]);
+            }
+            Log::error('Customer cancel: Razorpay refund failed', [
+                'order_id' => $order->order_id,
+                'payment_id' => $razorpayPaymentId,
+                'error' => $msg,
+            ]);
+        } catch (\Exception $e) {
+            $order->update(['payment_status' => 'Refund Failed']);
+            $order->cancel_detail?->update([
+                'is_refunded' => 'failed',
+                'read_at' => now(),
+            ]);
+            Log::error('Customer cancel: Refund failed (generic)', [
+                'order_id' => $order->order_id,
+                'payment_id' => $razorpayPaymentId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function sendCustomerCancellationNotifications(Orders $order): void
+    {
+        try {
+            $recipients = array_filter(array_unique([
+                $order->address->receiver_email ?? null,
+                $order->user->email ?? null,
+            ]));
+
+            if (!empty($recipients)) {
+                Mail::to($recipients)->send(new CancelOrder($order));
+            }
+
+            $adminEmail = config('mail.admin_finance_email') ?: config('mail.from.address');
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new CancelOrder($order));
+            }
+        } catch (\Exception $e) {
+            Log::error('Customer cancel: Notification email failed', [
+                'order_id' => $order->order_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 
     public function tracking(Request $request, Orders $order)
     {
