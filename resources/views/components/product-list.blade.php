@@ -534,7 +534,8 @@ $products = Product::with(['category','images','variations','cart'])
     @media (max-width: 767.98px) {
 
         /* 2-up grid */
-        .featured-list-slider .row {
+        .featured-list-slider .row,
+        .product-grid-row {
             margin-left: -5px;
             margin-right: -5px;
         }
@@ -544,7 +545,8 @@ $products = Product::with(['category','images','variations','cart'])
             width: 100%;
         }
 
-        .featured-list-slider .row>.col-md-3 {
+        .featured-list-slider .row>.col-md-3,
+        .product-grid-row>.col-md-3 {
             flex: 0 0 50%;
             max-width: 50%;
             padding-left: 5px;
