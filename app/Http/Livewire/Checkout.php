@@ -1510,6 +1510,8 @@ class Checkout extends Component
             if ($this->payment_option === 'COD') {
                 $cod_charge = (float) (CodCharge::where('status', 1)->value('cod_charge') ?? 0);
                 $total_price += $cod_charge;
+                // COD is collected in cash — round the payable total to the nearest rupee
+                $total_price = round($total_price);
             }
 
             $order = Orders::create([

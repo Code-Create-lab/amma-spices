@@ -334,8 +334,16 @@
                                 @endif
                                 <tr>
                                     <td class="text-right"><strong>{{ __('keywords.Net_Total(Payable)') }}:</strong></td>
-                                    <td class="text-right"><strong>{{ number_format($order->total_price, 2) }}</strong></td>
+                                    <td class="text-right"><strong>{{ number_format($order->total_price, strtolower($order->payment_method ?? '') === 'cod' ? 0 : 2) }}</strong></td>
                                 </tr>
+                                @if (strtolower($order->payment_method ?? '') === 'cod')
+                                    <tr>
+                                        <td colspan="2" class="text-right text-muted"
+                                            style="font-size:11px; font-style:italic;">
+                                            Rounded off to nearest ₹1 for Cash on Delivery
+                                        </td>
+                                    </tr>
+                                @endif
                             </table>
                         </div>
                     </div>

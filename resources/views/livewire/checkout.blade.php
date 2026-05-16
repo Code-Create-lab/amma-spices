@@ -637,6 +637,9 @@
 
                                         @php
                                             $codChargeApplied = $payment_option == 'COD' ? (float) $codCharge : 0;
+                                            $isCodOrder = $payment_option == 'COD';
+                                            $grandTotal = $subTotal1 - ($discount ?? 0) + $shippingCharge + $codChargeApplied;
+                                            $payableTotal = $isCodOrder ? round($grandTotal) : $grandTotal;
                                         @endphp
                                         @if ($codChargeApplied > 0)
                                             <tr class="cod-charge">
@@ -647,7 +650,14 @@
 
                                         <tr class="summary-total">
                                             <td>Total:</td>
-                                            <td> ₹{{ number_format($subTotal1 - ($discount ?? 0) + $shippingCharge + $codChargeApplied, 2, '.', ',') }}
+                                            <td>
+                                                ₹{{ number_format($payableTotal, $isCodOrder ? 0 : 2, '.', ',') }}
+                                                @if ($isCodOrder)
+                                                    <small class="d-block text-muted"
+                                                        style="font-size:11px; font-weight:400; line-height:1.4; margin-top:2px;">
+                                                        Rounded off to nearest ₹1 for Cash on Delivery
+                                                    </small>
+                                                @endif
                                             </td>
                                         </tr><!-- End .summary-total -->
                                     </tbody>
