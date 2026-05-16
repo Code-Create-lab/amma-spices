@@ -95,6 +95,13 @@
                                     <td align="right">Shipping:</td>
                                     <td align="right">₹{{ number_format($order->delivery_charge, 2) }}</td>
                                 </tr>
+                                @if (($order->cod_charge ?? 0) > 0)
+                                    <tr>
+                                        <td align="right">COD Charges:</td>
+                                        <td align="right" width="120">
+                                            ₹{{ number_format($order->cod_charge, 2) }}</td>
+                                    </tr>
+                                @endif
                                 @if ($order->coupon_discount > 0)
                                     <tr>
                                         <td align="right">Coupon Discount:</td>

@@ -314,6 +314,12 @@
                                     <td class="text-right"><strong>{{ __('keywords.Delivery_Charge') }}:</strong></td>
                                     <td class="text-right">+{{ $order->delivery_charge ?? 0 }}</td>
                                 </tr>
+                                @if (($order->cod_charge ?? 0) > 0)
+                                    <tr>
+                                        <td class="text-right"><strong>COD Charges:</strong></td>
+                                        <td class="text-right">+{{ $order->cod_charge }}</td>
+                                    </tr>
+                                @endif
                                 @if (($order->paid_by_wallet ?? 0) > 0)
                                     <tr>
                                         <td class="text-right"><strong>{{ __('keywords.Paid By Wallet') }}:</strong></td>
