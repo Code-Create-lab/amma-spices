@@ -1503,14 +1503,16 @@ class Checkout extends Component
             $cart_id = $this->generateCartId();
 
 
-            $total_price = round($total_price - (round($this->discount) ?? 0));
+            // Exact order total before payment-specific charges — no premature rounding
+            // (rounding the discount on its own caused a mismatch with the checkout UI)
+            $total_price = $total_price - ($this->discount ?? 0);
 
             // Apply Cash on Delivery charge on top of the order total when COD is selected
             $cod_charge = 0;
             if ($this->payment_option === 'COD') {
                 $cod_charge = (float) (CodCharge::where('status', 1)->value('cod_charge') ?? 0);
                 $total_price += $cod_charge;
-                // COD is collected in cash — round the payable total to the nearest rupee
+                // COD is collected in cash — round the full payable total to the nearest rupee
                 $total_price = round($total_price);
             }
 
