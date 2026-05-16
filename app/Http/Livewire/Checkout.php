@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 use App\Models\Shipping;
+use App\Models\CodCharge;
 use App\Jobs\OrderPlacedEmailJob;
 use App\Jobs\SendOrderNotificationJob;
 use App\Jobs\SendMailJob;
@@ -57,6 +58,9 @@ class Checkout extends Component
     public $getShippingCharge;
 
     public $shippingAmount = 0.0;
+
+    // Cash on Delivery charge applied on top of subtotal when COD is selected
+    public float $codCharge = 0.0;
 
     // Store address data as simple array - FIXED STRUCTURE
     public array $addressData = [
@@ -416,6 +420,7 @@ class Checkout extends Component
         // }
 
         $this->getShippingCharge = Shipping::where('status', 1)->first();
+        $this->codCharge = (float) (CodCharge::where('status', 1)->value('cod_charge') ?? 0);
         // $this->shippingAmount = $this->getShippingAmount($this->subTotal);
         $this->codOrderCount = Orders::where('user_id', Auth::id())->where('payment_method', "COD")->count();
         // dd( $this->codOrderCount);
@@ -1500,6 +1505,13 @@ class Checkout extends Component
 
             $total_price = round($total_price - (round($this->discount) ?? 0));
 
+            // Apply Cash on Delivery charge on top of the order total when COD is selected
+            $cod_charge = 0;
+            if ($this->payment_option === 'COD') {
+                $cod_charge = (float) (CodCharge::where('status', 1)->value('cod_charge') ?? 0);
+                $total_price += $cod_charge;
+            }
+
             $order = Orders::create([
                 'user_id' => $checkoutUserId,
                 'is_guest_checkout' => !$loggedInUser,
@@ -1516,6 +1528,7 @@ class Checkout extends Component
                 'order_time' => now()->format('H:i:s'),
                 // 'delivery_date' => Carbon::now()->addDays(2),
                 'delivery_charge' => $delivery_charge,
+                'cod_charge' => $cod_charge,
                 'coupon_id' => $getCoupon->coupon_id ?? 0,
                 'time_slot' => Carbon::now()->addDays(2),
                 'order_status' => 'Pending',

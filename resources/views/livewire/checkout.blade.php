@@ -635,9 +635,19 @@
                                             @endif
                                         </tr>
 
+                                        @php
+                                            $codChargeApplied = $payment_option == 'COD' ? (float) $codCharge : 0;
+                                        @endphp
+                                        @if ($codChargeApplied > 0)
+                                            <tr class="cod-charge">
+                                                <td>COD Charge:</td>
+                                                <td>₹{{ number_format($codChargeApplied, 2, '.', ',') }}</td>
+                                            </tr>
+                                        @endif
+
                                         <tr class="summary-total">
                                             <td>Total:</td>
-                                            <td> ₹{{ number_format(round($subTotal1 - ($discount ?? 0) + $shippingCharge), 2, '.', ',') }}
+                                            <td> ₹{{ number_format(round($subTotal1 - ($discount ?? 0) + $shippingCharge + $codChargeApplied), 2, '.', ',') }}
                                             </td>
                                         </tr><!-- End .summary-total -->
                                     </tbody>
@@ -645,18 +655,23 @@
 
 
                                 <div class="payment_methods">
-                                    {{-- <div class="cod_payment">
-
-                                        <input class="d-inline w-auto me-5px mb-0 p-0" type="radio"
-                                            name="payment-option" wire:model="payment_option" value="COD">
-                                        <span class="d-inline-block text-dark-gray fw-500">Cash On Delivery</span>
-                                    </div> --}}
                                     <div class="online_payment">
                                         <input class="d-inline w-auto me-5px mb-0 p-0" type="radio"
-                                            name="payment-option" checked wire:model="payment_option" id="online"
+                                            name="payment-option" wire:model.live="payment_option" id="online"
                                             value="ONLINE">
-                                        <span class="d-inline-block text-dark-gray fw-500" id="online">Online
+                                        <span class="d-inline-block text-dark-gray fw-500">Online
                                             Payment</span>
+                                    </div>
+                                    <div class="cod_payment mt-2">
+                                        <input class="d-inline w-auto me-5px mb-0 p-0" type="radio"
+                                            name="payment-option" wire:model.live="payment_option" id="cod"
+                                            value="COD">
+                                        <span class="d-inline-block text-dark-gray fw-500">Cash On Delivery
+                                            @if ($codCharge > 0)
+                                                <small class="text-muted">(+₹{{ number_format($codCharge, 2) }} COD
+                                                    charge)</small>
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
                                 {{-- <div class="accordion-summary" id="accordion-payment">

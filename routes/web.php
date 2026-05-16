@@ -846,6 +846,10 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::post('/shippings/{id}/update', [App\Http\Controllers\Admin\ShippingController::class, 'update'])->name('shippings.update');
             Route::delete('/shippings/{id}', [App\Http\Controllers\Admin\ShippingController::class, 'destroy'])->name('shippings.destroy');
 
+            Route::get('/cod-charges', [App\Http\Controllers\Admin\CodChargeController::class, 'index'])->name('cod-charges.index');
+            Route::get('/cod-charges/{id}/edit', [App\Http\Controllers\Admin\CodChargeController::class, 'edit'])->name('cod-charges.edit');
+            Route::post('/cod-charges/{id}/update', [App\Http\Controllers\Admin\CodChargeController::class, 'update'])->name('cod-charges.update');
+
             Route::get('report/tax', [TaxreportController::class, 'taxreport'])->name('taxreport');
             Route::post('report/taxdatewise', [TaxreportController::class, 'taxdatewise'])->name('taxdatewise');
             Route::get('logout', [LoginController::class, 'logout'])->name('logout');
