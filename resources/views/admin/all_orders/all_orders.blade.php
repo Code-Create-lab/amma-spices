@@ -289,14 +289,14 @@
                                         <td>{{ $item->tx_per ?? 0 }}%</td>
                                         <td>
                                             @if ($item->price_without_tax != null && $item->price_without_tax != 0)
-                                                {{ $item->price_without_tax }}
+                                                {{ number_format($item->price_without_tax, 2) }}
                                             @elseif ($item->price != null && $item->price != 0)
-                                                {{ $item->price }}
+                                                {{ number_format($item->price, 2) }}
                                             @else
-                                                {{ $item->total_mrp }}
+                                                {{ number_format($item->total_mrp, 2) }}
                                             @endif
                                         </td>
-                                        <td>{{ $item->price == 0 || $item->price == null ? $item->total_mrp : $item->price }}
+                                        <td>{{ number_format($item->price == 0 || $item->price == null ? $item->total_mrp : $item->price, 2) }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -308,33 +308,33 @@
                                 <tr>
                                     <td class="text-right"><strong>{{ __('keywords.Products_Price') }}:</strong></td>
                                     <td class="text-right" width="120">
-                                        {{ $order->price_without_delivery + ($order->coupon_discount ?? 0) }}</td>
+                                        {{ number_format($order->price_without_delivery + ($order->coupon_discount ?? 0), 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="text-right"><strong>{{ __('keywords.Delivery_Charge') }}:</strong></td>
-                                    <td class="text-right">+{{ $order->delivery_charge ?? 0 }}</td>
+                                    <td class="text-right">+{{ number_format($order->delivery_charge ?? 0, 2) }}</td>
                                 </tr>
                                 @if (($order->cod_charge ?? 0) > 0)
                                     <tr>
                                         <td class="text-right"><strong>COD Charges:</strong></td>
-                                        <td class="text-right">+{{ $order->cod_charge }}</td>
+                                        <td class="text-right">+{{ number_format($order->cod_charge, 2) }}</td>
                                     </tr>
                                 @endif
                                 @if (($order->paid_by_wallet ?? 0) > 0)
                                     <tr>
                                         <td class="text-right"><strong>{{ __('keywords.Paid By Wallet') }}:</strong></td>
-                                        <td class="text-right">-{{ $order->paid_by_wallet }}</td>
+                                        <td class="text-right">-{{ number_format($order->paid_by_wallet, 2) }}</td>
                                     </tr>
                                 @endif
                                 @if (($order->coupon_discount ?? 0) > 0)
                                     <tr>
                                         <td class="text-right"><strong>{{ __('keywords.Coupon Discount') }}:</strong></td>
-                                        <td class="text-right">-{{ $order->coupon_discount }}</td>
+                                        <td class="text-right">-{{ number_format($order->coupon_discount, 2) }}</td>
                                     </tr>
                                 @endif
                                 <tr>
                                     <td class="text-right"><strong>{{ __('keywords.Net_Total(Payable)') }}:</strong></td>
-                                    <td class="text-right"><strong>{{ $order->total_price }}</strong></td>
+                                    <td class="text-right"><strong>{{ number_format($order->total_price, 2) }}</strong></td>
                                 </tr>
                             </table>
                         </div>

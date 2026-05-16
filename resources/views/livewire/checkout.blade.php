@@ -550,7 +550,7 @@
                                         {{-- @dd($cart_items_checkOut) --}}
                                         @foreach ($cart_items_checkOut as $item)
                                             @php
-                                                $shippingCharge = number_format($shippingAmount) ?? 0.0;
+                                                $shippingCharge = $shippingAmount ?? 0.0;
 
                                                 // dd($shippingAmount);
                                                 $mrp = round($item['variation']['mrp'] ?? $item['product']['base_mrp']);
@@ -597,13 +597,13 @@
                                                         @endif
                                                     </span>
                                                 </td>
-                                                <td> ₹{{ number_format(round($lineTotal), 0, '.', ',') }}</td>
+                                                <td> ₹{{ number_format($lineTotal, 2, '.', ',') }}</td>
                                             </tr>
                                         @endforeach
 
                                         <tr class="summary-subtotal">
                                             <td>Subtotal:</td>
-                                            <td>₹{{ number_format(round($subTotal1), 0, '.', ',') }}</td>
+                                            <td>₹{{ number_format($subTotal1, 2, '.', ',') }}</td>
                                         </tr><!-- End .summary-subtotal -->
 
                                         <tr class="coupon">
@@ -647,7 +647,7 @@
 
                                         <tr class="summary-total">
                                             <td>Total:</td>
-                                            <td> ₹{{ number_format(round($subTotal1 - ($discount ?? 0) + $shippingCharge + $codChargeApplied), 2, '.', ',') }}
+                                            <td> ₹{{ number_format($subTotal1 - ($discount ?? 0) + $shippingCharge + $codChargeApplied, 2, '.', ',') }}
                                             </td>
                                         </tr><!-- End .summary-total -->
                                     </tbody>
