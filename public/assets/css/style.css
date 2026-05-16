@@ -6883,7 +6883,7 @@ a:focus {
 }
 
 .breadcrumb-item+.breadcrumb-item:before {
-  color: #fff;
+  color: #000;
   content: '\f112';
   font-family: "molla";
   padding-right: .7rem;
