@@ -250,6 +250,11 @@ $products = Product::with(['category','images','variations','cart'])
         letter-spacing: 0.08em;
         text-transform: uppercase;
         font-family: sans-serif;
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .product-card__badge {
@@ -261,6 +266,7 @@ $products = Product::with(['category','images','variations','cart'])
         padding: 2px 8px;
         border-radius: 10px;
         letter-spacing: 0.04em;
+        flex-shrink: 0;
     }
 
     /* Title */
@@ -585,22 +591,15 @@ $products = Product::with(['category','images','variations','cart'])
             display: none;
         }
 
-        /* Pills + wishlist */
+        /* Category pill hidden on mobile — category already shown in body (.product-card__meta-cat),
+           and the pill overlapped the product image */
         .product-card__cat {
-            top: 9px;
-            left: 9px;
-            font-size: 8.5px;
-            letter-spacing: 0.07em;
-            padding: 4px 9px;
-            max-width: calc(100% - 50px);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            display: none;
         }
 
         span.product-card__new {
-            top: 37px;
-            left: 10px;
+            top: 9px;
+            left: 9px;
             font-size: 8.5px;
             padding: 4px 9px;
         }
