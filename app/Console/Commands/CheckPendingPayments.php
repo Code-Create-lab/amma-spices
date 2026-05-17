@@ -42,7 +42,7 @@ class CheckPendingPayments extends Command
         $days = $this->option('days');
         $now = Carbon::now('Asia/Kolkata');
 
-        Log::info('Pending payments check started', [
+        Log::channel('payments')->info('Pending payments check started', [
             'limit' => $limit,
             'days' => $days,
             'datetime' => Carbon::now()->toDateTimeString()
@@ -90,12 +90,12 @@ class CheckPendingPayments extends Command
                     // $progressBar->advance();
                     // continue;
                     $orderId = $order->razorpay_order_id;
-                    Log::info('razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id]);
+                    Log::channel('payments')->info('razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id]);
                     if(!empty($orderId))
                     {
                         $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
                         $payments = $api->order->fetch($orderId)->payments();
-                        Log::info('Fetch payments for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payments]);
+                        Log::channel('payments')->info('Fetch payments for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payments]);
 
                         /**
                          * -------------------------------------
@@ -111,16 +111,16 @@ class CheckPendingPayments extends Command
 
                             $this->markOrderAsFailed($order);
 
-                            Log::info('No payment Found for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payments]);
+                            Log::channel('payments')->info('No payment Found for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payments]);
 
                         }
 
                         $payment = collect($payments->items)->where('status', 'captured')->first();
 
-                        Log::info('Fetch payment items for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payment, 'payment items' => $payments->items]);
+                        Log::channel('payments')->info('Fetch payment items for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payment, 'payment items' => $payments->items]);
 
                         if ($payment) {
-                            Log::info('payment Found for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payments]);
+                            Log::channel('payments')->info('payment Found for razorpay order id',['order_id' => $order->order_id,'razorpay_order_id' => $order->razorpay_order_id,'payment' => $payments]);
 
                             // CheckRazorpayPaymentStatusJob::dispatch(
                             //     $order->order_id,
@@ -187,7 +187,7 @@ class CheckPendingPayments extends Command
             ]
         );
 
-        Log::info('Pending payments check completed', [
+        Log::channel('payments')->info('Pending payments check completed', [
             'dispatched' => $dispatched,
             'skipped' => $skipped,
             'errors' => $errors,
@@ -220,7 +220,7 @@ class CheckPendingPayments extends Command
             //         Variation::where('id', $item->variation_id)
             //             ->increment('stock', $item->quantity);
 
-            //         Log::info('Stock restored for abandoned order', [
+            //         Log::channel('payments')->info('Stock restored for abandoned order', [
             //             'order_id' => $order->order_id,
             //             'variation_id' => $item->variation_id,
             //             'quantity' => $item->quantity
@@ -266,7 +266,7 @@ class CheckPendingPayments extends Command
                 try {
                     Mail::to($order->user->email)->send(new PaymentFailed($order));
 
-                    Log::info('Payment failed email sent', [
+                    Log::channel('payments')->info('Payment failed email sent', [
                         'order_id' => $order->order_id,
                         'email' => $order->user->email
                     ]);
@@ -278,7 +278,7 @@ class CheckPendingPayments extends Command
                 }
             }
 
-            Log::info('order marked as failed successfully', [
+            Log::channel('payments')->info('order marked as failed successfully', [
                 'order_id' => $order->order_id,
                 'cart_id' => $order->cart_id,
                 'order_date' => $order->order_date,
@@ -362,7 +362,7 @@ class CheckPendingPayments extends Command
                             ->send(new PaymentSuccess($order));
                     }
                     
-                    Log::info('Payment success email sent', [
+                    Log::channel('payments')->info('Payment success email sent', [
                         'order_id' => $order->order_id,
                         'email' => $user->email
                     ]);
@@ -385,7 +385,7 @@ class CheckPendingPayments extends Command
                 }
             }
 
-            Log::info('Payment success processed via job', [
+            Log::channel('payments')->info('Payment success processed via job', [
                 'order_id' => $order->order_id,
                 'payment_id' => $paymentId
             ]);

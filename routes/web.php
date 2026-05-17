@@ -156,9 +156,19 @@ Route::get('/run-command', function () {
 
     // VIEW LOGS
     if ($action === 'logs') {
-        $logFile = storage_path('logs/laravel.log');
         $lines = request('lines', 500);
         $search = request('search');
+        $file = request('file', 'laravel');
+
+        // Whitelist of viewable logs. 'payments' is a daily channel,
+        // so resolve to the most recent dated file.
+        if ($file === 'payments') {
+            $paymentFiles = glob(storage_path('logs/payments-*.log'));
+            $logFile = $paymentFiles ? end($paymentFiles) : storage_path('logs/payments.log');
+        } else {
+            $file = 'laravel';
+            $logFile = storage_path('logs/laravel.log');
+        }
 
         if (!file_exists($logFile)) {
             $logs = ['Log file not found!'];
@@ -248,6 +258,10 @@ Route::get('/run-command', function () {
                 <form method="GET" style="display: inline;">
                     <input type="hidden" name="password" value="<?= $password ?>">
                     <input type="hidden" name="action" value="logs">
+                    <select name="file">
+                        <option value="laravel" <?= $file === 'laravel' ? 'selected' : '' ?>>Laravel log</option>
+                        <option value="payments" <?= $file === 'payments' ? 'selected' : '' ?>>Payments log</option>
+                    </select>
                     <input type="text" name="search" placeholder="Search logs..." value="<?= htmlspecialchars($search ?? '') ?>">
                     <select name="lines">
                         <option value="200" <?= $lines == 200 ? 'selected' : '' ?>>200 lines</option>
