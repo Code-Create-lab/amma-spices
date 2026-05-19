@@ -95,6 +95,13 @@
                                     <td align="right">Shipping:</td>
                                     <td align="right">₹{{ number_format($order->delivery_charge, 2) }}</td>
                                 </tr>
+                                @if (($order->cod_charge ?? 0) > 0)
+                                    <tr>
+                                        <td align="right">COD Charges:</td>
+                                        <td align="right" width="120">
+                                            ₹{{ number_format($order->cod_charge, 2) }}</td>
+                                    </tr>
+                                @endif
                                 @if ($order->coupon_discount > 0)
                                     <tr>
                                         <td align="right">Coupon Discount:</td>
@@ -104,9 +111,17 @@
                                 @endif
                                 <tr>
                                     <td align="right"><strong>Total:</strong></td>
-                                    <td align="right"><strong>₹{{ number_format($order->total_price, 2) }}</strong>
+                                    <td align="right"><strong>₹{{ number_format($order->total_price, strtolower($order->payment_method ?? '') === 'cod' ? 0 : 2) }}</strong>
                                     </td>
                                 </tr>
+                                @if (strtolower($order->payment_method ?? '') === 'cod')
+                                    <tr>
+                                        <td colspan="2" align="right"
+                                            style="font-size:11px; color:#9ca3af; font-style:italic;">
+                                            Rounded off to nearest ₹1 for Cash on Delivery
+                                        </td>
+                                    </tr>
+                                @endif
                             </table>
                         </td>
                     </tr>

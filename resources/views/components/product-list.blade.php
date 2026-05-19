@@ -109,7 +109,7 @@ $products = Product::with(['category','images','variations','cart'])
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
-        padding:50px
+        padding: 50px
     }
 
     .product-card:hover .product-card__slide img {
@@ -250,6 +250,11 @@ $products = Product::with(['category','images','variations','cart'])
         letter-spacing: 0.08em;
         text-transform: uppercase;
         font-family: sans-serif;
+        flex: 1;
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .product-card__badge {
@@ -261,6 +266,7 @@ $products = Product::with(['category','images','variations','cart'])
         padding: 2px 8px;
         border-radius: 10px;
         letter-spacing: 0.04em;
+        flex-shrink: 0;
     }
 
     /* Title */
@@ -522,19 +528,206 @@ $products = Product::with(['category','images','variations','cart'])
         font-family: sans-serif;
     }
 
+    /* ─────────────────────────────────────────────
+       MOBILE — 2 products per row, clean card
+    ───────────────────────────────────────────── */
     @media (max-width: 767.98px) {
+
+        /* 2-up grid */
+        .featured-list-slider .row,
+        .product-grid-row {
+            margin-left: -5px;
+            margin-right: -5px;
+        }
+
+        .input-group {
+
+            width: 100%;
+        }
+
+        .featured-list-slider .row>.col-md-3,
+        .product-grid-row>.col-md-3 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        /* Card */
+        .product-card {
+            max-width: 100% !important;
+            margin: 0 0 12px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(75, 59, 46, 0.08);
+        }
+
+        .product-card:hover {
+            transform: none;
+            /* no lift on touch devices */
+            box-shadow: 0 6px 18px rgba(75, 59, 46, 0.08);
+        }
+
+        /* Thumbnail — square, centred image */
         .product-card__thumb {
             height: auto;
-            aspect-ratio: 5 / 6;
+            aspect-ratio: 1 / 1;
+        }
+
+        .product-card__slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .product-card__slide img {
             object-position: center;
+            padding: 22px;
         }
 
         .product-card:hover .product-card__slide img {
             transform: none;
             filter: brightness(0.97);
+        }
+
+        /* No hover arrows on touch */
+        .product-card__arrow {
+            display: none;
+        }
+
+        /* Category pill hidden on mobile — category already shown in body (.product-card__meta-cat),
+           and the pill overlapped the product image */
+        .product-card__cat {
+            display: none;
+        }
+
+        span.product-card__new {
+            top: 9px;
+            left: 9px;
+            font-size: 8.5px;
+            padding: 4px 9px;
+        }
+
+        .product-card__wishlist {
+            top: 9px;
+            right: 9px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .product-card__wishlist svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        .product-card__dots {
+            bottom: 9px;
+            gap: 4px;
+        }
+
+        .product-card__dot {
+            width: 5px;
+            height: 5px;
+        }
+
+        .product-card__dot.active {
+            width: 14px;
+        }
+
+        /* Body */
+        .product-card__body {
+            padding: 13px 12px 8px;
+        }
+
+        .product-card__meta {
+            margin-bottom: 7px;
+        }
+
+        .product-card__meta-cat {
+            font-size: 9.5px;
+            letter-spacing: 0.06em;
+        }
+
+        .product-card__badge {
+            font-size: 9px;
+            padding: 2px 7px;
+        }
+
+        .product-card__title {
+            font-size: 13.5px;
+            line-height: 1.4;
+            margin: 0 0 10px;
+            min-height: 38px;
+            /* reserve 2 lines — keeps price rows aligned across cards */
+        }
+
+        .product-card__price {
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .product-card__price-new {
+            font-size: 16px;
+        }
+
+        .product-card__price-old {
+            font-size: 11.5px;
+        }
+
+        /* Footer — add button and qty stacked in 2 rows */
+        .product-card__footer {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 11px 12px 13px;
+            gap: 8px;
+        }
+
+        .product-card__qty {
+            width: 100%;
+            font-size: 12.5px;
+            padding: 8px 3px !important;
+        }
+
+        .product-card__cart-btn {
+            font-size: 10px;
+            letter-spacing: 0.05em;
+            padding: 9px 4px;
+            gap: 5px;
+        }
+
+        .product-card__cart-btn svg {
+            width: 13px;
+            height: 13px;
+        }
+    }
+
+    /* Extra-small phones — tighten a little */
+    @media (max-width: 360px) {
+        .product-card__slide img {
+            padding: 16px;
+        }
+
+        .product-card__body {
+            padding: 11px 10px 7px;
+        }
+
+        .product-card__title {
+            font-size: 12.5px;
+            min-height: 35px;
+        }
+
+        .product-card__price-new {
+            font-size: 14.5px;
+        }
+
+        .product-card__cart-btn {
+            font-size: 9px;
+            letter-spacing: 0.03em;
+            padding: 9px 2px;
+        }
+
+        .product-card__qty {
+            width: 100%;
+            font-size: 12px;
         }
     }
 </style>

@@ -41,7 +41,7 @@ class MarkAbandonedOrdersFailed extends Command
         $threshold = $now->copy()->subMinutes($minutes);
         $orderCreatedAtSql = "STR_TO_DATE(CONCAT(order_date, ' ', COALESCE(order_time, '00:00:00')), '%Y-%m-%d %H:%i:%s')";
 
-        Log::info('Marking abandoned orders as failed', [
+        Log::channel('payments')->info('Marking abandoned orders as failed', [
             'limit' => $limit,
             'minutes' => $minutes,
             'threshold' => $threshold->toDateTimeString(),
@@ -138,7 +138,7 @@ class MarkAbandonedOrdersFailed extends Command
             $this->info('Run without --dry-run flag to actually mark orders as failed');
         }
 
-        Log::info('Abandoned orders marked as failed completed', [
+        Log::channel('payments')->info('Abandoned orders marked as failed completed', [
             'processed' => $processed,
             'stock_restored' => $stockRestored,
             'errors' => $errors,
@@ -155,7 +155,7 @@ class MarkAbandonedOrdersFailed extends Command
     private function markOrderAsFailed($order, $dryRun = false)
     {
         if ($dryRun) {
-            Log::info('DRY RUN: Would mark order as failed', [
+            Log::channel('payments')->info('DRY RUN: Would mark order as failed', [
                 'order_id' => $order->order_id,
                 'cart_id' => $order->cart_id,
                 'order_date' => $order->order_date,
@@ -181,7 +181,7 @@ class MarkAbandonedOrdersFailed extends Command
             //         Variation::where('id', $item->variation_id)
             //             ->increment('stock', $item->quantity);
 
-            //         Log::info('Stock restored for abandoned order', [
+            //         Log::channel('payments')->info('Stock restored for abandoned order', [
             //             'order_id' => $order->order_id,
             //             'variation_id' => $item->variation_id,
             //             'quantity' => $item->quantity
@@ -227,7 +227,7 @@ class MarkAbandonedOrdersFailed extends Command
                 try {
                     Mail::to($order->user->email)->send(new PaymentFailed($order));
 
-                    Log::info('Payment failed email sent for abandoned order', [
+                    Log::channel('payments')->info('Payment failed email sent for abandoned order', [
                         'order_id' => $order->order_id,
                         'email' => $order->user->email
                     ]);
@@ -239,7 +239,7 @@ class MarkAbandonedOrdersFailed extends Command
                 }
             }
 
-            Log::info('Abandoned order marked as failed successfully', [
+            Log::channel('payments')->info('Abandoned order marked as failed successfully', [
                 'order_id' => $order->order_id,
                 'cart_id' => $order->cart_id,
                 'order_date' => $order->order_date,

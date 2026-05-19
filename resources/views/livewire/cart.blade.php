@@ -257,7 +257,7 @@
                                     <tbody>
                                         <tr class="summary-subtotal">
                                             <td>Subtotal:</td>
-                                            <td>₹{{ number_format($totalPriceProduct, 0, '.', ',') }}</td>
+                                            <td>₹{{ number_format($totalPriceProduct, 2, '.', ',') }}</td>
                                         </tr><!-- End .summary-subtotal -->
                                         <tr class="summary-subtotal">
                                             <td>Coupon</th>
@@ -269,7 +269,7 @@
                                                     <span class="remove-b" wire:click="removeCoupon"><i
                                                             class="icon-close"></i></span>
                                                 @endif
-                                                &nbsp;<span class="text-success">-₹{{ $discount ?? 0 }} </span>
+                                                &nbsp;<span class="text-success">-₹{{ number_format($discount ?? 0, 2, '.', ',') }} </span>
 
                                             </td>
                                         </tr>
@@ -281,9 +281,9 @@
                                                 <td>Shipping:</td>
                                                 <td>&nbsp;
                                                     @if (count($cart_items) != 0)
-                                                        ₹{{ count($cart_items) ? number_format($shippingAmount) : '0' }}
+                                                        ₹{{ count($cart_items) ? number_format($shippingAmount, 2, '.', ',') : '0.00' }}
                                                     @else
-                                                        ₹0
+                                                        ₹0.00
                                                     @endif
                                                 </td>
                                             @endif
@@ -310,9 +310,9 @@
                                             <td>
                                                 {{-- @dd($subTotal) --}}
                                                 @if (count($cart_items) != 0)
-                                                    ₹{{ number_format($subTotal, 0, '.', ',') }}
+                                                    ₹{{ number_format($subTotal, 2, '.', ',') }}
                                                 @else
-                                                    ₹0
+                                                    ₹0.00
                                                 @endif
                                             </td>
                                         </tr><!-- End .summary-total -->

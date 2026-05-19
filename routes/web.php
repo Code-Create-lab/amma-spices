@@ -156,9 +156,19 @@ Route::get('/run-command', function () {
 
     // VIEW LOGS
     if ($action === 'logs') {
-        $logFile = storage_path('logs/laravel.log');
         $lines = request('lines', 500);
         $search = request('search');
+        $file = request('file', 'laravel');
+
+        // Whitelist of viewable logs. 'payments' is a daily channel,
+        // so resolve to the most recent dated file.
+        if ($file === 'payments') {
+            $paymentFiles = glob(storage_path('logs/payments-*.log'));
+            $logFile = $paymentFiles ? end($paymentFiles) : storage_path('logs/payments.log');
+        } else {
+            $file = 'laravel';
+            $logFile = storage_path('logs/laravel.log');
+        }
 
         if (!file_exists($logFile)) {
             $logs = ['Log file not found!'];
@@ -248,6 +258,10 @@ Route::get('/run-command', function () {
                 <form method="GET" style="display: inline;">
                     <input type="hidden" name="password" value="<?= $password ?>">
                     <input type="hidden" name="action" value="logs">
+                    <select name="file">
+                        <option value="laravel" <?= $file === 'laravel' ? 'selected' : '' ?>>Laravel log</option>
+                        <option value="payments" <?= $file === 'payments' ? 'selected' : '' ?>>Payments log</option>
+                    </select>
                     <input type="text" name="search" placeholder="Search logs..." value="<?= htmlspecialchars($search ?? '') ?>">
                     <select name="lines">
                         <option value="200" <?= $lines == 200 ? 'selected' : '' ?>>200 lines</option>
@@ -845,6 +859,10 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::get('/shippings/{id}/edit', [App\Http\Controllers\Admin\ShippingController::class, 'edit'])->name('shippings.edit');
             Route::post('/shippings/{id}/update', [App\Http\Controllers\Admin\ShippingController::class, 'update'])->name('shippings.update');
             Route::delete('/shippings/{id}', [App\Http\Controllers\Admin\ShippingController::class, 'destroy'])->name('shippings.destroy');
+
+            Route::get('/cod-charges', [App\Http\Controllers\Admin\CodChargeController::class, 'index'])->name('cod-charges.index');
+            Route::get('/cod-charges/{id}/edit', [App\Http\Controllers\Admin\CodChargeController::class, 'edit'])->name('cod-charges.edit');
+            Route::post('/cod-charges/{id}/update', [App\Http\Controllers\Admin\CodChargeController::class, 'update'])->name('cod-charges.update');
 
             Route::get('report/tax', [TaxreportController::class, 'taxreport'])->name('taxreport');
             Route::post('report/taxdatewise', [TaxreportController::class, 'taxdatewise'])->name('taxdatewise');

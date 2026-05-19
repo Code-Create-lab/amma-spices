@@ -44,6 +44,7 @@ class Orders extends Model
         'rem_price',
         'coupon_discount',
         'delivery_charge',
+        'cod_charge',
         'coupon_id',
         'razorpay_order_id',
         'razorpay_refund_id	',

@@ -81,7 +81,7 @@
                                 style="height:14px;"><span></span></div>
                     </div>
                     {{-- <div class="cp-prod-grid"> --}}
-                    <div class="row">
+                    <div class="row product-grid-row">
                         <x-product-list :products="$category->products" />
                     </div>
 

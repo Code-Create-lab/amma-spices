@@ -708,7 +708,7 @@ class AdminorderController extends Controller
 
                     // PENDING → CONFIRM + CANCEL
                     if (strtolower($row->order_status) === 'pending') {
-                        if (strtolower($row->payment_status) === 'paid') {
+                        if (strtolower($row->payment_status) === 'paid' || strtolower($row->payment_method) === 'cod') {
                             $html .= '<button
                                 class="btn btn-primary btn-sm mr-1 mb-1 open-confirm-modal" id="confirmOrderBtn"
                                 data-order-id="' . $row->order_id . '">

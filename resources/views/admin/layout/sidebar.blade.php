@@ -228,6 +228,12 @@
                     <span class="menu-text">Shipping Fee Manage</span>
                 </a>
             </div>
+            <div class="menu-item  {{ request()->is('cod-charges*') ? 'active' : '' }}">
+                <a href="{{ route('cod-charges.index') }}" class="menu-link">
+                    <span class="menu-icon"><i class="fa fa-money-bill"></i></span>
+                    <span class="menu-text">COD Charge Manage</span>
+                </a>
+            </div>
 
             {{-- <div class="menu-item {{ request()->routeIs('admin.auto-publish.*') ? 'active' : '' }}">
                 <a href="{{ route('admin.auto-publish.index') }}" class="menu-link">

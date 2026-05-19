@@ -550,7 +550,7 @@
                                         {{-- @dd($cart_items_checkOut) --}}
                                         @foreach ($cart_items_checkOut as $item)
                                             @php
-                                                $shippingCharge = number_format($shippingAmount) ?? 0.0;
+                                                $shippingCharge = $shippingAmount ?? 0.0;
 
                                                 // dd($shippingAmount);
                                                 $mrp = round($item['variation']['mrp'] ?? $item['product']['base_mrp']);
@@ -597,13 +597,13 @@
                                                         @endif
                                                     </span>
                                                 </td>
-                                                <td> ₹{{ number_format(round($lineTotal), 0, '.', ',') }}</td>
+                                                <td> ₹{{ number_format($lineTotal, 2, '.', ',') }}</td>
                                             </tr>
                                         @endforeach
 
                                         <tr class="summary-subtotal">
                                             <td>Subtotal:</td>
-                                            <td>₹{{ number_format(round($subTotal1), 0, '.', ',') }}</td>
+                                            <td>₹{{ number_format($subTotal1, 2, '.', ',') }}</td>
                                         </tr><!-- End .summary-subtotal -->
 
                                         <tr class="coupon">
@@ -635,9 +635,29 @@
                                             @endif
                                         </tr>
 
+                                        @php
+                                            $codChargeApplied = $payment_option == 'COD' ? (float) $codCharge : 0;
+                                            $isCodOrder = $payment_option == 'COD';
+                                            $grandTotal = $subTotal1 - ($discount ?? 0) + $shippingCharge + $codChargeApplied;
+                                            $payableTotal = $isCodOrder ? round($grandTotal) : $grandTotal;
+                                        @endphp
+                                        @if ($codChargeApplied > 0)
+                                            <tr class="cod-charge">
+                                                <td>COD Charge:</td>
+                                                <td>₹{{ number_format($codChargeApplied, 2, '.', ',') }}</td>
+                                            </tr>
+                                        @endif
+
                                         <tr class="summary-total">
                                             <td>Total:</td>
-                                            <td> ₹{{ number_format(round($subTotal1 - ($discount ?? 0) + $shippingCharge), 2, '.', ',') }}
+                                            <td>
+                                                ₹{{ number_format($payableTotal, $isCodOrder ? 0 : 2, '.', ',') }}
+                                                @if ($isCodOrder)
+                                                    <small class="d-block text-muted"
+                                                        style="font-size:11px; font-weight:400; line-height:1.4; margin-top:2px;">
+                                                        Rounded off to nearest ₹1 for Cash on Delivery
+                                                    </small>
+                                                @endif
                                             </td>
                                         </tr><!-- End .summary-total -->
                                     </tbody>
@@ -645,18 +665,23 @@
 
 
                                 <div class="payment_methods">
-                                    {{-- <div class="cod_payment">
-
-                                        <input class="d-inline w-auto me-5px mb-0 p-0" type="radio"
-                                            name="payment-option" wire:model="payment_option" value="COD">
-                                        <span class="d-inline-block text-dark-gray fw-500">Cash On Delivery</span>
-                                    </div> --}}
                                     <div class="online_payment">
                                         <input class="d-inline w-auto me-5px mb-0 p-0" type="radio"
-                                            name="payment-option" checked wire:model="payment_option" id="online"
+                                            name="payment-option" wire:model.live="payment_option" id="online"
                                             value="ONLINE">
-                                        <span class="d-inline-block text-dark-gray fw-500" id="online">Online
+                                        <span class="d-inline-block text-dark-gray fw-500">Online
                                             Payment</span>
+                                    </div>
+                                    <div class="cod_payment mt-2">
+                                        <input class="d-inline w-auto me-5px mb-0 p-0" type="radio"
+                                            name="payment-option" wire:model.live="payment_option" id="cod"
+                                            value="COD">
+                                        <span class="d-inline-block text-dark-gray fw-500">Cash On Delivery
+                                            @if ($codCharge > 0)
+                                                <small class="text-muted">(+₹{{ number_format($codCharge, 2) }} COD
+                                                    charge)</small>
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
                                 {{-- <div class="accordion-summary" id="accordion-payment">

@@ -129,6 +129,14 @@
                                         ₹{{ number_format($order->delivery_charge ?? 0, 2) }}
                                     </td>
                                 </tr>
+                                @if (($order->cod_charge ?? 0) > 0)
+                                    <tr>
+                                        <td style="font-size:14px;">COD Charges</td>
+                                        <td align="right" style="font-size:14px;">
+                                            ₹{{ number_format($order->cod_charge, 2) }}
+                                        </td>
+                                    </tr>
+                                @endif
                                 @if ($order->coupon_discount ?? 0)
                                     <tr>
                                         <td style="font-size:14px;">Discount</td>
@@ -142,9 +150,17 @@
                                         Total Paid
                                     </td>
                                     <td align="right" style="padding-top:10px; font-size:16px; font-weight:bold;">
-                                        ₹{{ number_format($order->rem_price ?? 0, 2) }}
+                                        ₹{{ number_format($order->rem_price ?? 0, strtolower($order->payment_method ?? '') === 'cod' ? 0 : 2) }}
                                     </td>
                                 </tr>
+                                @if (strtolower($order->payment_method ?? '') === 'cod')
+                                    <tr>
+                                        <td colspan="2"
+                                            style="padding-top:4px; font-size:11px; color:#9ca3af; font-style:italic;">
+                                            Rounded off to nearest ₹1 for Cash on Delivery
+                                        </td>
+                                    </tr>
+                                @endif
                             </table>
                         </td>
                     </tr>

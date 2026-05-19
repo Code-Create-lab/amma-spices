@@ -212,7 +212,7 @@
     @endphp
     <main class="main">
         <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-            <div class="container d-flex align-items-center">
+            <div class="container-fluid d-flex align-items-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
 
