@@ -1609,7 +1609,7 @@ Route::get('/contact-us', [ContactUsController::class, 'index'])->name('contact-
 Route::post('/contact-us/store', [ContactUsController::class, 'store'])->name('contact-us.store');
 
 //About Us Routes
-Route::get('about-us', [AboutUsController::class, 'index'])->name('frontend.about-us');
+Route::get('about', [AboutUsController::class, 'index'])->name('frontend.about-us');
 
 //Privacy Policy Routes
 Route::get('/privacy-policy', [PrivacyPolicyController::class, 'index'])->name('frontend.privacy_policy');
