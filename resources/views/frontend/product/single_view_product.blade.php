@@ -1,5 +1,18 @@
 @extends('frontend.layouts.app', ['title' => ''])
 
+{{-- Meta Pixel: ViewContent — fires on this product page with live product data --}}
+@push('meta_pixel_events')
+    <script>
+        fbq('track', 'ViewContent', {
+            content_ids: ['{{ $response['slug'] ?? $response['id'] }}'],
+            content_name: @json($response['name'] ?? ''),
+            content_type: 'product',
+            value: {{ (float) ($response['variations'][0]['price'] ?? $response['base_price'] ?? 0) }},
+            currency: '{{ config('services.meta_pixel.currency') }}'
+        });
+    </script>
+@endpush
+
 <style>
     .product-details-quantity .input-group.input-spinner {
         width: 50%;
@@ -1173,7 +1186,15 @@
                             };
                             toastr.success(response.message);
 
-
+                            // Meta Pixel AddToCart — live slug + displayed price + chosen qty
+                            var atcPrice = parseFloat(
+                                ($('#product-price-current').text() || '').replace(/[^0-9.]/g, '')
+                            );
+                            window.trackMetaAddToCart(
+                                '{{ $response['slug'] ?? $response['id'] }}',
+                                isNaN(atcPrice) ? {{ (float) ($response['base_price'] ?? 0) }} : atcPrice,
+                                cartData.quantity
+                            );
 
                             const productId = $(this).data('id');
 

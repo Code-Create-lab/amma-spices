@@ -28,6 +28,8 @@
     <meta name="developer" content="10xCart">
     <meta name="copyright" content="© 2026 10xCart">
 
+    <link rel="canonical" href="{{ url()->current() }}">
+
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icon/favicon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/icon/favicon.png') }}">
@@ -54,6 +56,35 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
+    <!-- Meta Pixel Code -->
+    <script>
+        ! function(f, b, e, v, n, t, s) {
+            if (f.fbq) return;
+            n = f.fbq = function() {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = '2.0';
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '{{ config('services.meta_pixel.id') }}');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id={{ config('services.meta_pixel.id') }}&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
+
+    {{-- Page-specific Meta Pixel events (ViewContent / InitiateCheckout / Purchase) pushed here --}}
+    @stack('meta_pixel_events')
 
     @if (Route::currentRouteName() !== 'index')
         <style>
@@ -418,6 +449,21 @@
         // });
 
 
+        // Meta Pixel — reusable AddToCart tracker. Values dynamic, never hardcoded.
+        window.trackMetaAddToCart = function(productId, productPrice, quantity) {
+            if (typeof fbq !== 'function' || !productId) return;
+            const payload = {
+                content_ids: [String(productId)],
+                content_type: 'product',
+                currency: '{{ config('services.meta_pixel.currency') }}'
+            };
+            const price = parseFloat(productPrice);
+            if (!isNaN(price)) {
+                payload.value = price * (parseInt(quantity) || 1);
+            }
+            fbq('track', 'AddToCart', payload);
+        };
+
         function addTowishListClass(element) {
             console.log($(element).html()); // Log the HTML content
             $(element).addClass('liked'); // Add a class
@@ -458,6 +504,13 @@
                     product_id: productId,
                     quantity: quantity
                 });
+
+                // Meta Pixel AddToCart — price/qty read from data attributes (dynamic)
+                window.trackMetaAddToCart(
+                    productId,
+                    $container.data('product-price') || $(this).data('product-price'),
+                    quantity
+                );
             });
             /* From laravel product list component with updated code  */
 
@@ -481,6 +534,13 @@
                     product_id: productId,
                     quantity: quantity
                 });
+
+                // Meta Pixel AddToCart — price/qty read from data attributes (dynamic)
+                window.trackMetaAddToCart(
+                    productId,
+                    $(this).data('product-price') || $container.data('product-price'),
+                    quantity
+                );
             });
 
             // console.log('addToCart dispatched with ID:', productId);

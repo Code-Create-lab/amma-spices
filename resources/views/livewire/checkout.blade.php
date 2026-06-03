@@ -663,6 +663,17 @@
                                     </tbody>
                                 </table><!-- End .table table-summary -->
 
+                                {{-- Meta Pixel: InitiateCheckout — live cart total, fires once per page load --}}
+                                <script>
+                                    (function() {
+                                        if (window.__metaCheckoutFired || typeof fbq !== 'function') return;
+                                        window.__metaCheckoutFired = true;
+                                        fbq('track', 'InitiateCheckout', {
+                                            value: {{ (float) $payableTotal }},
+                                            currency: '{{ config('services.meta_pixel.currency') }}'
+                                        });
+                                    })();
+                                </script>
 
                                 <div class="payment_methods">
                                     <div class="online_payment">

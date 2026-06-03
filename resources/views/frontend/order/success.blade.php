@@ -1,6 +1,22 @@
 @extends('frontend.layouts.app', ['title' => ''])
 
-
+{{-- Meta Pixel: Purchase — most important event. Live order data, real order_id for dedup. --}}
+@php
+    $metaContentIds = $order->orderItems
+        ? $order->orderItems->pluck('varient_id')->filter()->map(fn ($id) => (string) $id)->values()->all()
+        : [];
+@endphp
+@push('meta_pixel_events')
+    <script>
+        fbq('track', 'Purchase', {
+            content_ids: @json($metaContentIds),
+            content_type: 'product',
+            value: {{ (float) ($order->total_price ?? 0) }},
+            currency: '{{ config('services.meta_pixel.currency') }}',
+            order_id: @json((string) $order->cart_id)
+        });
+    </script>
+@endpush
 
 @section('content')
     <style>
