@@ -66,10 +66,5 @@ return [
         'webhook_secret' => env('BLOG_ENGINE_WEBHOOK_SECRET'),
     ],
 
-    'meta_pixel' => [
-        'id' => env('META_PIXEL_ID', '406462894526097'),
-        'currency' => env('META_PIXEL_CURRENCY', 'INR'),
-    ],
-
 
 ];

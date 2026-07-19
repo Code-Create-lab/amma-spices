@@ -76,11 +76,11 @@
             s.parentNode.insertBefore(t, s)
         }(window, document, 'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '{{ config('services.meta_pixel.id') }}');
+        fbq('init', '406462894526097');
         fbq('track', 'PageView');
     </script>
     <noscript><img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?id={{ config('services.meta_pixel.id') }}&ev=PageView&noscript=1" /></noscript>
+            src="https://www.facebook.com/tr?id=406462894526097&ev=PageView&noscript=1" /></noscript>
     <!-- End Meta Pixel Code -->
 
     {{-- Page-specific Meta Pixel events (ViewContent / InitiateCheckout / Purchase) pushed here --}}
@@ -455,7 +455,7 @@
             const payload = {
                 content_ids: [String(productId)],
                 content_type: 'product',
-                currency: '{{ config('services.meta_pixel.currency') }}'
+                currency: 'INR'
             };
             const price = parseFloat(productPrice);
             if (!isNaN(price)) {

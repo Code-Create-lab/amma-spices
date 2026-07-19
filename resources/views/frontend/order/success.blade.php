@@ -12,7 +12,7 @@
             content_ids: @json($metaContentIds),
             content_type: 'product',
             value: {{ (float) ($order->total_price ?? 0) }},
-            currency: '{{ config('services.meta_pixel.currency') }}',
+            currency: 'INR',
             order_id: @json((string) $order->cart_id)
         });
     </script>

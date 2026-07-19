@@ -670,7 +670,7 @@
                                         window.__metaCheckoutFired = true;
                                         fbq('track', 'InitiateCheckout', {
                                             value: {{ (float) $payableTotal }},
-                                            currency: '{{ config('services.meta_pixel.currency') }}'
+                                            currency: 'INR'
                                         });
                                     })();
                                 </script>

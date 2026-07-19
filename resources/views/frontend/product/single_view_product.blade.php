@@ -8,7 +8,7 @@
             content_name: @json($response['name'] ?? ''),
             content_type: 'product',
             value: {{ (float) ($response['variations'][0]['price'] ?? $response['base_price'] ?? 0) }},
-            currency: '{{ config('services.meta_pixel.currency') }}'
+            currency: 'INR'
         });
     </script>
 @endpush
