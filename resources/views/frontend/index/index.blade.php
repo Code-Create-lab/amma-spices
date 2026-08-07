@@ -597,6 +597,231 @@
 
 
             {{-- ══════════════════════════════════════════
+             WHAT IS NOT IN OUR MASALA — PURITY PROMISE
+             Lab report: drop the PDF at
+             public/assets/docs/lab-report.pdf and the CTA
+             links to it automatically; otherwise it falls
+             back to the contact page.
+        ══════════════════════════════════════════ --}}
+            @php
+                $labReportPath = 'assets/docs/lab-report.pdf';
+                $labReportUrl = file_exists(public_path($labReportPath))
+                    ? asset($labReportPath)
+                    : route('contact-us.index');
+                $labReportIsFile = file_exists(public_path($labReportPath));
+
+                $purityItems = [
+                    [
+                        'title' => 'No Preservatives',
+                        'text' => 'Nothing added to stretch shelf life. Ground fresh in small batches, every week.',
+                        'icon' => '<path d="M9 3h6M10 3v5.2L4.8 17A2.4 2.4 0 0 0 6.9 20.6h10.2A2.4 2.4 0 0 0 19.2 17L14 8.2V3"/>',
+                    ],
+                    [
+                        'title' => 'No Artificial Colours',
+                        'text' => 'The colour you see comes from the spice itself — never from a dye or lake.',
+                        'icon' => '<path d="M12 3.2s5.6 5.3 5.6 9.1a5.6 5.6 0 1 1-11.2 0C6.4 8.5 12 3.2 12 3.2Z"/>',
+                    ],
+                    [
+                        'title' => 'No Fillers or Starch',
+                        'text' => 'No rice flour, husk or bran bulking up the weight of your pack.',
+                        'icon' => '<path d="M12 21V9M12 9c-2.6 0-4.2-1.7-4.2-4.2 2.6 0 4.2 1.7 4.2 4.2Zm0 0c2.6 0 4.2-1.7 4.2-4.2-2.6 0-4.2 1.7-4.2 4.2Zm0 6c-2.6 0-4.2-1.7-4.2-4.2 2.6 0 4.2 1.7 4.2 4.2Zm0 0c2.6 0 4.2-1.7 4.2-4.2-2.6 0-4.2 1.7-4.2 4.2Z"/>',
+                    ],
+                    [
+                        'title' => 'No Flavour Enhancers',
+                        'text' => 'No MSG, no synthetic flavouring. The aroma is the natural oil in the spice.',
+                        'icon' => '<path d="M13.4 2.8 5.2 13.4h6L10.6 21.2l8.2-10.6h-6l.6-7.8Z"/>',
+                    ],
+                    [
+                        'title' => 'No Anti-Caking Agents',
+                        'text' => 'No silica or chemical free-flow agents. Store it dry and it stays loose.',
+                        'icon' => '<circle cx="8" cy="8.4" r="1.7"/><circle cx="15.6" cy="10.4" r="1.7"/><circle cx="10.4" cy="15.6" r="1.7"/>',
+                    ],
+                    [
+                        'title' => 'No Unknown Sourcing',
+                        'text' => 'Sourced from farms we know by name and screened before it ever reaches the grinder.',
+                        'icon' => '<path d="M12 2.9 4.6 6v5.6c0 4.3 3.1 8.3 7.4 9.5 4.3-1.2 7.4-5.2 7.4-9.5V6L12 2.9Z"/>',
+                    ],
+                ];
+            @endphp
+            <div class="as-purity">
+                <div class="container">
+                    <div class="as-purity-label">Our Purity Promise</div>
+                    <div class="as-head">
+                        <h2>What is NOT in Our Masala</h2>
+                        <div class="as-divider"><span class="as-divider-dot"></span></div>
+                    </div>
+                    <p class="as-purity-lead">Most packet masala hides behind a long ingredient list. Ours is short on
+                        purpose — here is everything we leave out, and why.</p>
+
+                    <div class="as-purity-grid">
+                        @foreach ($purityItems as $item)
+                            <article class="as-purity-card">
+                                <span class="as-purity-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                                        {!! $item['icon'] !!}
+                                        <line x1="4" y1="20" x2="20" y2="4"></line>
+                                    </svg>
+                                </span>
+                                <div>
+                                    <h3 class="as-purity-title">{{ $item['title'] }}</h3>
+                                    <p class="as-purity-text">{{ $item['text'] }}</p>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="as-purity-foot">
+                        <p class="as-purity-foot-text">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M12 2.9 4.6 6v5.6c0 4.3 3.1 8.3 7.4 9.5 4.3-1.2 7.4-5.2 7.4-9.5V6L12 2.9Z" />
+                                <path d="m9 12 2.1 2.1L15.4 9.8" />
+                            </svg>
+                            <span>Every batch is lab-tested for pesticides, heavy metals and aflatoxins before it
+                                leaves our kitchen.</span>
+                        </p>
+                        <a href="{{ $labReportUrl }}" class="as-lab-btn"
+                            @if ($labReportIsFile) target="_blank" rel="noopener" @endif>
+                            Read Lab Report
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════════
+             COMPARISON TABLE — AMMA'S vs THE REST
+             Collapses into one card per row below 860px.
+        ══════════════════════════════════════════ --}}
+            @php
+                // verdict: yes | no | part  — each cell also carries words,
+                // so the meaning never depends on the colour of the mark alone.
+                $compareRows = [
+                    [
+                        'feature' => 'Freshness',
+                        'us' => ['yes', 'Ground in small batches, every week'],
+                        'packet' => ['no', 'Months old before it reaches your kitchen'],
+                        'mill' => ['part', 'Fresh, but ground in bulk lots'],
+                    ],
+                    [
+                        'feature' => 'Preservatives',
+                        'us' => ['yes', 'None. Ever.'],
+                        'packet' => ['no', 'Commonly added for shelf life'],
+                        'mill' => ['part', 'Varies — rarely declared'],
+                    ],
+                    [
+                        'feature' => 'Artificial colours',
+                        'us' => ['yes', 'Colour comes from the spice itself'],
+                        'packet' => ['no', 'Often dyed for a brighter look'],
+                        'mill' => ['part', 'Depends on the lot bought'],
+                    ],
+                    [
+                        'feature' => 'Fillers &amp; starch',
+                        'us' => ['yes', 'Zero bulking agents'],
+                        'packet' => ['no', 'Husk, bran or flour used to cut cost'],
+                        'mill' => ['part', 'Not always disclosed'],
+                    ],
+                    [
+                        'feature' => 'Lab testing',
+                        'us' => ['yes', 'Every batch, report on request'],
+                        'packet' => ['no', 'Rarely shared with the buyer'],
+                        'mill' => ['no', 'Not tested'],
+                    ],
+                    [
+                        'feature' => 'Recipe',
+                        'us' => ['yes', "Amma's family recipe, unchanged"],
+                        'packet' => ['no', 'Mass factory blend'],
+                        'mill' => ['part', 'Plain grind, no blending'],
+                    ],
+                    [
+                        'feature' => 'Sourcing',
+                        'us' => ['yes', 'Farms we know by name'],
+                        'packet' => ['no', 'Origin not disclosed'],
+                        'mill' => ['part', 'Open market lots'],
+                    ],
+                    [
+                        'feature' => 'Aroma &amp; natural oils',
+                        'us' => ['yes', 'Oils intact — you smell it on opening'],
+                        'packet' => ['no', 'Faded after months on the shelf'],
+                        'mill' => ['part', 'Good only if used quickly'],
+                    ],
+                ];
+
+                $verdictIcons = [
+                    'yes' => '<path d="M20 6 9 17l-5-5"/>',
+                    'no' => '<path d="M18 6 6 18M6 6l12 12"/>',
+                    'part' => '<path d="M5 12h14"/>',
+                ];
+                $verdictLabels = ['yes' => 'Yes', 'no' => 'No', 'part' => 'Partly'];
+            @endphp
+            <div class="as-compare">
+                <div class="container">
+                    <div class="as-compare-label">Honest Comparison</div>
+                    <div class="as-head">
+                        <h2>Amma's vs the Packet on the Shelf</h2>
+                        <div class="as-divider"><span class="as-divider-dot"></span></div>
+                    </div>
+                    <p class="as-compare-lead">Same spice name on the label, very different jar. Here is the plain
+                        difference between our masala, a supermarket packet, and the local mill.</p>
+
+                    <div class="as-compare-scroll">
+                        <table class="as-compare-table">
+                            <caption class="as-sr-only">Comparison of Amma's Spices with supermarket packet masala and
+                                local mill masala across freshness, additives, testing and sourcing</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">What matters</th>
+                                    <th scope="col" class="is-us">
+                                        Amma's Spices
+                                        <span class="as-compare-badge">OUR PROMISE</span>
+                                    </th>
+                                    <th scope="col">Supermarket packet</th>
+                                    <th scope="col">Local mill</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($compareRows as $row)
+                                    <tr>
+                                        <th scope="row">{!! $row['feature'] !!}</th>
+                                        @foreach (['us' => "Amma's", 'packet' => 'Packet', 'mill' => 'Local mill'] as $key => $label)
+                                            @php $verdict = $row[$key][0]; @endphp
+                                            <td data-label="{{ $label }}" class="{{ $key === 'us' ? 'is-us' : '' }}">
+                                                <span class="as-cmp-cell as-cmp-{{ $verdict }}">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2.4" stroke-linecap="round"
+                                                        stroke-linejoin="round" role="img"
+                                                        aria-label="{{ $verdictLabels[$verdict] }}">
+                                                        {!! $verdictIcons[$verdict] !!}
+                                                    </svg>
+                                                    <span>{{ $row[$key][1] }}</span>
+                                                </span>
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="as-compare-foot">
+                        <p class="as-compare-note">Comparison based on commonly sold packet masala and open-mill grinding
+                            practice. Our claims are backed by the batch lab report.</p>
+                        <a href="{{ route('shop.page.index') }}" class="as-compare-btn">
+                            Shop Amma's Masala
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════════
              OUR STORY
         ══════════════════════════════════════════ --}}
             <div class="as-story">
