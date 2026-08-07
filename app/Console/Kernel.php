@@ -44,6 +44,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('refunds:process')->hourly();
 
+        // Keep activity tracking tables from growing unbounded
+        $schedule->command('activity:prune --days=90')->dailyAt('03:30');
+
         // Retry failed jobs twice a week
         $schedule->command('queue:retry all')
             ->weeklyOn(2, '02:00'); // Tuesday 2 AM

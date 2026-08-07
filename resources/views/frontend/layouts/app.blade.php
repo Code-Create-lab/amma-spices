@@ -89,7 +89,14 @@
     @if (Route::currentRouteName() !== 'index')
         <style>
             main {
-                margin-top: 10rem;
+                /* 10rem base + announcement bar height */
+                margin-top: calc(10rem + 38px);
+            }
+
+            @media (max-width: 767px) {
+                main {
+                    margin-top: calc(10rem + 34px);
+                }
             }
         </style>
     @endif
@@ -642,6 +649,7 @@
         window.csrfToken = "{{ csrf_token() }}";
         window.authUser = "{{ auth()->user() }}";
     </script>
+    @include('frontend.partials.activity_tracker')
     @stack('scripts')
     <script>
         function shouldCelebrateToast(toastEl) {

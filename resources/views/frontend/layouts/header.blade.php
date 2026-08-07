@@ -170,6 +170,8 @@
 {{-- ── HEADER MARKUP (unchanged structure, classes preserved) ── --}}
 <header class="header header-28 sticky-header">
 
+    @include('frontend.partials.announcement_bar')
+
     <div class="sticky-wrapper">
 
         <div class="header-top">

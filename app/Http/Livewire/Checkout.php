@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 use App\Models\Shipping;
+use App\Models\UserActivity;
 use App\Models\CodCharge;
 use App\Jobs\OrderPlacedEmailJob;
 use App\Jobs\SendOrderNotificationJob;
@@ -1296,6 +1297,13 @@ class Checkout extends Component
 
             DB::commit();
 
+            UserActivity::recordServerEvent('address_added', null, [
+                'address_uuid' => $address->uuid,
+                'type' => $address->type,
+                'city' => $address->city,
+                'pincode' => $address->pincode,
+            ]);
+
             if (!Auth::check()) {
                 $this->dispatch('guest-checkout-synced', [
                     'mode' => 'guest',
@@ -1587,10 +1595,9 @@ class Checkout extends Component
                 // Variation::where('id', $item->variation_id)->decrement('stock', $item->quantity);
             }
 
-            // Cart::where('user_id', Auth::id())->delete();
-            session()->forget(['cart', 'addressView', 'coupon_code']);
-
-
+            // Cart and session are cleared only after payment succeeds:
+            // COD → below, online → Razorpay success callback/webhook.
+            // Clearing here wiped the cart when the user backed out of the gateway.
 
             DB::commit();
 
@@ -1620,6 +1627,7 @@ class Checkout extends Component
                     Variation::where('id', $item->variation_id)->decrement('stock', $item->quantity);
                 }
                 Cart::where('user_id', $checkoutUserId)->delete();
+                session()->forget(['cart', 'addressView', 'coupon_code']);
 
 
                 Log::info('Payment Success Processed:', [
@@ -1832,6 +1840,28 @@ class Checkout extends Component
     }
 
     // FIXED: Properly initialize address data when showing existing address
+    public function updatedAddressId($value)
+    {
+        if (!$value) {
+            return;
+        }
+
+        $address = $this->accessibleAddressesQuery()
+            ->where('uuid', $value)
+            ->first();
+
+        if (!$address) {
+            return;
+        }
+
+        UserActivity::recordServerEvent('address_selected', null, [
+            'address_uuid' => $address->uuid,
+            'type' => $address->type,
+            'city' => $address->city,
+            'pincode' => $address->pincode,
+        ]);
+    }
+
     public function showAddress($addressId)
     {
         $getAddress = $this->accessibleAddressesQuery()

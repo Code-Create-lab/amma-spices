@@ -239,3 +239,17 @@ if (!function_exists('sendWhatsAppNotification')) {
         }
     }
 }
+
+if (!function_exists('activity_duration_format')) {
+    function activity_duration_format($seconds): string
+    {
+        $seconds = (int) $seconds;
+        if ($seconds < 60) {
+            return $seconds . 's';
+        }
+        if ($seconds < 3600) {
+            return floor($seconds / 60) . 'm ' . ($seconds % 60) . 's';
+        }
+        return floor($seconds / 3600) . 'h ' . floor(($seconds % 3600) / 60) . 'm';
+    }
+}

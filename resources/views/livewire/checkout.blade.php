@@ -255,7 +255,7 @@
                             {{-- @dd($this->addresses) --}}
                             @foreach ($this->addresses as $address)
                                 <div class="address-item address_page">
-                                    <input name="address_id" wire:model="address_id" type="radio"
+                                    <input name="address_id" wire:model.live="address_id" type="radio"
                                         id="{{ $address->uuid }}" value="{{ $address->uuid }}"
                                         {{ $loop->first ? 'checked=checked' : '' }} class="me-2 mt-1">
 

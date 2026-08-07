@@ -66,5 +66,9 @@ return [
         'webhook_secret' => env('BLOG_ENGINE_WEBHOOK_SECRET'),
     ],
 
+    'activity_tracker' => [
+        'enabled' => env('ACTIVITY_TRACKING_ENABLED', true),
+    ],
+
 
 ];

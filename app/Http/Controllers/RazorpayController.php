@@ -201,16 +201,20 @@ class RazorpayController extends Controller
                 return;
             }
 
-            // Check if already processed (idempotency)
+            DB::beginTransaction();
+
+            // Re-fetch under row lock, then idempotency check — prevents the browser
+            // callback and this webhook from both decrementing stock.
+            $order = Orders::where('razorpay_order_id', $razorpayOrderId)->lockForUpdate()->first();
+
             if (in_array(strtolower($order->payment_status), ['paid', 'success'])) {
+                DB::commit();
                 Log::info('Order already processed via webhook', [
                     'order_id' => $order->order_id,
                     'payment_status' => $order->payment_status
                 ]);
                 return;
             }
-
-            DB::beginTransaction();
 
             // Update order
             $order->update([
@@ -244,9 +248,9 @@ class RazorpayController extends Controller
                 ]
             );
 
-            // Reduce stock
-            $storeOrder = StoreOrders::where('order_cart_id', $order->cart_id)->first();
-            if ($storeOrder) {
+            // Reduce stock for every item in the order, not just the first
+            $storeOrders = StoreOrders::where('order_cart_id', $order->cart_id)->get();
+            foreach ($storeOrders as $storeOrder) {
                 Variation::where('id', $storeOrder->varient_id)
                     ->decrement('stock', $storeOrder->quantity);
             }
@@ -542,6 +546,7 @@ class RazorpayController extends Controller
                 ]);
 
                 $this->restoreAuthSessionIfAllowed($request, $order);
+                session()->forget(['cart', 'addressView', 'coupon_code']);
                 $encryptedId = Crypt::encrypt($order->order_id);
                 return redirect()->route('customer.orders.order_success', ['orderId' => $encryptedId]);
             }
@@ -556,6 +561,18 @@ class RazorpayController extends Controller
             $providerReference = 'BTX-' . strtoupper(Str::random(12));
 
             DB::beginTransaction();
+
+            // Re-check under row lock so the webhook and this callback can't both
+            // process the same payment (double stock decrement).
+            $order = Orders::where('razorpay_order_id', $razorpay_order_id)->lockForUpdate()->first();
+
+            if (in_array(strtolower($order->payment_status), ['paid', 'success'])) {
+                DB::commit();
+                $this->restoreAuthSessionIfAllowed($request, $order);
+                session()->forget(['cart', 'addressView', 'coupon_code']);
+                $encryptedId = Crypt::encrypt($order->order_id);
+                return redirect()->route('customer.orders.order_success', ['orderId' => $encryptedId]);
+            }
 
             switch (strtolower($status)) {
                 case 'captured':
@@ -621,12 +638,12 @@ class RazorpayController extends Controller
                         ]);
                     }
 
-                    $storeOrder = StoreOrders::where('order_cart_id', $order->cart_id)->first();
-                    $productVarientId = $storeOrder->varient_id;
-                    $productOrderQty = $storeOrder->quantity;
-
-                    Variation::where('id', $productVarientId)->decrement('stock', $productOrderQty);
-
+                    // Decrement stock for every item in the order, not just the first
+                    $storeOrders = StoreOrders::where('order_cart_id', $order->cart_id)->get();
+                    foreach ($storeOrders as $storeOrder) {
+                        Variation::where('id', $storeOrder->varient_id)
+                            ->decrement('stock', $storeOrder->quantity);
+                    }
 
                     Log::info('Payment Success Processed:', [
                         'order_id' => $order->order_id,
@@ -637,6 +654,7 @@ class RazorpayController extends Controller
 
                     $this->restoreAuthSessionIfAllowed($request, $order);
                     Cart::where('user_id', $order->user_id)->delete();
+                    session()->forget(['cart', 'addressView', 'coupon_code']);
                     $encryptedId = Crypt::encrypt($order->order_id);
                     DB::commit();
 

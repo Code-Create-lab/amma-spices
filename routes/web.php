@@ -392,6 +392,14 @@ Route::group(['middleware' => ['verifylicense']], function () {
             Route::get('/cod-charges/{id}/edit', [App\Http\Controllers\Admin\CodChargeController::class, 'edit'])->name('cod-charges.edit');
             Route::post('/cod-charges/{id}/update', [App\Http\Controllers\Admin\CodChargeController::class, 'update'])->name('cod-charges.update');
 
+            // User Activity Tracker
+            Route::get('/user-activity', [App\Http\Controllers\Admin\UserActivityController::class, 'dashboard'])->name('admin.activity.dashboard');
+            Route::get('/user-activity/live', [App\Http\Controllers\Admin\UserActivityController::class, 'live'])->name('admin.activity.live');
+            Route::get('/user-activity/sessions', [App\Http\Controllers\Admin\UserActivityController::class, 'sessions'])->name('admin.activity.sessions');
+            Route::get('/user-activity/sessions/{id}', [App\Http\Controllers\Admin\UserActivityController::class, 'sessionDetail'])->name('admin.activity.session.detail');
+            Route::get('/user-activity/user/{id}', [App\Http\Controllers\Admin\UserActivityController::class, 'userActivity'])->name('admin.activity.user');
+            Route::get('/user-activity/products', [App\Http\Controllers\Admin\UserActivityController::class, 'products'])->name('admin.activity.products');
+
             Route::get('report/tax', [TaxreportController::class, 'taxreport'])->name('taxreport');
             Route::post('report/taxdatewise', [TaxreportController::class, 'taxdatewise'])->name('taxdatewise');
             Route::get('logout', [LoginController::class, 'logout'])->name('logout');
@@ -1114,6 +1122,10 @@ Route::post('/customer/register', [SignUpController::class, 'register'])->name('
 //Search Routes
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/search-results', [SearchController::class, 'searchResults'])->name('search.results');
+
+//Activity Tracking Routes (beacon + client events, CSRF-exempt)
+Route::post('/track/beacon', [App\Http\Controllers\Frontend\Tracking\TrackingController::class, 'beacon'])->name('track.beacon');
+Route::post('/track/event', [App\Http\Controllers\Frontend\Tracking\TrackingController::class, 'event'])->name('track.event');
 
 // Blogs
 Route::get('/blogs', [BlogController::class, 'index'])->name('customer.blog.index');
