@@ -204,6 +204,77 @@
             height: 62px;
         }
     }
+
+    /* ═══════════════════════════════════════════════════
+       PRODUCT CERTIFICATES
+    ═══════════════════════════════════════════════════ */
+    .product-certificates {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid #ebebeb;
+    }
+
+    .product-certificates__title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: #333;
+        margin-bottom: 12px;
+    }
+
+    .product-certificates__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .product-certificates__link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 92px;
+        padding: 10px 6px;
+        border: 1px solid #ebebeb;
+        border-radius: 10px;
+        text-align: center;
+        color: #555;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .product-certificates__link:hover {
+        border-color: #c9a227;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .07);
+    }
+
+    .product-certificates__img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+    }
+
+    .product-certificates__pdf {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        background: #f5f5f5;
+        font-size: 12px;
+        font-weight: 700;
+        color: #b3241f;
+    }
+
+    .product-certificates__label {
+        font-size: 11px;
+        line-height: 1.3;
+        word-break: break-word;
+    }
 </style>
 </style>
 
@@ -604,6 +675,31 @@
                                     </div><!-- End .details-action-wrapper -->
                                 </div><!-- End .product-details-action -->
 
+                                @if (!empty($response['certificates']))
+                                    <div class="product-certificates">
+                                        <h4 class="product-certificates__title">Certifications</h4>
+                                        <ul class="product-certificates__list">
+                                            @foreach ($response['certificates'] as $certificate)
+                                                <li>
+                                                    <a href="{{ asset('storage/' . $certificate['file']) }}"
+                                                        target="_blank" rel="noopener"
+                                                        class="product-certificates__link"
+                                                        title="{{ $certificate['title'] }}">
+                                                        @if ($certificate['file_type'] === 'pdf')
+                                                            <span class="product-certificates__pdf">PDF</span>
+                                                        @else
+                                                            <img src="{{ asset('storage/' . $certificate['file']) }}"
+                                                                alt="{{ $certificate['title'] }}"
+                                                                class="product-certificates__img">
+                                                        @endif
+                                                        <span
+                                                            class="product-certificates__label">{{ $certificate['title'] }}</span>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div><!-- End .product-certificates -->
+                                @endif
 
                             </div><!-- End .product-details -->
                         </div><!-- End .col-md-6 -->

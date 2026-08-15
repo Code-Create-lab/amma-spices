@@ -347,6 +347,61 @@
                             </div>
                         </div>
 
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <label class="bmd-label-floating">Product Certificates
+                                    <b>(Image or PDF | Each should be less than 10 MB | Maximum 10)</b></label>
+
+                                <div id="existing-certificates-container" class="mt-2">
+                                    @foreach ($product->certificates as $certificate)
+                                        <div class="certificate-row existing-certificate border rounded p-3 mb-2"
+                                            data-id="{{ $certificate->id }}">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label>Current File</label><br>
+                                                    @if ($certificate->file_type === 'pdf')
+                                                        <a href="{{ asset('storage/' . $certificate->file) }}"
+                                                            target="_blank" rel="noopener">View PDF</a>
+                                                    @else
+                                                        <img src="{{ asset('storage/' . $certificate->file) }}"
+                                                            alt="{{ $certificate->title }}"
+                                                            style="width:80px;height:80px;object-fit:contain;border:1px solid #ddd;">
+                                                    @endif
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Certificate Title</label>
+                                                    <input type="text"
+                                                        name="existing_certificates[{{ $certificate->id }}][title]"
+                                                        class="form-control" value="{{ $certificate->title }}">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Replace File (optional)</label>
+                                                    <input type="file"
+                                                        name="existing_certificates[{{ $certificate->id }}][file]"
+                                                        class="form-control certificate-file"
+                                                        accept="image/*,application/pdf">
+                                                    <div class="certificate-preview mt-2"></div>
+                                                </div>
+                                                <div class="col-md-2 d-flex align-items-end">
+                                                    <button type="button"
+                                                        class="btn btn-danger remove-existing-certificate">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div id="certificates-container"></div>
+                                <div id="deleted-certificates-inputs"></div>
+
+                                <button type="button" class="btn btn-info mt-2" id="add-certificate-btn">+ Add
+                                    Certificate</button>
+                                <span id="certificate-limit-msg" class="text-danger ml-2" style="display:none;">
+                                    Maximum of 10 certificates reached.
+                                </span>
+                            </div>
+                        </div>
+
                         @if ($product->type == 'Variable')
                             <!-- Replace the variations container with this -->
                             <div class="row variations">
@@ -1249,6 +1304,100 @@
 
                 // Initialize custom file input
                 //bsCustomFileInput.init();
+            });
+        </script>
+        <script>
+            // ---- Product certificates repeater ----
+            $(document).ready(function() {
+                var MAX_CERTIFICATES = 10;
+                var certificateIndex = 0;
+
+                function certificateRowTemplate(index) {
+                    return '<div class="certificate-row new-certificate border rounded p-3 mb-2">' +
+                        '<div class="row">' +
+                        '<div class="col-md-5">' +
+                        '<label>Certificate Title</label>' +
+                        '<input type="text" name="certificates[' + index +
+                        '][title]" class="form-control certificate-title" placeholder="e.g. FSSAI, ISO 22000, Organic">' +
+                        '</div>' +
+                        '<div class="col-md-5">' +
+                        '<label>Certificate File (Image or PDF)</label>' +
+                        '<input type="file" name="certificates[' + index +
+                        '][file]" class="form-control certificate-file" accept="image/*,application/pdf">' +
+                        '<div class="certificate-preview mt-2"></div>' +
+                        '</div>' +
+                        '<div class="col-md-2 d-flex align-items-end">' +
+                        '<button type="button" class="btn btn-danger remove-certificate">Remove</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                }
+
+                function certificateCount() {
+                    return $('#existing-certificates-container .certificate-row').length +
+                        $('#certificates-container .certificate-row').length;
+                }
+
+                function refreshCertificateLimit() {
+                    var atLimit = certificateCount() >= MAX_CERTIFICATES;
+                    $('#add-certificate-btn').prop('disabled', atLimit);
+                    $('#certificate-limit-msg').toggle(atLimit);
+                }
+
+                $('#add-certificate-btn').on('click', function() {
+                    if (certificateCount() >= MAX_CERTIFICATES) {
+                        return;
+                    }
+                    $('#certificates-container').append(certificateRowTemplate(certificateIndex++));
+                    refreshCertificateLimit();
+                });
+
+                // Flag an existing certificate for deletion, then drop its inputs from the form
+                $(document).on('click', '.remove-existing-certificate', function() {
+                    var row = $(this).closest('.certificate-row');
+                    var id = row.data('id');
+
+                    $('#deleted-certificates-inputs').append(
+                        '<input type="hidden" name="deleted_certificates[]" value="' + id + '">'
+                    );
+
+                    row.remove();
+                    refreshCertificateLimit();
+                });
+
+                $(document).on('click', '.remove-certificate', function() {
+                    $(this).closest('.certificate-row').remove();
+                    refreshCertificateLimit();
+                });
+
+                $(document).on('change', '.certificate-file', function() {
+                    var row = $(this).closest('.certificate-row');
+                    var preview = row.find('.certificate-preview');
+                    var titleInput = row.find('.certificate-title');
+                    var file = this.files && this.files[0];
+
+                    preview.empty();
+
+                    // Title is only mandatory on new rows, and only once a file has been picked
+                    titleInput.prop('required', !!file);
+
+                    if (!file) {
+                        return;
+                    }
+
+                    if (file.type === 'application/pdf') {
+                        preview.html('<span class="badge badge-secondary">PDF</span> ' + file.name);
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.html('<img src="' + e.target.result + '" style="max-width:100px;">');
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                refreshCertificateLimit();
             });
         </script>
     @endpush

@@ -72,6 +72,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class, 'product_id', 'product_id');
     }
+
+    public function certificates()
+    {
+        return $this->hasMany(ProductCertificate::class, 'product_id', 'product_id')
+            ->where('is_deleted', 0)
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
     public function variation()
     {
         return $this->hasOne(Variation::class, 'product_id', 'product_id')->where('is_deleted', 0);

@@ -38,6 +38,9 @@ class ProductStoreRequest extends FormRequest
             'variations.*.price' => 'required_if:type,Variable',
             'variations.*.stock' => 'required_if:type,Variable',
             'variations.*.image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'certificates' => 'sometimes|array|max:10',
+            'certificates.*.title' => 'required_with:certificates.*.file|nullable|string|max:255',
+            'certificates.*.file' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,pdf|max:10240',
         ];
     }
 
@@ -66,6 +69,10 @@ class ProductStoreRequest extends FormRequest
             'description.required' => 'The description field is required.',
             'variations.*.price.required' => 'The price for each variation is required.',
             'variations.*.stock.required' => 'The stock quantity for each variation is required.',
+            'certificates.max' => 'You can upload a maximum of 10 certificates.',
+            'certificates.*.title.required_with' => 'Enter a title for each certificate you upload.',
+            'certificates.*.file.mimes' => 'A certificate must be an image or a PDF file.',
+            'certificates.*.file.max' => 'Each certificate must not exceed 10 MB.',
         ];
     }
 }
