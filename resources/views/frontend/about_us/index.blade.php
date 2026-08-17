@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' => ''])
+@extends('frontend.layouts.app', ['title' => 'Our Story'])
 
 @push('styles')
 @endpush

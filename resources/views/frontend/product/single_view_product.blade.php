@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' => ''])
+@extends('frontend.layouts.app', ['title' => $response['name'] ?? ''])
 
 {{-- Meta Pixel: ViewContent — fires on this product page with live product data --}}
 @push('meta_pixel_events')
@@ -10,6 +10,50 @@
             value: {{ (float) ($response['variations'][0]['price'] ?? $response['base_price'] ?? 0) }},
             currency: 'INR'
         });
+    </script>
+@endpush
+
+{{-- Product structured data. Every value is read from the same $response the
+     page already renders, and aggregateRating is emitted only when real
+     reviews exist — Google penalises ratings that are not visible on-page. --}}
+@push('meta_pixel_events')
+    @php
+        $ldVariations = $response['variations'] ?? [];
+        $ldPrice = $ldVariations[0]['price'] ?? ($response['base_price'] ?? null);
+        $ldInStock = collect($ldVariations)->contains(fn($v) => ($v['stock'] ?? 0) > 0);
+        $ldImage = !empty($response['image']) ? asset('storage/' . $response['image']) : null;
+
+        $ldProduct = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $response['name'] ?? null,
+            'sku' => $response['slug'] ?? null,
+            'image' => $ldImage,
+            'brand' => ['@type' => 'Brand', 'name' => "Amma's Spices"],
+            // A zero or missing price means the catalogue row is incomplete —
+            // omit the offer rather than publish a ₹0 product to Google.
+            'offers' => $ldPrice > 0
+                ? [
+                    '@type' => 'Offer',
+                    'url' => url()->current(),
+                    'priceCurrency' => 'INR',
+                    'price' => (string) round((float) $ldPrice, 2),
+                    'availability' => $ldInStock
+                        ? 'https://schema.org/InStock'
+                        : 'https://schema.org/OutOfStock',
+                ]
+                : null,
+            'aggregateRating' => ($total_reviews ?? 0) > 0
+                ? [
+                    '@type' => 'AggregateRating',
+                    'ratingValue' => (string) round((float) ($avg_rating ?? 0), 1),
+                    'reviewCount' => (int) $total_reviews,
+                ]
+                : null,
+        ]);
+    @endphp
+    <script type="application/ld+json">
+        {!! json_encode($ldProduct, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
     </script>
 @endpush
 

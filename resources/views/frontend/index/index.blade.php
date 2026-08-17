@@ -408,6 +408,11 @@
     <main class="main">
         <div class="page-content">
 
+            {{-- The hero is an image carousel with the wordmark baked into the
+                 artwork, so the page had no h1 at all. This one is read by
+                 crawlers and screen readers without altering the visual design. --}}
+            <h1 class="as-sr-only">Amma's Spices — authentic homemade Indian spice blends</h1>
+
             {{-- ══════════════════════════════════════════
              HERO BANNER
         ══════════════════════════════════════════ --}}
@@ -422,15 +427,20 @@
                         "dots": true,
                         "loop": true
                     }'>
-                    @foreach ($banners as $banner)
+                    @foreach ($banners as $index => $banner)
                         <div class="intro-slide">
                             <picture>
                                 @if ($banner->mobile_banner)
                                     <source media="(max-width: 767px)"
                                         srcset="{{ asset('storage/' . $banner->mobile_banner) }}">
                                 @endif
+                                {{-- First slide is the LCP element: fetch it eagerly and at
+                                     high priority. Later slides are off-screen, so they wait. --}}
                                 <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r"
-                                    alt="Amma's Spices">
+                                    alt="Amma's Spices"
+                                    loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                    fetchpriority="{{ $index === 0 ? 'high' : 'low' }}"
+                                    decoding="async">
                             </picture>
                         </div>
                     @endforeach
@@ -571,7 +581,8 @@
                                 <div class="items-box">
                                     <a href="{{ route('getCatList', $category->slug) }}">
                                         <div class="items">
-                                            <img src="{{ asset($category->image) }}" alt="{{ $category->title }}">
+                                            <img src="{{ asset($category->image) }}" alt="{{ $category->title }}" loading="lazy"
+                                            decoding="async">
                                         </div>
                                     </a>
                                     <h3>{{ $category->title }}</h3>
@@ -621,7 +632,8 @@
                             <div class="items-box">
                                 <a href="{{ route('getCatList', $category->slug) }}">
                                     <div class="items">
-                                        <img src="{{ asset($category->image) }}" alt="{{ $category->title }}">
+                                        <img src="{{ asset($category->image) }}" alt="{{ $category->title }}" loading="lazy"
+                                            decoding="async">
                                     </div>
                                 </a>
                                 <h3>{{ $category->title }}</h3>
@@ -898,7 +910,8 @@
                 <div class="container">
                     <div class="as-story-grid">
                         <div class="as-story-img">
-                            <img src="{{ asset('assets/img/aboutus_home.jpg') }}" alt="Our Story">
+                            <img src="{{ asset('assets/img/aboutus_home.jpg') }}"
+                                alt="Amma cooking in her home kitchen" loading="lazy" decoding="async">
                         </div>
                         <div>
                             <div class="as-story-label">Our Story</div>
@@ -927,10 +940,16 @@
                         <h2>Why Choose Us</h2>
                         <div class="as-divider"><span class="as-divider-dot"></span></div>
                     </div>
+                    {{-- Each icon sits directly above a heading that states the same
+                         thing, so the images are decorative: alt="" keeps screen
+                         readers from reading every claim twice. Several of the old
+                         alts were wrong anyway ("Authentic" on the preservative
+                         icon). All are below the fold, so all load lazily. --}}
                     <div class="as-why-grid">
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Preservative free</h3>
@@ -938,7 +957,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
+                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">No Artificial additives</h3>
@@ -946,7 +966,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
+                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">All products are lab-tested and certified</h3>
@@ -954,7 +975,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Authentic recipes &amp; flavours</h3>
@@ -962,7 +984,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Made with natural ingredients</h3>
@@ -970,7 +993,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="high natural oil content">
+                                <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Natural oil content</h3>
@@ -978,8 +1002,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/proud_product_of_india.png') }}"
-                                    alt="proud product of india" style="width: 90px;height: 60px;">
+                                <img src="{{ asset('assets/img/proud_product_of_india.png') }}" alt=""
+                                    loading="lazy" decoding="async" style="width: 90px;height: 60px;">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Proud product of India</h3>
@@ -987,7 +1011,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
+                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Sustainable, home kitchen crafted</h3>
@@ -1069,7 +1094,7 @@
                                                 <div class="g-reviewer-name">{{ $review->reviewer_name }}</div>
                                                 <div class="g-reviewer-meta">
                                                     <img src="https://www.google.com/favicon.ico" class="g-favicon"
-                                                        alt="Google">
+                                                        alt="" loading="lazy" decoding="async">
                                                     <span>{{ $review->reviewer_role ?: 'Google Review' }}</span>
                                                 </div>
                                             </div>

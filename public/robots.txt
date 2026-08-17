@@ -1,0 +1,35 @@
+# Amma's Spices — crawler rules
+# Every Disallow below is a page that is either per-user or has no standalone
+# search value, so keeping it out of the index avoids thin/duplicate results.
+
+User-agent: *
+Allow: /
+
+# Per-user pages — nothing here is the same for two visitors.
+Disallow: /cart
+Disallow: /wishlist
+Disallow: /checkout
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /address
+Disallow: /orders
+Disallow: /order/
+Disallow: /track-orders
+Disallow: /payment/
+Disallow: /success/
+Disallow: /login
+Disallow: /customer/login
+Disallow: /customer/register
+Disallow: /customer/dashboard
+
+# Admin and back-office areas.
+Disallow: /admin
+Disallow: /cityadmin
+Disallow: /store
+Disallow: /installer
+
+# Faceted blog URLs duplicate the blog index.
+Disallow: /blogs?category=
+Disallow: /blogs?tag=
+
+Sitemap: https://ammasspices.com/sitemap.xml

@@ -3,13 +3,28 @@
   https://10xcart.in
 -->
 <!DOCTYPE html>
-<html lang="UTF-8">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Amma's Spices</title>
+    {{-- No maximum-scale: pinch-zoom must stay available (WCAG 1.4.4). --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    @php
+        // Views pass a $title through @extends; many pass an empty string, so
+        // fall back to the brand line rather than rendering a bare suffix.
+        // Some views (blog posts) already append the brand — don't repeat it.
+        $pageTitle = trim($title ?? '');
+        if ($pageTitle === '') {
+            $documentTitle = "Amma's Spices — Authentic Homemade Indian Spice Blends";
+        } elseif (stripos($pageTitle, "Amma") !== false) {
+            $documentTitle = $pageTitle;
+        } else {
+            $documentTitle = $pageTitle . " | Amma's Spices";
+        }
+    @endphp
+    <title>{{ $documentTitle }}</title>
 
 
     <meta name="keywords"
@@ -20,15 +35,33 @@
     <meta property="og:description"
         content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
     <meta property="og:image" content="{{ asset('assets/images/meta_og/og_banner.webp') }}">
-    <meta property="og:url" content="ammasspices.com">
+    {{-- og:url must be absolute or crawlers drop it. --}}
+    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Amma's Spices">
+    <meta property="og:locale" content="en_IN">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $documentTitle }}">
+    <meta name="twitter:description"
+        content="Discover Amma’s Spices for authentic Indian spices and homemade masalas. Fresh, pure and full of traditional flavor. Order premium spices online with delivery across India.">
+    <meta name="twitter:image" content="{{ asset('assets/images/meta_og/og_banner.webp') }}">
 
     <meta name="author" content="10xCart">
     <meta name="designer" content="10xCart">
     <meta name="developer" content="10xCart">
     <meta name="copyright" content="© 2026 10xCart">
 
+    {{-- Canonical drops the query string so filtered/paginated views do not
+         each register as a separate page. --}}
     <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open the connection to the third-party origins the page will need
+         anyway, so the CSS and font requests do not pay for DNS + TLS. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icon/favicon.png') }}">
@@ -89,13 +122,14 @@
     @if (Route::currentRouteName() !== 'index')
         <style>
             main {
-                /* 10rem base + announcement bar height */
-                margin-top: calc(10rem + 38px);
+                /* 10rem base + announcement bar height. Read from the bar's own
+                   tokens so the two can never drift apart again. */
+                margin-top: calc(10rem + var(--announce-h, 52px));
             }
 
             @media (max-width: 767px) {
                 main {
-                    margin-top: calc(10rem + 34px);
+                    margin-top: calc(10rem + var(--announce-h-mobile, 46px));
                 }
             }
         </style>
@@ -218,6 +252,9 @@
             "@type": "WebSite",
             "name": "Amma’s Spices",
             "url": "https://ammasspices.com/",
+            {{-- No SearchAction: the shop filter is Livewire-only and does not
+                 read a search query string, so a sitelinks searchbox would
+                 point at a URL that returns unfiltered results. --}}
             "creator": {
                 "@type": "Organization",
                 "name": "10xCart",
@@ -226,7 +263,58 @@
             }
         </script>
 
+{{-- Organization: every value below is taken from the contact page and footer,
+     so the markup cannot claim anything the site does not already state. --}}
+<script type="application/ld+json">
+            {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Amma’s Spices",
+            "url": "https://ammasspices.com/",
+            "logo": "{{ asset('images/icon/favicon.png') }}",
+            "email": "info@ammasspices.com",
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+91-8800952006",
+                "contactType": "customer service",
+                "areaServed": "IN",
+                "availableLanguage": ["en", "hi"]
+            },
+            {{-- Facebook only: the footer's Instagram link points at a single
+                 reel, not a profile, so it is not a valid sameAs target. --}}
+            "sameAs": [
+                "https://www.facebook.com/Ammahomespices"
+            ]
+            }
+        </script>
+
 <body>
+
+    {{-- Keyboard users can jump the header and marquee. Off-screen until
+         focused, so nothing changes visually for pointer users. --}}
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    <style>
+        .skip-to-content {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 100000;
+            padding: 12px 22px;
+            background: #4b3b2e;
+            color: #fdf6e3;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 0 0 8px 0;
+            text-decoration: none;
+        }
+
+        .skip-to-content:focus {
+            left: 0;
+            color: #fdf6e3;
+            outline: 2px solid #e7c840;
+            outline-offset: 2px;
+        }
+    </style>
 
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
@@ -251,6 +339,9 @@
             });
         </script>
 
+        {{-- Skip-link target. An empty inline element rather than a wrapper, so
+             no existing parent/child CSS selector changes meaning. --}}
+        <span id="main-content" tabindex="-1"></span>
         @yield('content')
 
         @if (Route::currentRouteName() != 'customer.orders.order_success')

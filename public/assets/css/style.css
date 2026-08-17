@@ -27243,3 +27243,23 @@ a.know-more-btn:hover,
     transform: none;
   }
 }
+
+/* ══════════════════════════════════════════
+   MOTION SAFETY NET
+   Individual sections already handle prefers-reduced-motion, but the theme's
+   older components (carousels, hover lifts, toast bursts) do not. This collapses
+   any animation or transition that is left for visitors who have asked their OS
+   to reduce motion. Nothing is hidden and no layout changes — states still
+   apply, they just arrive instantly.
+══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
