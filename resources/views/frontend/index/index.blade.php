@@ -449,6 +449,78 @@
             </div>
 
             {{-- ══════════════════════════════════════════
+             HERO CTA + TRUST BADGES
+        ══════════════════════════════════════════ --}}
+            @php
+                // Dispatch promise is copy, not data — edit this one line if the
+                // fulfilment window changes.
+                $dispatchPromise = 'Dispatch in 24–48 hrs';
+            @endphp
+            <section class="as-herocta" aria-label="Shop Amma's Spices">
+                <div class="container">
+                    <div class="as-herocta-actions">
+                        <a href="{{ route('shop.page.index') }}" class="as-herocta-btn as-herocta-btn--primary">
+                            Shop All Blends
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M5 12h14" />
+                                <path d="m13 6 6 6-6 6" />
+                            </svg>
+                        </a>
+                        <a href="{{ route('frontend.about-us') }}" class="as-herocta-btn as-herocta-btn--ghost">
+                            Meet Amma
+                        </a>
+                    </div>
+
+                    @if ($reviewCount > 0)
+                        <div class="as-herocta-rating">
+                            @php $filledStars = (int) round($reviewAverage); @endphp
+                            <span class="as-herocta-stars" aria-hidden="true">@for ($i = 1; $i <= 5; $i++)<span
+                                    class="{{ $i <= $filledStars ? 'is-on' : '' }}">★</span>@endfor</span>
+                            <span class="as-herocta-rating-text">
+                                <strong>{{ $reviewAverageFormatted }}/5</strong>
+                                from {{ $reviewCount }} Google {{ Str::plural('review', $reviewCount) }}
+                            </span>
+                        </div>
+                    @endif
+
+                    <ul class="as-herocta-badges">
+                        @if (!is_null($freeShippingFrom))
+                            <li class="as-herocta-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M3 7h11v9H3z" />
+                                    <path d="M14 10h4l3 3v3h-7z" />
+                                    <circle cx="7" cy="18" r="1.8" />
+                                    <circle cx="17" cy="18" r="1.8" />
+                                </svg>
+                                <span>{{ $freeShippingFrom > 0 ? 'Free shipping over ₹' . number_format($freeShippingFrom) : 'Free shipping on every order' }}</span>
+                            </li>
+                        @endif
+                        @if ($codAvailable)
+                            <li class="as-herocta-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2.5" y="6" width="19" height="12" rx="2" />
+                                    <circle cx="12" cy="12" r="2.6" />
+                                    <path d="M6 12h.01M18 12h.01" />
+                                </svg>
+                                <span>Cash on delivery available</span>
+                            </li>
+                        @endif
+                        <li class="as-herocta-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3.5 2" />
+                            </svg>
+                            <span>{{ $dispatchPromise }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            {{-- ══════════════════════════════════════════
              TRUST BAR
         ══════════════════════════════════════════ --}}
             <div class="as-trust">
@@ -465,9 +537,7 @@
                     <div class="as-trust-item">
                         <div class="as-trust-dot"></div> Authentic recipes & flavours
                     </div>
-                    <div class="as-trust-item">
-                        <div class="as-trust-dot"></div> {{$reviewAverageFormatted}}★ Google Rating · {{$reviewCount}} reviews
-                    </div>
+                    {{-- Google rating now sits under the hero CTA, where it carries more weight. --}}
                 </div>
             </div>
 

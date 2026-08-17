@@ -27033,3 +27033,213 @@ a.know-more-btn:hover,
                 font-size: 22px;
             }
         }
+
+/* ══════════════════════════════════════════
+   HERO CTA + TRUST BADGES
+══════════════════════════════════════════ */
+.as-herocta,
+.as-herocta *,
+.as-herocta *::before,
+.as-herocta *::after {
+  box-sizing: border-box;
+}
+
+.as-herocta {
+  --herocta-ink: #8a6d1f;
+  /* readable gold for text/icons on cream */
+  padding: 34px 0 30px;
+  background: var(--bg);
+  text-align: center;
+}
+
+/* ── Buttons ── */
+.as-herocta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.as-herocta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 40px;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease,
+    border-color 0.25s ease, color 0.25s ease;
+}
+
+.as-herocta-btn svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
+}
+
+/* Primary — the page's heaviest CTA */
+.as-herocta-btn--primary {
+  min-height: 58px;
+  padding: 18px 42px;
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: #2e2416 !important;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  box-shadow: 0 14px 30px rgba(167, 138, 73, 0.28);
+}
+
+.as-herocta-btn--primary:hover,
+.as-herocta-btn--primary:focus {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  color: #2e2416 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 38px rgba(167, 138, 73, 0.34);
+}
+
+.as-herocta-btn--primary:hover svg {
+  transform: translateX(3px);
+}
+
+/* Secondary — deliberately lighter than the primary */
+.as-herocta-btn--ghost {
+  min-height: 48px;
+  padding: 13px 28px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2) !important;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.as-herocta-btn--ghost:hover,
+.as-herocta-btn--ghost:focus {
+  border-color: rgba(167, 138, 73, 0.55);
+  color: var(--text) !important;
+  background: rgba(231, 200, 64, 0.08);
+}
+
+/* ── Rating line, sits directly under the CTAs ── */
+.as-herocta-rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.as-herocta-stars {
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  color: var(--text3);
+}
+
+.as-herocta-stars .is-on {
+  color: var(--herocta-ink);
+}
+
+.as-herocta-rating-text {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text2);
+}
+
+.as-herocta-rating-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ── Badges, held well clear of the CTA block ── */
+.as-herocta-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 14px;
+  margin: 34px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.as-herocta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 20px;
+  border: 1px solid var(--border2);
+  border-radius: 40px;
+  background: var(--card);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text2);
+}
+
+.as-herocta-badge svg {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--herocta-ink);
+}
+
+.as-herocta a:focus-visible {
+  outline: 2px solid var(--herocta-ink);
+  outline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+  .as-herocta {
+    padding: 28px 0 26px;
+  }
+
+  .as-herocta-badges {
+    margin-top: 28px;
+  }
+}
+
+@media (max-width: 520px) {
+  .as-herocta-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .as-herocta-btn {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .as-herocta-btn--primary {
+    min-height: 54px;
+    padding: 16px 28px;
+    font-size: 15px;
+  }
+
+  .as-herocta-badge {
+    font-size: 11.5px;
+    padding: 9px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .as-herocta-btn,
+  .as-herocta-btn svg {
+    transition: none;
+  }
+
+  .as-herocta-btn:hover,
+  .as-herocta-btn:focus {
+    transform: none;
+  }
+
+  .as-herocta-btn--primary:hover svg {
+    transform: none;
+  }
+}
