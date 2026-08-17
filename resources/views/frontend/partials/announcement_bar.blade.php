@@ -1,8 +1,44 @@
-{{-- ── Top announcement / trust bar (marquee) ── --}}
+{{-- ── Top announcement / trust bar ──
+     One message at a time, centred, cross-fading on a fixed step. Replaces the
+     old continuous marquee: a reader no longer has to track moving text. The
+     keyframe percentages are derived from the message count below, so adding or
+     removing a message keeps the timing even. Root font-size is 62.5%, so
+     1rem = 10px. --}}
+
+@php
+    $announcements = [
+        [
+            'text' => 'Pan-India Delivery',
+            // Lucide: truck
+            'icon' =>
+                '<path d="M14 18V6a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l3 3v5a1 1 0 0 1-1 1h-1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M9 18h6"/>',
+        ],
+        [
+            'text' => 'Cash on Delivery',
+            // Lucide: banknote
+            'icon' => '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+        ],
+        [
+            'text' => 'Lab Tested Every Batch',
+            // Lucide: flask-conical
+            'icon' =>
+                '<path d="M10 2v7.31L4.7 18.6A2 2 0 0 0 6.43 21h11.14a2 2 0 0 0 1.73-2.4L14 9.31V2"/><path d="M8.5 2h7"/><path d="M7 15h10"/>',
+        ],
+    ];
+
+    $announceCount = max(count($announcements), 1);
+    // Share of the full cycle each message owns, and the slice of that share
+    // spent fading in or out.
+    $announceSlice = 100 / $announceCount;
+    $announceFade = min(4, $announceSlice / 4);
+@endphp
+
 <style>
     :root {
-        --announce-h: 38px;
-        --announce-h-mobile: 34px;
+        --announce-h: 52px;
+        --announce-h-mobile: 46px;
+        /* Seconds each message holds before the next one takes over. */
+        --announce-step: 4s;
     }
 
     .announce-bar {
@@ -11,76 +47,51 @@
         height: var(--announce-h);
         display: flex;
         align-items: center;
+        justify-content: center;
         overflow: hidden;
+        padding: 0 20px;
         background: linear-gradient(90deg, #4b3b2e 0%, #6b5236 45%, #4b3b2e 100%);
         border-bottom: 1px solid rgba(231, 200, 64, 0.35);
         z-index: 2;
     }
 
-    /* Soft fade on both edges so items enter/exit cleanly */
-    .announce-bar::before,
-    .announce-bar::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        width: 48px;
-        height: 100%;
-        pointer-events: none;
-        z-index: 2;
-    }
-
-    .announce-bar::before {
-        left: 0;
-        background: linear-gradient(90deg, #4b3b2e 0%, rgba(75, 59, 46, 0) 100%);
-    }
-
-    .announce-bar::after {
-        right: 0;
-        background: linear-gradient(270deg, #4b3b2e 0%, rgba(75, 59, 46, 0) 100%);
-    }
-
-    .announce-viewport {
-        width: 100%;
-        overflow: hidden;
-    }
-
-    .announce-track {
-        display: flex;
-        width: max-content;
-        will-change: transform;
-        animation: announce-scroll 28s linear infinite;
-    }
-
-    .announce-bar:hover .announce-track,
-    .announce-bar:focus-within .announce-track {
-        animation-play-state: paused;
-    }
-
-    .announce-group {
+    .announce-rotator {
+        position: relative;
         display: flex;
         align-items: center;
-        flex: 0 0 auto;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
     }
 
     .announce-item {
-        display: inline-flex;
+        /* Pinned to the whole rotator rather than sized to the text: an
+           absolutely positioned flex child does not honour justify-content,
+           so each message centres itself instead. */
+        position: absolute;
+        inset: 0;
+        display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 0 28px;
+        justify-content: center;
+        gap: 11px;
+        padding: 0 8px;
         font-family: inherit;
-        font-size: 1.25rem;
+        font-size: 1.55rem;
         font-weight: 600;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         white-space: nowrap;
         color: #fdf6e3;
-        line-height: 1;
+        line-height: 1.2;
+        opacity: 0;
+        animation: announce-rotate calc(var(--announce-step) * {{ $announceCount }}) linear infinite;
+        animation-delay: calc(var(--announce-step) * var(--announce-index));
     }
 
     .announce-item svg {
-        width: 16px;
-        height: 16px;
-        flex: 0 0 16px;
+        width: 19px;
+        height: 19px;
+        flex: 0 0 19px;
         stroke: #e7c840;
         stroke-width: 1.75;
         fill: none;
@@ -88,112 +99,92 @@
         stroke-linejoin: round;
     }
 
-    .announce-sep {
-        display: inline-flex;
-        align-items: center;
-        color: rgba(231, 200, 64, 0.6);
-        font-size: 1.1rem;
-        line-height: 1;
+    .announce-bar:hover .announce-item,
+    .announce-bar:focus-within .announce-item {
+        animation-play-state: paused;
     }
 
-    /* 4 identical groups in the track — shifting by exactly one group (-25%)
-       loops seamlessly: text exits left and re-enters from the right. */
-    @keyframes announce-scroll {
-        from {
-            transform: translate3d(0, 0, 0);
+    /* Each message rises in, holds for its slice, then lifts out. */
+    @keyframes announce-rotate {
+        0% {
+            opacity: 0;
+            transform: translateY(7px);
         }
 
-        to {
-            transform: translate3d(-25%, 0, 0);
+        {{ round($announceFade, 2) }}% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        {{ round($announceSlice - $announceFade, 2) }}% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        {{ round($announceSlice, 2) }}% {
+            opacity: 0;
+            transform: translateY(-7px);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(-7px);
         }
     }
 
     @media (max-width: 767px) {
         .announce-bar {
             height: var(--announce-h-mobile);
+            padding: 0 14px;
         }
 
         .announce-item {
-            font-size: 1.1rem;
-            padding: 0 18px;
-            letter-spacing: 0.04em;
+            font-size: 1.4rem;
+            letter-spacing: 0.05em;
+            gap: 9px;
         }
 
         .announce-item svg {
-            width: 14px;
-            height: 14px;
-            flex: 0 0 14px;
-        }
-
-        .announce-track {
-            animation-duration: 20s;
-        }
-
-        .announce-bar::before,
-        .announce-bar::after {
-            width: 28px;
+            width: 17px;
+            height: 17px;
+            flex: 0 0 17px;
         }
     }
 
-    /* Accessibility: no motion — static, centred, scrollable if needed */
+    /* Accessibility: no motion — every message shown at once, static. */
     @media (prefers-reduced-motion: reduce) {
-        .announce-track {
+        .announce-bar {
+            height: auto;
+            min-height: var(--announce-h);
+            padding: 9px 16px;
+        }
+
+        .announce-rotator {
+            flex-wrap: wrap;
+            gap: 6px 22px;
+            height: auto;
+        }
+
+        .announce-item {
+            position: static;
+            inset: auto;
+            width: auto;
+            opacity: 1;
+            transform: none;
             animation: none;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .announce-group[aria-hidden="true"] {
-            display: none;
-        }
-
-        .announce-viewport {
-            overflow-x: auto;
         }
     }
 </style>
 
 <div class="announce-bar" role="region" aria-label="Store highlights">
-    <div class="announce-viewport">
-        <div class="announce-track">
-            @php
-                $announcements = [
-                    [
-                        'text' => 'Pan-India Delivery',
-                        // Lucide: truck
-                        'icon' =>
-                            '<path d="M14 18V6a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h2"/><path d="M14 9h4l3 3v5a1 1 0 0 1-1 1h-1"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/><path d="M9 18h6"/>',
-                    ],
-                    [
-                        'text' => 'Cash on Delivery',
-                        // Lucide: banknote
-                        'icon' =>
-                            '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
-                    ],
-                    [
-                        'text' => 'Lab Tested Every Batch',
-                        // Lucide: flask-conical
-                        'icon' =>
-                            '<path d="M10 2v7.31L4.7 18.6A2 2 0 0 0 6.43 21h11.14a2 2 0 0 0 1.73-2.4L14 9.31V2"/><path d="M8.5 2h7"/><path d="M7 15h10"/>',
-                    ],
-                ];
-            @endphp
-
-            {{-- Four identical groups = seamless -25% loop, wide enough to fill any viewport.
-                 Only the first copy is exposed to screen readers. --}}
-            @for ($copy = 0; $copy < 4; $copy++)
-                <div class="announce-group" @if ($copy > 0) aria-hidden="true" @endif>
-                    @foreach ($announcements as $i => $announcement)
-                        <span class="announce-item">
-                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                {!! $announcement['icon'] !!}
-                            </svg>
-                            {{ $announcement['text'] }}
-                        </span>
-                        <span class="announce-sep" aria-hidden="true">&bull;</span>
-                    @endforeach
-                </div>
-            @endfor
-        </div>
+    <div class="announce-rotator">
+        @foreach ($announcements as $index => $announcement)
+            <span class="announce-item" style="--announce-index: {{ $index }}">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    {!! $announcement['icon'] !!}
+                </svg>
+                {{ $announcement['text'] }}
+            </span>
+        @endforeach
     </div>
 </div>
