@@ -1,6 +1,7 @@
 <!--
   Website designed & developed by 10xCart
-  https://10xcart.in
+  https://10xcart.snehal.info/
+  Instagram: https://www.instagram.com/10xcart
 -->
 <!DOCTYPE html>
 <html lang="UTF-8">
@@ -27,6 +28,7 @@
     <meta name="designer" content="10xCart">
     <meta name="developer" content="10xCart">
     <meta name="copyright" content="© 2026 10xCart">
+    <link rel="author" href="https://10xcart.snehal.info/">
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icon/favicon.png') }}">
@@ -183,7 +185,8 @@
             "creator": {
                 "@type": "Organization",
                 "name": "10xCart",
-                "url": "https://10xcart.in"
+                "url": "https://10xcart.snehal.info/",
+                "sameAs": ["https://www.instagram.com/10xcart"]
             }
             }
         </script>
