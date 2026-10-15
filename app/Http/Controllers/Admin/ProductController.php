@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\Product\ProductStoreRequest;
 use App\Models\Attribute;
+use App\Models\ProductCertificate;
 use App\Models\ProductImage;
 use App\Models\ProductVarient;
 use App\Models\Variation;
@@ -143,6 +144,142 @@ class ProductController extends Controller
         $sku = $this->generateSKU($productName, $categoryName);
 
         return response()->json(['sku' => $sku]);
+    }
+
+    /**
+     * Store an uploaded certificate file and report back its path and kind.
+     *
+     * @return array{path: string, type: string}
+     */
+    private function storeCertificateFile($file): array
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $fileType  = $extension === 'pdf' ? 'pdf' : 'image';
+
+        if ($this->storage_space != "same_server") {
+            $fileName = str_replace(" ", "-", $file->getClientOriginalName());
+            $filePath = '/product/certificates/' . time() . '-' . $fileName;
+            Storage::disk($this->storage_space)
+                ->put($filePath, fopen($file->getRealPath(), 'r+'), 'public');
+        } else {
+            $filePath = Storage::disk('public')->put('certificates', $file);
+        }
+
+        return ['path' => $filePath, 'type' => $fileType];
+    }
+
+    /**
+     * Remove a certificate file from local storage. Remote files are left in place.
+     */
+    private function deleteCertificateFile(?string $path): void
+    {
+        if (empty($path) || $this->storage_space != "same_server") {
+            return;
+        }
+
+        $fullPath = public_path('storage/' . $path);
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
+    }
+
+    /**
+     * Create certificate rows from the "certificates" repeater input.
+     * Rows without an uploaded file are skipped.
+     */
+    private function storeNewCertificates(Request $request, int $productId, int $startOrder = 0): void
+    {
+        $certificates = (array) $request->input('certificates', []);
+        // Uploaded files are not part of input(), so the row keys come from both sides
+        $keys = array_unique(array_merge(
+            array_keys($certificates),
+            array_keys((array) $request->file('certificates', []))
+        ));
+
+        $order = $startOrder;
+
+        foreach ($keys as $key) {
+            $file = $request->file("certificates.{$key}.file");
+
+            if (!$file) {
+                continue;
+            }
+
+            $stored = $this->storeCertificateFile($file);
+            $title  = trim((string) ($certificates[$key]['title'] ?? ''));
+
+            ProductCertificate::create([
+                'product_id' => $productId,
+                'title'      => $title !== ''
+                    ? $title
+                    : pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                'file'       => $stored['path'],
+                'file_type'  => $stored['type'],
+                'sort_order' => $order++,
+            ]);
+        }
+    }
+
+    /**
+     * Apply title edits, file replacements and removals to a product's existing certificates.
+     */
+    private function updateExistingCertificates(Request $request, int $productId): void
+    {
+        $deleted = $request->input('deleted_certificates', []);
+
+        if (is_array($deleted) && !empty($deleted)) {
+            $toDelete = ProductCertificate::where('product_id', $productId)
+                ->whereIn('id', $deleted)
+                ->get();
+
+            foreach ($toDelete as $certificate) {
+                $this->deleteCertificateFile($certificate->file);
+                $certificate->update(['is_deleted' => 1]);
+            }
+        }
+
+        $existing = (array) $request->input('existing_certificates', []);
+        $keys = array_unique(array_merge(
+            array_keys($existing),
+            array_keys((array) $request->file('existing_certificates', []))
+        ));
+
+        foreach ($keys as $id) {
+            if (is_array($deleted) && in_array($id, $deleted)) {
+                continue;
+            }
+
+            $data = $existing[$id] ?? [];
+
+            $certificate = ProductCertificate::where('product_id', $productId)
+                ->where('id', $id)
+                ->where('is_deleted', 0)
+                ->first();
+
+            if (!$certificate) {
+                continue;
+            }
+
+            $payload = [];
+            $title   = trim((string) ($data['title'] ?? ''));
+
+            if ($title !== '') {
+                $payload['title'] = $title;
+            }
+
+            $file = $request->file("existing_certificates.{$id}.file");
+
+            if ($file) {
+                $this->deleteCertificateFile($certificate->file);
+                $stored              = $this->storeCertificateFile($file);
+                $payload['file']      = $stored['path'];
+                $payload['file_type'] = $stored['type'];
+            }
+
+            if (!empty($payload)) {
+                $certificate->update($payload);
+            }
+        }
     }
 
     public function AddProduct(Request $request)
@@ -363,6 +500,9 @@ class ProductController extends Controller
             // ]);
             // }
         }
+
+        $this->storeNewCertificates($request, $product->product_id);
+
         DB::commit();
         return redirect()->back()->withSuccess(trans('keywords.Added Successfully'));
         // } catch (Exception $e) {
@@ -449,6 +589,11 @@ class ProductController extends Controller
                 'variations.*.attributes' => 'sometimes|array',
                 //'variations.*.attributes.*' => 'required',
                 'variations.*.image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+                'certificates' => 'sometimes|array|max:10',
+                'certificates.*.title' => 'required_with:certificates.*.file|nullable|string|max:255',
+                'certificates.*.file' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,pdf|max:10240',
+                'existing_certificates.*.title' => 'nullable|string|max:255',
+                'existing_certificates.*.file' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp,pdf|max:10240',
             ],
             [
                 'product_name.required' => 'Enter product name.',
@@ -457,7 +602,13 @@ class ProductController extends Controller
                 'hsn_number.required' => 'SKU code is required',
                 'hsn_number.unique' => 'SKU code should be unique',
                 'images.max' => 'You can upload a maximum of 10 images.',
-                'images.*' => 'Images should be Image'
+                'images.*' => 'Images should be Image',
+                'certificates.max' => 'You can upload a maximum of 10 certificates.',
+                'certificates.*.title.required_with' => 'Enter a title for each certificate you upload.',
+                'certificates.*.file.mimes' => 'A certificate must be an image or a PDF file.',
+                'certificates.*.file.max' => 'Each certificate must not exceed 10 MB.',
+                'existing_certificates.*.file.mimes' => 'A certificate must be an image or a PDF file.',
+                'existing_certificates.*.file.max' => 'Each certificate must not exceed 10 MB.',
 
             ]
         );
@@ -751,6 +902,14 @@ class ProductController extends Controller
                 ]);
             }
         }
+
+        $this->updateExistingCertificates($request, $getProduct->product_id);
+
+        $nextCertificateOrder = (int) ProductCertificate::where('product_id', $getProduct->product_id)
+            ->where('is_deleted', 0)
+            ->max('sort_order') + 1;
+
+        $this->storeNewCertificates($request, $getProduct->product_id, $nextCertificateOrder);
 
         if ($insertproduct || $enternew != NULL || $enternewim != NULL) {
             return redirect()->back()->withSuccess(trans('keywords.Updated Successfully'));

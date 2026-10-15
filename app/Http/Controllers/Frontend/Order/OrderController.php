@@ -1065,9 +1065,9 @@ class OrderController extends Controller
 
     private function customerHandleCODCancellation(Orders $order, string $reason): void
     {
-        $shiprocket = new ShiprocketService();
-
+        
         if ($order->shipment) {
+            $shiprocket = new ShiprocketService();
             $shiprocketStatus = strtoupper($order->shipment->status ?? '');
 
             try {

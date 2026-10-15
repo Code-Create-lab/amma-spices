@@ -287,6 +287,46 @@
                                 </div>
                             </div> --}}
 
+                            <div class="row mt-4">
+                                <div class="col-md-12">
+                                    <label class="bmd-label-floating">Product Certificates
+                                        <b>(Image or PDF | Each should be less than 10 MB | Maximum 10)</b></label>
+                                    <div id="certificates-container" class="mt-2">
+                                        @foreach (old('certificates', []) as $oldIndex => $oldCertificate)
+                                            <div class="certificate-row border rounded p-3 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <label>Certificate Title</label>
+                                                        <input type="text"
+                                                            name="certificates[{{ $oldIndex }}][title]"
+                                                            class="form-control certificate-title"
+                                                            value="{{ $oldCertificate['title'] ?? '' }}"
+                                                            placeholder="e.g. FSSAI, ISO 22000, Organic">
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <label>Certificate File (Image or PDF)</label>
+                                                        <input type="file"
+                                                            name="certificates[{{ $oldIndex }}][file]"
+                                                            class="form-control certificate-file"
+                                                            accept="image/*,application/pdf">
+                                                        <div class="certificate-preview mt-2"></div>
+                                                    </div>
+                                                    <div class="col-md-2 d-flex align-items-end">
+                                                        <button type="button"
+                                                            class="btn btn-danger remove-certificate">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <button type="button" class="btn btn-info mt-2" id="add-certificate-btn">+ Add
+                                        Certificate</button>
+                                    <span id="certificate-limit-msg" class="text-danger ml-2" style="display:none;">
+                                        Maximum of 10 certificates reached.
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="size-wrapper">
                                     <!-- Button to Toggle Dropdown -->
@@ -816,6 +856,79 @@
 
                 // Call it initially in case of old form value (like on validation fail)
                 toggleProductTypeSections($("select[name='type']").val());
+
+                // ---- Product certificates repeater ----
+                var MAX_CERTIFICATES = 10;
+                var certificateIndex = {{ count(old('certificates', [])) }};
+
+                function certificateRowTemplate(index) {
+                    return '<div class="certificate-row border rounded p-3 mb-2">' +
+                        '<div class="row">' +
+                        '<div class="col-md-5">' +
+                        '<label>Certificate Title</label>' +
+                        '<input type="text" name="certificates[' + index +
+                        '][title]" class="form-control certificate-title" placeholder="e.g. FSSAI, ISO 22000, Organic">' +
+                        '</div>' +
+                        '<div class="col-md-5">' +
+                        '<label>Certificate File (Image or PDF)</label>' +
+                        '<input type="file" name="certificates[' + index +
+                        '][file]" class="form-control certificate-file" accept="image/*,application/pdf">' +
+                        '<div class="certificate-preview mt-2"></div>' +
+                        '</div>' +
+                        '<div class="col-md-2 d-flex align-items-end">' +
+                        '<button type="button" class="btn btn-danger remove-certificate">Remove</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                }
+
+                function refreshCertificateLimit() {
+                    var atLimit = $('#certificates-container .certificate-row').length >= MAX_CERTIFICATES;
+                    $('#add-certificate-btn').prop('disabled', atLimit);
+                    $('#certificate-limit-msg').toggle(atLimit);
+                }
+
+                $('#add-certificate-btn').on('click', function() {
+                    if ($('#certificates-container .certificate-row').length >= MAX_CERTIFICATES) {
+                        return;
+                    }
+                    $('#certificates-container').append(certificateRowTemplate(certificateIndex++));
+                    refreshCertificateLimit();
+                });
+
+                $(document).on('click', '.remove-certificate', function() {
+                    $(this).closest('.certificate-row').remove();
+                    refreshCertificateLimit();
+                });
+
+                $(document).on('change', '.certificate-file', function() {
+                    var row = $(this).closest('.certificate-row');
+                    var preview = row.find('.certificate-preview');
+                    var titleInput = row.find('.certificate-title');
+                    var file = this.files && this.files[0];
+
+                    preview.empty();
+
+                    // Title is only mandatory once a file has actually been picked
+                    titleInput.prop('required', !!file);
+
+                    if (!file) {
+                        return;
+                    }
+
+                    if (file.type === 'application/pdf') {
+                        preview.html('<span class="badge badge-secondary">PDF</span> ' + file.name);
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.html('<img src="' + e.target.result + '" style="max-width:100px;">');
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                refreshCertificateLimit();
             });
         </script>
         {!! JsValidator::formRequest('App\Http\Requests\Admin\Product\ProductStoreRequest', '#product-store-form') !!}

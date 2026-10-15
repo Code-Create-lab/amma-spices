@@ -8,6 +8,7 @@ use App\Models\Attribute;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\UserActivity;
 use App\Models\Wishlist;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -659,6 +660,8 @@ class ShopPageFilter extends Component
         if (!$variation || $variation->stock < $this->quantity) {
             return response()->json(['success' => false, 'message' => 'Out of stock']);
         }
+
+        UserActivity::recordServerEvent('add_to_cart', (int) $product_id, ['quantity' => 1]);
 
         if (auth()->check()) {
             try {

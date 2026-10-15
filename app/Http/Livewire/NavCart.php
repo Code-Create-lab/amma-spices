@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\UserActivity;
 use App\Models\Variation;
 use App\Models\Wishlist;
 use Illuminate\Support\Facades\Auth;
@@ -218,6 +219,8 @@ class NavCart extends Component
                 'message' => "Out Of stock",
             ]);
         }
+
+        UserActivity::recordServerEvent('add_to_cart', (int) $product_id, ['quantity' => (int) $this->quantity]);
 
         if (auth()->check()) {
             try {

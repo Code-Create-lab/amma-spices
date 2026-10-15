@@ -886,7 +886,8 @@ $sliderId = 'pslider-' . $product->product_id;
                         @endphp
 
                         <a class="product-card__cart-btn add-to-cart-home add-to-cart-component"
-                            data-product-id="{{ $product->product_id }}">
+                            data-product-id="{{ $product->product_id }}"
+                            data-product-price="{{ $price == 0 ? $mrp : $price }}">
                             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                 stroke-width="2.5">
                                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />

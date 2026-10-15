@@ -1,4 +1,61 @@
-@extends('frontend.layouts.app', ['title' => ''])
+@extends('frontend.layouts.app', ['title' => $response['name'] ?? ''])
+
+{{-- Meta Pixel: ViewContent — fires on this product page with live product data --}}
+@push('meta_pixel_events')
+    <script>
+        fbq('track', 'ViewContent', {
+            content_ids: ['{{ $response['slug'] ?? $response['id'] }}'],
+            content_name: @json($response['name'] ?? ''),
+            content_type: 'product',
+            value: {{ (float) ($response['variations'][0]['price'] ?? $response['base_price'] ?? 0) }},
+            currency: 'INR'
+        });
+    </script>
+@endpush
+
+{{-- Product structured data. Every value is read from the same $response the
+     page already renders, and aggregateRating is emitted only when real
+     reviews exist — Google penalises ratings that are not visible on-page. --}}
+@push('meta_pixel_events')
+    @php
+        $ldVariations = $response['variations'] ?? [];
+        $ldPrice = $ldVariations[0]['price'] ?? ($response['base_price'] ?? null);
+        $ldInStock = collect($ldVariations)->contains(fn($v) => ($v['stock'] ?? 0) > 0);
+        $ldImage = !empty($response['image']) ? asset('storage/' . $response['image']) : null;
+
+        $ldProduct = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $response['name'] ?? null,
+            'sku' => $response['slug'] ?? null,
+            'image' => $ldImage,
+            'brand' => ['@type' => 'Brand', 'name' => "Amma's Spices"],
+            // A zero or missing price means the catalogue row is incomplete —
+            // omit the offer rather than publish a ₹0 product to Google.
+            'offers' => $ldPrice > 0
+                ? [
+                    '@type' => 'Offer',
+                    'url' => url()->current(),
+                    'priceCurrency' => 'INR',
+                    'price' => (string) round((float) $ldPrice, 2),
+                    'availability' => $ldInStock
+                        ? 'https://schema.org/InStock'
+                        : 'https://schema.org/OutOfStock',
+                ]
+                : null,
+            'aggregateRating' => ($total_reviews ?? 0) > 0
+                ? [
+                    '@type' => 'AggregateRating',
+                    'ratingValue' => (string) round((float) ($avg_rating ?? 0), 1),
+                    'reviewCount' => (int) $total_reviews,
+                ]
+                : null,
+        ]);
+    @endphp
+    <script type="application/ld+json">
+        {!! json_encode($ldProduct, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+@endpush
 
 <style>
     .product-details-quantity .input-group.input-spinner {
@@ -190,6 +247,77 @@
             width: 62px;
             height: 62px;
         }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       PRODUCT CERTIFICATES
+    ═══════════════════════════════════════════════════ */
+    .product-certificates {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid #ebebeb;
+    }
+
+    .product-certificates__title {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: #333;
+        margin-bottom: 12px;
+    }
+
+    .product-certificates__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .product-certificates__link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 92px;
+        padding: 10px 6px;
+        border: 1px solid #ebebeb;
+        border-radius: 10px;
+        text-align: center;
+        color: #555;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .product-certificates__link:hover {
+        border-color: #c9a227;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .07);
+    }
+
+    .product-certificates__img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+    }
+
+    .product-certificates__pdf {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 8px;
+        background: #f5f5f5;
+        font-size: 12px;
+        font-weight: 700;
+        color: #b3241f;
+    }
+
+    .product-certificates__label {
+        font-size: 11px;
+        line-height: 1.3;
+        word-break: break-word;
     }
 </style>
 </style>
@@ -591,6 +719,31 @@
                                     </div><!-- End .details-action-wrapper -->
                                 </div><!-- End .product-details-action -->
 
+                                @if (!empty($response['certificates']))
+                                    <div class="product-certificates">
+                                        <h4 class="product-certificates__title">Certifications</h4>
+                                        <ul class="product-certificates__list">
+                                            @foreach ($response['certificates'] as $certificate)
+                                                <li>
+                                                    <a href="{{ asset('storage/' . $certificate['file']) }}"
+                                                        target="_blank" rel="noopener"
+                                                        class="product-certificates__link"
+                                                        title="{{ $certificate['title'] }}">
+                                                        @if ($certificate['file_type'] === 'pdf')
+                                                            <span class="product-certificates__pdf">PDF</span>
+                                                        @else
+                                                            <img src="{{ asset('storage/' . $certificate['file']) }}"
+                                                                alt="{{ $certificate['title'] }}"
+                                                                class="product-certificates__img">
+                                                        @endif
+                                                        <span
+                                                            class="product-certificates__label">{{ $certificate['title'] }}</span>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div><!-- End .product-certificates -->
+                                @endif
 
                             </div><!-- End .product-details -->
                         </div><!-- End .col-md-6 -->
@@ -1173,7 +1326,15 @@
                             };
                             toastr.success(response.message);
 
-
+                            // Meta Pixel AddToCart — live slug + displayed price + chosen qty
+                            var atcPrice = parseFloat(
+                                ($('#product-price-current').text() || '').replace(/[^0-9.]/g, '')
+                            );
+                            window.trackMetaAddToCart(
+                                '{{ $response['slug'] ?? $response['id'] }}',
+                                isNaN(atcPrice) ? {{ (float) ($response['base_price'] ?? 0) }} : atcPrice,
+                                cartData.quantity
+                            );
 
                             const productId = $(this).data('id');
 

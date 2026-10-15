@@ -59,6 +59,14 @@ class ProductResource extends JsonResource
             'image' => $this->product_image, // for testing
             'size_guide_images' => $this->size_guide_images, // for testing
             'images' => $this->images->toArray(),
+            'certificates' => $this->certificates->map(function ($certificate) {
+                return [
+                    'id' => $certificate->id,
+                    'title' => $certificate->title,
+                    'file' => $certificate->file,
+                    'file_type' => $certificate->file_type,
+                ];
+            })->toArray(),
             'product_video' => $this->product_video,
             'variations' => (ProductVariationsResource::collection($this->variations))->toArray(request()),
             'variation_attributes' => $variation_attributes

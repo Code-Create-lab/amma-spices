@@ -1,4 +1,4 @@
-@extends('frontend.layouts.app', ['title' => ''])
+@extends('frontend.layouts.app', ['title' => 'Contact Us'])
 
 @section('content')
     <main class="main">

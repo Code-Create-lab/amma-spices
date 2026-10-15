@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend\Cart;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\UserActivity;
 use App\Models\Variation;
 use Exception;
 use Illuminate\Http\Request;
@@ -38,6 +39,8 @@ class CartController extends Controller
         if (!$variation || $variation->stock < $request->quantity) {
             return response()->json(['success' => false, 'message' => 'Out of stock']);
         }
+
+        UserActivity::recordServerEvent('add_to_cart', (int) $request->product_id, ['quantity' => (int) $request->quantity]);
 
         if (auth()->check()) {
             try {

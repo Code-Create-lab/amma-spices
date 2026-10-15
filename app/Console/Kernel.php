@@ -44,6 +44,16 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('refunds:process')->hourly();
 
+        // Keep activity tracking tables from growing unbounded
+        $schedule->command('activity:prune --days=90')->dailyAt('03:30');
+
+        // Rebuild sitemap.xml nightly so new products, categories and posts get
+        // indexed without anyone remembering to regenerate it. Uses APP_URL, so
+        // that must be the public https:// address in production.
+        $schedule->command('sitemap:generate')
+            ->dailyAt('04:15')
+            ->onOneServer();
+
         // Retry failed jobs twice a week
         $schedule->command('queue:retry all')
             ->weeklyOn(2, '02:00'); // Tuesday 2 AM

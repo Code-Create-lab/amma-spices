@@ -408,6 +408,11 @@
     <main class="main">
         <div class="page-content">
 
+            {{-- The hero is an image carousel with the wordmark baked into the
+                 artwork, so the page had no h1 at all. This one is read by
+                 crawlers and screen readers without altering the visual design. --}}
+            <h1 class="as-sr-only">Amma's Spices — authentic homemade Indian spice blends</h1>
+
             {{-- ══════════════════════════════════════════
              HERO BANNER
         ══════════════════════════════════════════ --}}
@@ -422,15 +427,20 @@
                         "dots": true,
                         "loop": true
                     }'>
-                    @foreach ($banners as $banner)
+                    @foreach ($banners as $index => $banner)
                         <div class="intro-slide">
                             <picture>
                                 @if ($banner->mobile_banner)
                                     <source media="(max-width: 767px)"
                                         srcset="{{ asset('storage/' . $banner->mobile_banner) }}">
                                 @endif
+                                {{-- First slide is the LCP element: fetch it eagerly and at
+                                     high priority. Later slides are off-screen, so they wait. --}}
                                 <img src="{{ asset('storage/' . $banner->image) }}" class="baneer-img-r"
-                                    alt="Amma's Spices">
+                                    alt="Amma's Spices"
+                                    loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                    fetchpriority="{{ $index === 0 ? 'high' : 'low' }}"
+                                    decoding="async">
                             </picture>
                         </div>
                     @endforeach
@@ -449,6 +459,78 @@
             </div>
 
             {{-- ══════════════════════════════════════════
+             HERO CTA + TRUST BADGES
+        ══════════════════════════════════════════ --}}
+            @php
+                // Dispatch promise is copy, not data — edit this one line if the
+                // fulfilment window changes.
+                $dispatchPromise = 'Dispatch in 24–48 hrs';
+            @endphp
+            <section class="as-herocta" aria-label="Shop Amma's Spices">
+                <div class="container">
+                    <div class="as-herocta-actions">
+                        <a href="{{ route('shop.page.index') }}" class="as-herocta-btn as-herocta-btn--primary">
+                            Shop All Blends
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M5 12h14" />
+                                <path d="m13 6 6 6-6 6" />
+                            </svg>
+                        </a>
+                        <a href="{{ route('frontend.about-us') }}" class="as-herocta-btn as-herocta-btn--ghost">
+                            Meet Amma
+                        </a>
+                    </div>
+
+                    @if ($reviewCount > 0)
+                        <div class="as-herocta-rating">
+                            @php $filledStars = (int) round($reviewAverage); @endphp
+                            <span class="as-herocta-stars" aria-hidden="true">@for ($i = 1; $i <= 5; $i++)<span
+                                    class="{{ $i <= $filledStars ? 'is-on' : '' }}">★</span>@endfor</span>
+                            <span class="as-herocta-rating-text">
+                                <strong>{{ $reviewAverageFormatted }}/5</strong>
+                                from {{ $reviewCount }} Google {{ Str::plural('review', $reviewCount) }}
+                            </span>
+                        </div>
+                    @endif
+
+                    <ul class="as-herocta-badges">
+                        @if (!is_null($freeShippingFrom))
+                            <li class="as-herocta-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M3 7h11v9H3z" />
+                                    <path d="M14 10h4l3 3v3h-7z" />
+                                    <circle cx="7" cy="18" r="1.8" />
+                                    <circle cx="17" cy="18" r="1.8" />
+                                </svg>
+                                <span>{{ $freeShippingFrom > 0 ? 'Free shipping over ₹' . number_format($freeShippingFrom) : 'Free shipping on every order' }}</span>
+                            </li>
+                        @endif
+                        @if ($codAvailable)
+                            <li class="as-herocta-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2.5" y="6" width="19" height="12" rx="2" />
+                                    <circle cx="12" cy="12" r="2.6" />
+                                    <path d="M6 12h.01M18 12h.01" />
+                                </svg>
+                                <span>Cash on delivery available</span>
+                            </li>
+                        @endif
+                        <li class="as-herocta-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3.5 2" />
+                            </svg>
+                            <span>{{ $dispatchPromise }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            {{-- ══════════════════════════════════════════
              TRUST BAR
         ══════════════════════════════════════════ --}}
             <div class="as-trust">
@@ -465,9 +547,7 @@
                     <div class="as-trust-item">
                         <div class="as-trust-dot"></div> Authentic recipes & flavours
                     </div>
-                    <div class="as-trust-item">
-                        <div class="as-trust-dot"></div> {{$reviewAverageFormatted}}★ Google Rating · {{$reviewCount}} reviews
-                    </div>
+                    {{-- Google rating now sits under the hero CTA, where it carries more weight. --}}
                 </div>
             </div>
 
@@ -501,7 +581,8 @@
                                 <div class="items-box">
                                     <a href="{{ route('getCatList', $category->slug) }}">
                                         <div class="items">
-                                            <img src="{{ asset($category->image) }}" alt="{{ $category->title }}">
+                                            <img src="{{ asset($category->image) }}" alt="{{ $category->title }}" loading="lazy"
+                                            decoding="async">
                                         </div>
                                     </a>
                                     <h3>{{ $category->title }}</h3>
@@ -551,7 +632,8 @@
                             <div class="items-box">
                                 <a href="{{ route('getCatList', $category->slug) }}">
                                     <div class="items">
-                                        <img src="{{ asset($category->image) }}" alt="{{ $category->title }}">
+                                        <img src="{{ asset($category->image) }}" alt="{{ $category->title }}" loading="lazy"
+                                            decoding="async">
                                     </div>
                                 </a>
                                 <h3>{{ $category->title }}</h3>
@@ -597,13 +679,239 @@
 
 
             {{-- ══════════════════════════════════════════
+             WHAT IS NOT IN OUR MASALA — PURITY PROMISE
+             Lab report: drop the PDF at
+             public/assets/docs/lab-report.pdf and the CTA
+             links to it automatically; otherwise it falls
+             back to the contact page.
+        ══════════════════════════════════════════ --}}
+            @php
+                $labReportPath = 'assets/docs/lab-report.pdf';
+                $labReportUrl = file_exists(public_path($labReportPath))
+                    ? asset($labReportPath)
+                    : route('contact-us.index');
+                $labReportIsFile = file_exists(public_path($labReportPath));
+
+                $purityItems = [
+                    [
+                        'title' => 'No Preservatives',
+                        'text' => 'Nothing added to stretch shelf life. Ground fresh in small batches, every week.',
+                        'icon' => '<path d="M9 3h6M10 3v5.2L4.8 17A2.4 2.4 0 0 0 6.9 20.6h10.2A2.4 2.4 0 0 0 19.2 17L14 8.2V3"/>',
+                    ],
+                    [
+                        'title' => 'No Artificial Colours',
+                        'text' => 'The colour you see comes from the spice itself — never from a dye or lake.',
+                        'icon' => '<path d="M12 3.2s5.6 5.3 5.6 9.1a5.6 5.6 0 1 1-11.2 0C6.4 8.5 12 3.2 12 3.2Z"/>',
+                    ],
+                    [
+                        'title' => 'No Fillers or Starch',
+                        'text' => 'No rice flour, husk or bran bulking up the weight of your pack.',
+                        'icon' => '<path d="M12 21V9M12 9c-2.6 0-4.2-1.7-4.2-4.2 2.6 0 4.2 1.7 4.2 4.2Zm0 0c2.6 0 4.2-1.7 4.2-4.2-2.6 0-4.2 1.7-4.2 4.2Zm0 6c-2.6 0-4.2-1.7-4.2-4.2 2.6 0 4.2 1.7 4.2 4.2Zm0 0c2.6 0 4.2-1.7 4.2-4.2-2.6 0-4.2 1.7-4.2 4.2Z"/>',
+                    ],
+                    [
+                        'title' => 'No Flavour Enhancers',
+                        'text' => 'No MSG, no synthetic flavouring. The aroma is the natural oil in the spice.',
+                        'icon' => '<path d="M13.4 2.8 5.2 13.4h6L10.6 21.2l8.2-10.6h-6l.6-7.8Z"/>',
+                    ],
+                    [
+                        'title' => 'No Anti-Caking Agents',
+                        'text' => 'No silica or chemical free-flow agents. Store it dry and it stays loose.',
+                        'icon' => '<circle cx="8" cy="8.4" r="1.7"/><circle cx="15.6" cy="10.4" r="1.7"/><circle cx="10.4" cy="15.6" r="1.7"/>',
+                    ],
+                    [
+                        'title' => 'No Unknown Sourcing',
+                        'text' => 'Sourced from farms we know by name and screened before it ever reaches the grinder.',
+                        'icon' => '<path d="M12 2.9 4.6 6v5.6c0 4.3 3.1 8.3 7.4 9.5 4.3-1.2 7.4-5.2 7.4-9.5V6L12 2.9Z"/>',
+                    ],
+                ];
+            @endphp
+            <div class="as-purity">
+                <div class="container">
+                    <div class="as-purity-label">Our Purity Promise</div>
+                    <div class="as-head">
+                        <h2>What is NOT in Our Masala</h2>
+                        <div class="as-divider"><span class="as-divider-dot"></span></div>
+                    </div>
+                    <p class="as-purity-lead">Most packet masala hides behind a long ingredient list. Ours is short on
+                        purpose — here is everything we leave out, and why.</p>
+
+                    <div class="as-purity-grid">
+                        @foreach ($purityItems as $item)
+                            <article class="as-purity-card">
+                                <span class="as-purity-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                                        {!! $item['icon'] !!}
+                                        <line x1="4" y1="20" x2="20" y2="4"></line>
+                                    </svg>
+                                </span>
+                                <div>
+                                    <h3 class="as-purity-title">{{ $item['title'] }}</h3>
+                                    <p class="as-purity-text">{{ $item['text'] }}</p>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="as-purity-foot">
+                        <p class="as-purity-foot-text">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M12 2.9 4.6 6v5.6c0 4.3 3.1 8.3 7.4 9.5 4.3-1.2 7.4-5.2 7.4-9.5V6L12 2.9Z" />
+                                <path d="m9 12 2.1 2.1L15.4 9.8" />
+                            </svg>
+                            <span>Every batch is lab-tested for pesticides, heavy metals and aflatoxins before it
+                                leaves our kitchen.</span>
+                        </p>
+                        <a href="{{ $labReportUrl }}" class="as-lab-btn"
+                            @if ($labReportIsFile) target="_blank" rel="noopener" @endif>
+                            Read Lab Report
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════════
+             COMPARISON TABLE — AMMA'S vs THE REST
+             Collapses into one card per row below 860px.
+        ══════════════════════════════════════════ --}}
+            @php
+                // verdict: yes | no | part  — each cell also carries words,
+                // so the meaning never depends on the colour of the mark alone.
+                $compareRows = [
+                    [
+                        'feature' => 'Freshness',
+                        'us' => ['yes', 'Ground in small batches, every week'],
+                        'packet' => ['no', 'Months old before it reaches your kitchen'],
+                        'mill' => ['part', 'Fresh, but ground in bulk lots'],
+                    ],
+                    [
+                        'feature' => 'Preservatives',
+                        'us' => ['yes', 'None. Ever.'],
+                        'packet' => ['no', 'Commonly added for shelf life'],
+                        'mill' => ['part', 'Varies — rarely declared'],
+                    ],
+                    [
+                        'feature' => 'Artificial colours',
+                        'us' => ['yes', 'Colour comes from the spice itself'],
+                        'packet' => ['no', 'Often dyed for a brighter look'],
+                        'mill' => ['part', 'Depends on the lot bought'],
+                    ],
+                    [
+                        'feature' => 'Fillers &amp; starch',
+                        'us' => ['yes', 'Zero bulking agents'],
+                        'packet' => ['no', 'Husk, bran or flour used to cut cost'],
+                        'mill' => ['part', 'Not always disclosed'],
+                    ],
+                    [
+                        'feature' => 'Lab testing',
+                        'us' => ['yes', 'Every batch, report on request'],
+                        'packet' => ['no', 'Rarely shared with the buyer'],
+                        'mill' => ['no', 'Not tested'],
+                    ],
+                    [
+                        'feature' => 'Recipe',
+                        'us' => ['yes', "Amma's family recipe, unchanged"],
+                        'packet' => ['no', 'Mass factory blend'],
+                        'mill' => ['part', 'Plain grind, no blending'],
+                    ],
+                    [
+                        'feature' => 'Sourcing',
+                        'us' => ['yes', 'Farms we know by name'],
+                        'packet' => ['no', 'Origin not disclosed'],
+                        'mill' => ['part', 'Open market lots'],
+                    ],
+                    [
+                        'feature' => 'Aroma &amp; natural oils',
+                        'us' => ['yes', 'Oils intact — you smell it on opening'],
+                        'packet' => ['no', 'Faded after months on the shelf'],
+                        'mill' => ['part', 'Good only if used quickly'],
+                    ],
+                ];
+
+                $verdictIcons = [
+                    'yes' => '<path d="M20 6 9 17l-5-5"/>',
+                    'no' => '<path d="M18 6 6 18M6 6l12 12"/>',
+                    'part' => '<path d="M5 12h14"/>',
+                ];
+                $verdictLabels = ['yes' => 'Yes', 'no' => 'No', 'part' => 'Partly'];
+            @endphp
+            <div class="as-compare">
+                <div class="container">
+                    <div class="as-compare-label">Honest Comparison</div>
+                    <div class="as-head">
+                        <h2>Amma's vs the Packet on the Shelf</h2>
+                        <div class="as-divider"><span class="as-divider-dot"></span></div>
+                    </div>
+                    <p class="as-compare-lead">Same spice name on the label, very different jar. Here is the plain
+                        difference between our masala, a supermarket packet, and the local mill.</p>
+
+                    <div class="as-compare-scroll">
+                        <table class="as-compare-table">
+                            <caption class="as-sr-only">Comparison of Amma's Spices with supermarket packet masala and
+                                local mill masala across freshness, additives, testing and sourcing</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">What matters</th>
+                                    <th scope="col" class="is-us">
+                                        Amma's Spices
+                                        <span class="as-compare-badge">OUR PROMISE</span>
+                                    </th>
+                                    <th scope="col">Supermarket packet</th>
+                                    <th scope="col">Local mill</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($compareRows as $row)
+                                    <tr>
+                                        <th scope="row">{!! $row['feature'] !!}</th>
+                                        @foreach (['us' => "Amma's", 'packet' => 'Packet', 'mill' => 'Local mill'] as $key => $label)
+                                            @php $verdict = $row[$key][0]; @endphp
+                                            <td data-label="{{ $label }}" class="{{ $key === 'us' ? 'is-us' : '' }}">
+                                                <span class="as-cmp-cell as-cmp-{{ $verdict }}">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2.4" stroke-linecap="round"
+                                                        stroke-linejoin="round" role="img"
+                                                        aria-label="{{ $verdictLabels[$verdict] }}">
+                                                        {!! $verdictIcons[$verdict] !!}
+                                                    </svg>
+                                                    <span>{{ $row[$key][1] }}</span>
+                                                </span>
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="as-compare-foot">
+                        <p class="as-compare-note">Comparison based on commonly sold packet masala and open-mill grinding
+                            practice. Our claims are backed by the batch lab report.</p>
+                        <a href="{{ route('shop.page.index') }}" class="as-compare-btn">
+                            Shop Amma's Masala
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════════
              OUR STORY
         ══════════════════════════════════════════ --}}
             <div class="as-story">
                 <div class="container">
                     <div class="as-story-grid">
                         <div class="as-story-img">
-                            <img src="{{ asset('assets/img/aboutus_home.jpg') }}" alt="Our Story">
+                            <img src="{{ asset('assets/img/aboutus_home.jpg') }}"
+                                alt="Amma cooking in her home kitchen" loading="lazy" decoding="async">
                         </div>
                         <div>
                             <div class="as-story-label">Our Story</div>
@@ -632,10 +940,16 @@
                         <h2>Why Choose Us</h2>
                         <div class="as-divider"><span class="as-divider-dot"></span></div>
                     </div>
+                    {{-- Each icon sits directly above a heading that states the same
+                         thing, so the images are decorative: alt="" keeps screen
+                         readers from reading every claim twice. Several of the old
+                         alts were wrong anyway ("Authentic" on the preservative
+                         icon). All are below the fold, so all load lazily. --}}
                     <div class="as-why-grid">
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/preservative_free.svg') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Preservative free</h3>
@@ -643,7 +957,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt="No Chemicals">
+                                <img src="{{ asset('assets/img/Reduced_chemical_exposure.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">No Artificial additives</h3>
@@ -651,7 +966,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt="Lab Tested">
+                                <img src="{{ asset('assets/img/Chemical-Free-Skin-Safe.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">All products are lab-tested and certified</h3>
@@ -659,7 +975,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/Healthier_skin.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Authentic recipes &amp; flavours</h3>
@@ -667,7 +984,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt="Authentic">
+                                <img src="{{ asset('assets/img/made_with_natural_ingredients.svg') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Made with natural ingredients</h3>
@@ -675,7 +993,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt="high natural oil content">
+                                <img src="{{ asset('assets/img/high_natural_oil.svg') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Natural oil content</h3>
@@ -683,8 +1002,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/proud_product_of_india.png') }}"
-                                    alt="proud product of india" style="width: 90px;height: 60px;">
+                                <img src="{{ asset('assets/img/proud_product_of_india.png') }}" alt=""
+                                    loading="lazy" decoding="async" style="width: 90px;height: 60px;">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Proud product of India</h3>
@@ -692,7 +1011,8 @@
                         </div>
                         <div class="icon-box text-center pt-0">
                             <figure class="m-0">
-                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt="Sustainable">
+                                <img src="{{ asset('assets/img/lifestyle.png') }}" alt=""
+                                    loading="lazy" decoding="async">
                             </figure>
                             <div class="icon-box-content">
                                 <h3 class="icon-title">Sustainable, home kitchen crafted</h3>
@@ -774,7 +1094,7 @@
                                                 <div class="g-reviewer-name">{{ $review->reviewer_name }}</div>
                                                 <div class="g-reviewer-meta">
                                                     <img src="https://www.google.com/favicon.ico" class="g-favicon"
-                                                        alt="Google">
+                                                        alt="" loading="lazy" decoding="async">
                                                     <span>{{ $review->reviewer_role ?: 'Google Review' }}</span>
                                                 </div>
                                             </div>

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Frontend\Index;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\CodCharge;
 use App\Models\Product;
+use App\Models\Shipping;
 use App\Models\Video;
 use App\Models\Wishlist;
 use App\Models\Coupon;
@@ -92,6 +94,18 @@ class IndexController extends Controller
             'average' => (float) GoogleReview::where('is_active', 1)->avg('rating'),
         ];
 
+        // Hero trust badges. Both values come from the same tables checkout reads,
+        // so the badges can never promise something the cart will not honour.
+        // Shipping picks the highest threshold row that is <= subtotal, so shipping
+        // is only ever free once the top row is reached and that row charges nothing.
+        $topShipping = Shipping::where('status', 1)
+            ->orderByDesc('minimum_cart_value')
+            ->first();
+        $freeShippingFrom = $topShipping && (float) $topShipping->shipping_charge == 0.0
+            ? (int) $topShipping->minimum_cart_value
+            : null;
+        $codAvailable = CodCharge::where('status', 1)->exists();
+
             // dd($blogs);
         return view('frontend.index.index', [
             'products' => $products,
@@ -105,6 +119,8 @@ class IndexController extends Controller
             'blogs' => $blogs,       // ← add this
             'googleReviews' => $googleReviews,
             'googleReviewStats' => $googleReviewStats,
+            'freeShippingFrom' => $freeShippingFrom,
+            'codAvailable' => $codAvailable,
         ]);
     }
 

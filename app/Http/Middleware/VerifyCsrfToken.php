@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
        'payglocal/callback',
       'webhook/tracking',
        'razorpay/webhook',
+       'track/*',
     ];
 }

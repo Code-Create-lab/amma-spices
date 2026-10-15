@@ -132,6 +132,33 @@
                 </div>
             </div>
 
+            <div class="menu-item has-sub {{ request()->is('admin/user-activity*') ? 'active' : '' }}">
+                <a href="#" class="menu-link">
+                    <span class="menu-icon">
+                        <i class="fa fa-eye"></i>
+                    </span>
+                    <span class="menu-text">User Activity</span>
+                    <span class="menu-caret"><b class="caret"></b></span>
+                </a>
+                <div class="menu-submenu">
+                    <div class="menu-item {{ request()->is('admin/user-activity') ? 'active' : '' }}">
+                        <a href="{{ route('admin.activity.dashboard') }}" class="menu-link">
+                            <span class="menu-text">Dashboard</span>
+                        </a>
+                    </div>
+                    <div class="menu-item {{ request()->is('admin/user-activity/sessions*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.activity.sessions') }}" class="menu-link">
+                            <span class="menu-text">Visitor Sessions</span>
+                        </a>
+                    </div>
+                    <div class="menu-item {{ request()->is('admin/user-activity/products') ? 'active' : '' }}">
+                        <a href="{{ route('admin.activity.products') }}" class="menu-link">
+                            <span class="menu-text">Product Analytics</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="menu-header">{{ __('keywords.Categories & Products') }}</div>
             <div
                 class="menu-item has-sub {{ request()->is('category/*') ? 'active' : '' }}{{ request()->is('sub-category/*') ? 'active' : '' }}">
