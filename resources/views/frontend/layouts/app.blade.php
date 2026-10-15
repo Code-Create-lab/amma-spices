@@ -1,6 +1,7 @@
 <!--
   Website designed & developed by 10xCart
-  https://10xcart.in
+  https://10xcart.snehal.info/
+  Instagram: https://www.instagram.com/10xcart
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -51,6 +52,7 @@
     <meta name="designer" content="10xCart">
     <meta name="developer" content="10xCart">
     <meta name="copyright" content="© 2026 10xCart">
+    <link rel="author" href="https://10xcart.snehal.info/">
 
     {{-- Canonical drops the query string so filtered/paginated views do not
          each register as a separate page. --}}
@@ -258,7 +260,8 @@
             "creator": {
                 "@type": "Organization",
                 "name": "10xCart",
-                "url": "https://10xcart.in"
+                "url": "https://10xcart.snehal.info/",
+                "sameAs": ["https://www.instagram.com/10xcart"]
             }
             }
         </script>
